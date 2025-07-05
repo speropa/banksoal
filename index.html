@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Editor Bank Soal (Tahun Ajaran Final)</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #4A90E2;
+            --primary-hover: #357ABD;
+            --secondary-color: #6c757d;
+            --secondary-hover: #5a6268;
+            --success-color: #28a745;
+            --success-hover: #218838;
+            --publish-color: #F5A623;
+            --publish-hover: #D9931F;
+            --danger-color: #dc3545;
+            --danger-hover: #c82333;
+            --background-color: #F7F9FC;
+            --card-background: #FFFFFF;
+            --text-color: #333;
+            --label-color: #555;
+            --border-color: #DDE2E8;
+            --error-bg-color: #F8D7DA;
+            --error-text-color: #721C24;
+            --error-border-color: #f5c6cb;
+            --info-bg-color: #e2f0ff;
+        }
+
+        body.dark-mode {
+            --background-color: #121212;
+            --card-background: #1E1E1E;
+            --text-color: #E0E0E0;
+            --label-color: #B0B0B0;
+            --border-color: #333333;
+            --error-bg-color: #4d2b30;
+            --error-text-color: #f4a9b0;
+            --error-border-color: #6e3a41;
+            --info-bg-color: #1c2a38;
+        }
+
+        body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            line-height: 1.6; 
+            margin: 0;
+            padding: 15px; 
+            background-color: var(--background-color); 
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .view { display: none; }
+        .view.active { display: block; animation: fadeIn 0.5s ease-in-out; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: calc(100vh - 30px);
+        }
+        .card {
+            background-color: var(--card-background);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.07);
+            width: 100%;
+            max-width: 450px;
+            border: 1px solid var(--border-color);
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        .card-header { text-align: center; margin-bottom: 30px; }
+        .card-header h2 { margin: 0 0 10px 0; font-size: 1.6em; font-weight: 700; color: var(--text-color); }
+        .card-header p { margin: 0; color: var(--label-color); }
+
+        .spinner-container { text-align: center; }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .spinner-container p { font-size: 1.1em; color: var(--label-color); }
+
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--label-color); font-size: 0.9em; }
+        .form-control {
+            width: 100%; padding: 12px 15px; border: 1px solid var(--border-color); border-radius: 8px;
+            font-size: 1em; box-sizing: border-box; transition: border-color 0.3s, box-shadow 0.3s, background-color 0.3s, color 0.3s;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+        .form-control:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2); outline: none; }
+
+        .btn {
+            display: inline-block; padding: 12px 24px; border: none; border-radius: 8px;
+            background-color: var(--primary-color); color: white; font-size: 1em; font-weight: 700;
+            cursor: pointer; text-align: center; transition: background-color 0.3s, transform 0.2s, opacity 0.3s; text-decoration: none;
+        }
+        .btn:hover:not(:disabled) { background-color: var(--primary-hover); transform: translateY(-2px); }
+        .btn:active:not(:disabled) { transform: translateY(0); }
+        .btn-full { width: 100%; }
+        .btn:disabled { background-color: #ccc; cursor: not-allowed; transform: none; opacity: 0.6; }
+        body.dark-mode .btn:disabled { background-color: #444; color: #888; }
+
+        .error-message { color: var(--danger-color); text-align: center; margin-top: 15px; font-size: 0.9em; display: none; }
+
+        .title-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        #editor-view .main-title {
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.8em;
+            margin: 0;
+            flex-grow: 1;
+        }
+        .editor-header {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            background-color: var(--card-background);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        .header-col-1, .header-col-2 { width: 100%; }
+        .header-col-2 { display: flex; gap: 10px; }
+        .header-col-2 .btn { flex-grow: 1; }
+        .identitas-grid { display: grid; grid-template-columns: 1fr; gap: 10px; font-size: 0.95em; margin-bottom: 15px; }
+        .identitas-grid div { background-color: var(--background-color); padding: 8px 12px; border-radius: 6px; transition: background-color 0.3s; }
+        .identitas-grid span { color: var(--label-color); }
+        .identitas-actions { display: flex; gap: 10px; }
+        .btn-block { width: 100%; font-size: 1em; display: flex; justify-content: center; align-items: center; }
+        .btn-publish { background-color: var(--publish-color); }
+        .btn-publish:hover:not(:disabled) { background-color: var(--publish-hover); }
+        .btn-danger { background-color: var(--danger-color); }
+        .btn-danger:hover:not(:disabled) { background-color: var(--danger-hover); }
+        
+        #file-input { display: none; }
+        
+        .soal-container {
+            background-color: var(--card-background); border: 1px solid var(--border-color); border-radius: 8px;
+            padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+        }
+        .soal-container.invalid-soal {
+            border-color: var(--danger-color);
+            box-shadow: 0 0 8px rgba(220, 53, 69, 0.4);
+        }
+        .soal-validation-error {
+            color: var(--danger-color);
+            font-size: 0.85em;
+            font-weight: 500;
+            margin-top: 15px;
+            padding: 8px;
+            background-color: var(--error-bg-color);
+            border-radius: 4px;
+            display: none;
+        }
+        .soal-header { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px; }
+        .soal-nomor { justify-self: start; margin: 0; color: var(--label-color); font-size: 1em; font-weight: 700; }
+        .drag-handle { justify-self: center; display: grid; grid-template-columns: repeat(3, 6px); gap: 4px; padding: 10px; cursor: grab; border-radius: 5px; transition: background-color 0.2s; }
+        .delete-btn { justify-self: end; background-color: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.9em; }
+        [contenteditable="true"] { outline: none; background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; }
+        body.dark-mode [contenteditable="true"] { background-color: #2c2c2c; }
+        [contenteditable="true"]:hover, [contenteditable="true"]:focus { box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.25); }
+        .soal-container ul { list-style-type: none; padding-left: 0; margin-top: 15px; margin-bottom: 0; }
+        .soal-container li { padding: 8px 12px; margin-bottom: 5px; border-radius: 4px; display: flex; align-items: baseline; word-break: break-word; }
+        .soal-container li b { margin-right: 12px; min-width: 20px; }
+        .soal-container li div, .soal-container .soal-pertanyaan { width: 100%;}
+        
+        .soal-kunci-jawaban { margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border-color); display: flex; align-items: center; font-weight: 700; }
+        .soal-kunci-jawaban span { margin-right: 10px; color: var(--success-color); }
+
+        .img-inline { max-height: 2.5em; width: auto; vertical-align: middle; cursor: pointer; }
+        .img-block { display: block; max-width: 100%; height: auto; margin: 0.8em 0; cursor: pointer; }
+        .resizable-wrapper { position: relative; display: inline-block; outline: 2px dashed var(--primary-color); line-height: 0; user-select: none; -webkit-user-select: none; vertical-align: middle; }
+        .resizable-wrapper img { display: block; cursor: default !important; width: 100%; height: 100%; max-height: none; }
+        .resizer { position: absolute; width: 16px; height: 16px; background-color: var(--primary-color); border: 2px solid var(--card-background); border-radius: 4px; z-index: 10; box-shadow: 0 1px 4px rgba(0,0,0,0.4); }
+        .resizer.top-left { top: -8px; left: -8px; cursor: nwse-resize; }
+        .resizer.top-right { top: -8px; right: -8px; cursor: nesw-resize; }
+        .resizer.bottom-left { bottom: -8px; left: -8px; cursor: nesw-resize; }
+        .resizer.bottom-right { bottom: -8px; right: -8px; cursor: nwse-resize; }
+        .sortable-ghost { opacity: 0.4; background-color: #c8ebfb; }
+        
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); display: none; justify-content: center; align-items: center; z-index: 1000; animation: fadeIn 0.3s; }
+        .modal-content { background-color: var(--card-background); padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); text-align: center; max-width: 450px; width: 90%; transform: scale(0.95); animation: zoomIn 0.3s forwards; }
+        .modal-content h3 { margin-top: 0; }
+        .modal-content p { margin-bottom: 25px; line-height: 1.6; }
+        .modal-actions { margin-top: 20px; }
+        .modal-actions button { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin: 0 10px; }
+        .btn-confirm { background-color: var(--danger-color); color: white; }
+        .btn-cancel { background-color: var(--secondary-color); color: white; }
+        .confirmation-input-container { margin: 20px 0; }
+        @keyframes zoomIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 2000; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .toast { background-color: #333; color: white; padding: 12px 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); opacity: 0; transform: translateY(-100%); transition: opacity 0.3s, transform 0.3s; font-size: 0.9em; }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.success { background-color: var(--success-color); }
+        .toast.error { background-color: var(--danger-color); }
+
+        .settings-btn { background: none; border: none; cursor: pointer; padding: 5px; }
+        .settings-btn svg { width: 24px; height: 24px; stroke: var(--label-color); }
+        .theme-options { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
+        .theme-options button { flex-grow: 1; }
+        
+        #processing-modal .spinner-container p { font-size: 1.2em; color: white; font-weight: 500; }
+        #processing-modal .spinner { border-top-color: white; border-left-color: white; }
+        
+        .instructions-box {
+            background-color: var(--info-bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 30px;
+            font-size: 0.95em;
+        }
+        .instructions-box h3 {
+            margin-top: 0;
+            color: var(--text-color);
+            font-size: 1.1em;
+        }
+        .instructions-box ol {
+            padding-left: 20px;
+            margin-bottom: 0;
+        }
+        .instructions-box li {
+            margin-bottom: 10px;
+        }
+
+        @media (min-width: 768px) {
+            .editor-header { flex-direction: row; align-items: flex-start; }
+            .header-col-1 { flex: 1; }
+            .header-col-2 { flex: 0 0 250px; }
+            .identitas-grid { grid-template-columns: 1fr 1fr; }
+            .header-col-2 .btn { height: calc(50% - 5px); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <div id="loading-view" class="view active">
+        <div class="card-wrapper">
+            <div class="spinner-container">
+                <div class="spinner"></div>
+                <p id="loading-text">Mempersiapkan Aplikasi & Login...</p>
+                <p id="loading-error" class="error-message"></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="selection-view" class="view">
+        <div class="card-wrapper">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Identitas Soal</h2>
+                    <p>Lengkapi semua informasi di bawah</p>
+                </div>
+                <form id="selection-form">
+                    <div class="form-group">
+                        <label for="ujian-select">Ujian</label>
+                        <select id="ujian-select" class="form-control" required>
+                            <option value="" disabled selected>Pilih jenis asesmen...</option>
+                            <option value="ASTS 1">ASTS 1 (Asesmen Sumatif Tengah Semester 1)</option>
+                            <option value="ASAT 1">ASAT 1 (Asesmen Sumatif Akhir Semester 1)</option>
+                            <option value="ASTS 2">ASTS 2 (Asesmen Sumatif Tengah Semester 2)</option>
+                            <option value="ASAT 2">ASAT 2 (Asesmen Sumatif Akhir Tahun)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="tahun-ajaran-select">Tahun Ajaran</label>
+                        <select id="tahun-ajaran-select" class="form-control" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="kelas-select">Kelas</label>
+                        <select id="kelas-select" class="form-control" required>
+                             <option value="" disabled selected>Pilih kelas...</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="mapel-select">Mata Pelajaran</label>
+                        <select id="mapel-select" class="form-control" required>
+                            <option value="" disabled selected>Pilih mata pelajaran...</option>
+                            <option>Pendidikan Agama Islam</option>
+                            <option>Pendidikan Pancasila</option>
+                            <option>Matematika</option>
+                            <option>Bahasa Indonesia</option>
+                            <option>Bahasa Inggris</option>
+                            <option>IPA</option>
+                            <option>IPS</option>
+                            <option>PJOK</option>
+                            <option>Bahasa Jawa</option>
+                            <option>Seni Budaya dan Prakarya</option>
+                            <option>Informatika</option>
+                            <option value="Lainnya">Lainnya...</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="mapel-lainnya-group" style="display: none;">
+                        <label for="mapel-lainnya-input">Masukkan Mata Pelajaran</label>
+                        <input type="text" id="mapel-lainnya-input" class="form-control">
+                    </div>
+                    <button id="save-selection-btn" class="btn btn-full" disabled>Simpan & Lanjutkan</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="editor-view" class="view">
+        <div class="title-container">
+            <h1 class="main-title">Editor Bank Soal</h1>
+            <button class="settings-btn" id="settings-btn" title="Pengaturan Tampilan">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            </button>
+        </div>
+        <div class="editor-header">
+            <div class="header-col-1">
+                <div class="identitas-grid">
+                    <div><span>Ujian:</span> <strong id="info-ujian"></strong></div>
+                    <div><span>Kelas:</span> <strong id="info-kelas"></strong></div>
+                    <div><span>Tahun Ajaran:</span> <strong id="info-ta"></strong></div>
+                    <div><span>Mata Pelajaran:</span> <strong id="info-mapel"></strong></div>
+                </div>
+                <div class="identitas-actions">
+                    <button id="download-btn" class="btn btn-secondary">Download Template</button>
+                    <button id="upload-btn" class="btn btn-success">Upload & Proses ZIP</button>
+                </div>
+            </div>
+            <div class="header-col-2">
+                 <button id="publish-btn" class="btn btn-publish btn-block">Publish Soal</button>
+                 <button id="clear-data-btn" class="btn btn-danger btn-block">Kosongkan Data</button>
+            </div>
+        </div>
+        <input id="file-input" type="file" accept=".zip" />
+        <div id="soal-list-container"></div>
+        <div class="instructions-box">
+            <h3>Petunjuk</h3>
+            <ol>
+                <li><strong>Download Template ZIP:</strong> Unduh berkas ZIP yang berisi file HTML sebagai template.</li>
+                <li><strong>Isi Template:</strong> Buka file HTML dan isi bank soal sesuai dengan format dan petunjuk yang ada.</li>
+                <li><strong>Upload & Proses ZIP:</strong> Kembali ke halaman ini, lalu unggah file ZIP yang sudah Anda perbarui.</li>
+            </ol>
+        </div>
+    </div>
+
+</div>
+
+<div id="delete-modal" class="modal-overlay">
+    <div class="modal-content">
+        <p id="delete-modal-text"></p>
+        <div class="confirmation-input-container" style="display: none;">
+            <label for="confirmation-input">Ketik "<strong id="confirmation-word"></strong>" untuk konfirmasi:</label>
+            <input type="text" id="confirmation-input" class="form-control">
+        </div>
+        <div class="modal-actions">
+            <button id="modal-confirm-delete" class="btn-confirm">Ya, Hapus</button>
+            <button id="modal-cancel-delete" class="btn-cancel">Batal</button>
+        </div>
+    </div>
+</div>
+
+<div id="info-modal" class="modal-overlay">
+    <div class="modal-content">
+        <h3 id="info-modal-title"></h3>
+        <p id="info-modal-text"></p>
+        <div class="modal-actions">
+            <button id="info-modal-close" class="btn">Saya Mengerti</button>
+        </div>
+    </div>
+</div>
+
+<div id="settings-modal" class="modal-overlay">
+    <div class="modal-content">
+        <h3>Pengaturan Tampilan</h3>
+        <div class="theme-options">
+            <button class="btn" id="light-theme-btn">Mode Terang</button>
+            <button class="btn" id="dark-theme-btn">Mode Gelap</button>
+        </div>
+    </div>
+</div>
+
+<div id="processing-modal" class="modal-overlay">
+    <div class="spinner-container">
+        <div class="spinner"></div>
+        <p id="processing-text">Sedang memproses...</p>
+    </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
+<script type="module">
+    import { initializeApp, getApp, getApps } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-auth.js";
+    import { getDatabase, ref, set, get, remove } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
+    
+    const firebaseConfigs = {
+        '7ABC': { apiKey: "AIzaSyBAKwT7JY_HGnvK6h3u30-dfgRPXfef8l8", authDomain: "abc-a13ea.firebaseapp.com", databaseURL: "https://abc-a13ea-default-rtdb.firebaseio.com", projectId: "abc-a13ea", storageBucket: "abc-a13ea.appspot.com", messagingSenderId: "1052966795599", appId: "1:1052966795599:web:d4d331199ca9081321ed3a" },
+        '7DEF': { apiKey: "AIzaSyBkhBZw3oADXUAJ9FXY9-g7XBsSmQhzZVk", authDomain: "def-ab5ee.firebaseapp.com", databaseURL: "https://def-ab5ee-default-rtdb.firebaseio.com", projectId: "def-ab5ee", storageBucket: "def-ab5ee.appspot.com", messagingSenderId: "129712840107", appId: "1:129712840107:web:ab10576fed95f735dd46ee" },
+        '8ABC': { apiKey: "AIzaSyAwilwwwEJ2MAdSf09BotxNH-z6RiXaHXY", authDomain: "abc-43e73.firebaseapp.com", databaseURL: "https://abc-43e73-default-rtdb.firebaseio.com", projectId: "abc-43e73", storageBucket: "abc-43e73.appspot.com", messagingSenderId: "1043754727577", appId: "1:1043754727577:web:56c3732bf2a6ac900c2008" },
+        '8DEF': { apiKey: "AIzaSyBeCI57lmZ4-8DAKYJ7nvYjnXOfvy0vqrk", authDomain: "def-efcb2.firebaseapp.com", databaseURL: "https://def-efcb2-default-rtdb.firebaseio.com", projectId: "def-efcb2", storageBucket: "def-efcb2.appspot.com", messagingSenderId: "12569956361", appId: "1:12569956361:web:fea36c4e034e65f33ba8d8" },
+        '9ABC': { apiKey: "AIzaSyBZ6JR3ggnUiZFQ-wdrewbfhzMUwFaGGzQ", authDomain: "abc-d272a.firebaseapp.com", databaseURL: "https://abc-d272a-default-rtdb.firebaseio.com", projectId: "abc-d272a", storageBucket: "abc-d272a.appspot.com", messagingSenderId: "1036605132828", appId: "1:1036605132828:web:2b59f91290d50afe304fd9" },
+        '9DEF': { apiKey: "AIzaSyC2iwuDMWTaJIG8g464Wt0En3CXI2DZiz4", authDomain: "def-85f32.firebaseapp.com", databaseURL: "https://def-85f32-default-rtdb.firebaseio.com", projectId: "def-85f32", storageBucket: "def-85f32.appspot.com", messagingSenderId: "82670626048", appId: "1:82670626048:web:f5fdfda8fe078245b6bfe5" }
+    };
+
+    const firebaseApps = {};
+    function initializeFirebaseApps() {
+        for (const appName in firebaseConfigs) {
+            if (!getApps().find(app => app.name === appName)) {
+                firebaseApps[appName] = initializeApp(firebaseConfigs[appName], appName);
+            } else {
+                firebaseApps[appName] = getApp(appName);
+            }
+        }
+    }
+
+    const GITHUB_USERNAME = "speropa";
+    const GITHUB_REPO = "gambarbanksoal";
+    const GITHUB_TOKEN = "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";
+
+    let mainUser = null;
+    let soalToDelete = null;
+    let activeResizer = null;
+    let currentSoalData = {}; 
+
+    const loadingView = document.getElementById('loading-view');
+    const loadingText = document.getElementById('loading-text');
+    const loadingError = document.getElementById('loading-error');
+    const selectionView = document.getElementById('selection-view');
+    const editorView = document.getElementById('editor-view');
+    const selectionForm = document.getElementById('selection-form');
+    const ujianSelect = document.getElementById('ujian-select');
+    const tahunAjaranSelect = document.getElementById('tahun-ajaran-select');
+    const kelasSelect = document.getElementById('kelas-select');
+    const mapelSelect = document.getElementById('mapel-select');
+    const mapelLainnyaGroup = document.getElementById('mapel-lainnya-group');
+    const mapelLainnyaInput = document.getElementById('mapel-lainnya-input');
+    const saveSelectionBtn = document.getElementById('save-selection-btn');
+    const downloadBtn = document.getElementById('download-btn');
+    const uploadBtn = document.getElementById('upload-btn');
+    const publishBtn = document.getElementById('publish-btn');
+    const clearDataBtn = document.getElementById('clear-data-btn');
+    const fileInput = document.getElementById('file-input');
+    const outputEl = document.getElementById('soal-list-container');
+    const instructionsBox = document.querySelector('.instructions-box');
+    const deleteModal = document.getElementById('delete-modal');
+    const confirmDeleteBtn = document.getElementById('modal-confirm-delete');
+    const cancelDeleteBtn = document.getElementById('modal-cancel-delete');
+    const modalText = document.getElementById('delete-modal-text');
+    const confirmationInputContainer = document.querySelector('.confirmation-input-container');
+    const confirmationInput = document.getElementById('confirmation-input');
+    const confirmationWord = document.getElementById('confirmation-word');
+    const toastContainer = document.getElementById('toast-container');
+    const processingModal = document.getElementById('processing-modal');
+    const processingText = document.getElementById('processing-text');
+    const settingsBtn = document.getElementById('settings-btn');
+    const settingsModal = document.getElementById('settings-modal');
+    const lightThemeBtn = document.getElementById('light-theme-btn');
+    const darkThemeBtn = document.getElementById('dark-theme-btn');
+    const infoModal = document.getElementById('info-modal');
+    const infoModalTitle = document.getElementById('info-modal-title');
+    const infoModalText = document.getElementById('info-modal-text');
+    const infoModalCloseBtn = document.getElementById('info-modal-close');
+
+    function showView(viewId) {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.getElementById(viewId).classList.add('active');
+    }
+
+    function showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        toastContainer.appendChild(toast);
+        setTimeout(() => toast.classList.add('show'), 100);
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 500);
+        }, 4000);
+    }
+    
+    function showProcessing(message) {
+        processingText.textContent = message;
+        processingModal.style.display = 'flex';
+        setActionButtonsState(true);
+    }
+
+    function hideProcessing() {
+        processingModal.style.display = 'none';
+        setActionButtonsState(false);
+    }
+    
+    function setActionButtonsState(isProcessing) {
+        uploadBtn.disabled = isProcessing;
+        downloadBtn.disabled = isProcessing;
+        publishBtn.disabled = isProcessing;
+        clearDataBtn.disabled = isProcessing;
+    }
+
+    function showInfoOverlay(title, message) {
+        infoModalTitle.textContent = title;
+        infoModalText.innerHTML = message;
+        infoModal.style.display = 'flex';
+    }
+
+    function getDbPath(data) {
+        const { tahunAjaran, kelas, mapel, ujian } = data;
+        const safeTA = tahunAjaran.replace(/[\.\#\$\[\]\/]/g, '-');
+        const safeUjian = ujian.replace(/\s+/g, '-');
+        const safeMapel = mapel.replace(/\s+/g, '-');
+        return `ujian/${safeTA}/${safeUjian}/${safeMapel}/Kelas-${kelas}`;
+    }
+
+    async function performAutoLogin() {
+        const email = "speropa@gmail.com";
+        const password = "Pajangan201184*";
+        loadingError.style.display = 'none';
+
+        try {
+            const loginPromises = Object.keys(firebaseApps).map(appName => {
+                const appAuth = getAuth(firebaseApps[appName]);
+                return signInWithEmailAndPassword(appAuth, email, password);
+            });
+            
+            await Promise.all(loginPromises);
+            
+            console.log("Successfully logged in to all 6 projects.");
+            showView('selection-view');
+
+        } catch (error) {
+            loadingError.textContent = `Login Otomatis Gagal: ${error.message}`;
+            loadingError.style.display = 'block';
+            console.error("Auto-login failed:", error);
+        }
+    }
+
+    function populateTahunAjaranDropdown() {
+        const selectElement = document.getElementById('tahun-ajaran-select');
+        const date = new Date();
+        const currentYear = date.getFullYear();
+        const currentMonth = date.getMonth(); // 0-11, so July is 6
+
+        let latestAcademicYearStart = currentYear;
+        if (currentMonth < 6) { // Before July (0-5)
+            latestAcademicYearStart = currentYear - 1;
+        }
+        
+        const firstYear = 2025; // The first academic year to show, as requested
+        
+        selectElement.innerHTML = '<option value="" disabled>Pilih tahun ajaran...</option>';
+
+        for (let year = firstYear; year <= latestAcademicYearStart; year++) {
+            const academicYearString = `${year}/${year + 1}`;
+            const option = document.createElement('option');
+            option.value = academicYearString;
+            option.textContent = academicYearString;
+            selectElement.appendChild(option);
+        }
+
+        const latestOptionValue = `${latestAcademicYearStart}/${latestAcademicYearStart + 1}`;
+        selectElement.value = latestOptionValue;
+    }
+
+    function initialize() {
+        populateTahunAjaranDropdown();
+        initializeFirebaseApps();
+        performAutoLogin();
+    }
+
+    function validateSelectionForm() {
+        const isMapelLainnya = mapelSelect.value === 'Lainnya';
+        const isMapelLainnyaFilled = mapelLainnyaInput.value.trim() !== '';
+        
+        let isValid = selectionForm.checkValidity();
+        if (isMapelLainnya && !isMapelLainnyaFilled) {
+            isValid = false;
+        }
+        
+        saveSelectionBtn.disabled = !isValid;
+    }
+
+    selectionForm.addEventListener('input', validateSelectionForm);
+    mapelSelect.addEventListener('change', () => {
+        mapelLainnyaGroup.style.display = (mapelSelect.value === 'Lainnya') ? 'block' : 'none';
+        mapelLainnyaInput.required = (mapelSelect.value === 'Lainnya');
+        validateSelectionForm();
+    });
+
+    saveSelectionBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        validateSelectionForm();
+        if (saveSelectionBtn.disabled) {
+            showToast('Harap lengkapi semua isian identitas soal.', 'error');
+            return;
+        }
+
+        const ujian = ujianSelect.value;
+        const tahunAjaran = tahunAjaranSelect.value;
+        const kelas = kelasSelect.value;
+        let mapel = mapelSelect.value;
+        if (mapel === 'Lainnya') {
+            mapel = mapelLainnyaInput.value.trim();
+        }
+        
+        currentSoalData = { ujian, tahunAjaran, kelas, mapel };
+        
+        document.getElementById('info-ujian').textContent = ujian;
+        document.getElementById('info-ta').textContent = tahunAjaran;
+        document.getElementById('info-kelas').textContent = kelas;
+        document.getElementById('info-mapel').textContent = mapel;
+        
+        showView('loading-view');
+        loadingText.textContent = 'Mencari data soal yang sudah ada...';
+        
+        await fetchAndRenderSoal();
+
+        showView('editor-view');
+    });
+    
+    async function fetchAndRenderSoal() {
+        const dbPath = getDbPath(currentSoalData);
+        
+        let primaryDbName;
+        if (currentSoalData.kelas == '7') primaryDbName = '7ABC';
+        else if (currentSoalData.kelas == '8') primaryDbName = '8ABC';
+        else if (currentSoalData.kelas == '9') primaryDbName = '9ABC';
+        
+        if (!primaryDbName) {
+            showToast('Kelas tidak valid.', 'error');
+            return;
+        }
+        
+        const db = getDatabase(firebaseApps[primaryDbName]);
+        const snapshot = await get(ref(db, dbPath));
+
+        outputEl.innerHTML = ''; 
+
+        if (snapshot.exists()) {
+            const data = snapshot.val();
+            renderSoalFromData(data);
+            showToast(`Data berhasil dimuat. ${data.soal ? Object.keys(data.soal).length : 0} soal ditemukan.`, 'success');
+            publishBtn.disabled = false;
+            clearDataBtn.disabled = false;
+            instructionsBox.style.display = 'none';
+        } else {
+            showToast('Tidak ada data ditemukan. Silakan unggah file ZIP untuk memulai.', 'info');
+            publishBtn.disabled = true;
+            clearDataBtn.disabled = true;
+            instructionsBox.style.display = 'block';
+        }
+    }
+    
+    function renderSoalFromData(data) {
+        if (!data.soal) return;
+        
+        const kunciArray = data.kunciJawaban ? data.kunciJawaban.split(',') : [];
+
+        for (const nomor in data.soal) {
+            if (data.soal.hasOwnProperty(nomor)) {
+                const soalDetail = data.soal[nomor];
+                const kunci = kunciArray[parseInt(nomor) - 1] || '';
+                const soalDiv = createSoalElement(soalDetail, kunci, nomor);
+                outputEl.appendChild(soalDiv);
+            }
+        }
+        initializeSortable();
+    }
+
+    async function uploadImageToGithub(file, base64Content) {
+        const fileName = `${Date.now()}-${file.name}`;
+        const { tahunAjaran, kelas, mapel, ujian } = currentSoalData;
+        const safePath = `${tahunAjaran.replace('/', '-')}/${kelas}/${mapel.replace(/\s+/g, '-')}/${ujian.replace(/\s+/g, '-')}`;
+        const path = `${safePath}/${fileName}`;
+
+        const data = {
+            message: `Upload gambar soal: ${fileName}`,
+            content: base64Content,
+        };
+        const response = await fetch(
+            `https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/contents/${path}`,
+            {
+                method: 'PUT',
+                headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+            }
+        );
+        const result = await response.json();
+        if (!response.ok) throw new Error(`Gagal mengunggah ke GitHub: ${result.message}`);
+        return result.content.download_url;
+    }
+
+    async function deleteGithubFolder(path) {
+        try {
+            const response = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/contents/${path}`, {
+                headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
+            });
+            if (!response.ok) {
+                if (response.status === 404) {
+                    console.log(`Folder ${path} tidak ditemukan di GitHub, tidak perlu dihapus.`);
+                    return; 
+                }
+                throw new Error(`Gagal mendapatkan daftar file dari GitHub: ${response.statusText}`);
+            }
+            const files = await response.json();
+            if (!Array.isArray(files)) return;
+
+            const deletePromises = files.map(file => 
+                fetch(file.url, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: `Hapus file: ${file.name}`, sha: file.sha })
+                })
+            );
+            await Promise.all(deletePromises);
+            console.log(`Semua file di folder ${path} berhasil dihapus dari GitHub.`);
+        } catch (error) {
+            console.error('Gagal menghapus folder GitHub:', error);
+            throw error;
+        }
+    }
+
+    function validateAllSoal() {
+        let isAllValid = true;
+        
+        function isContentEmpty(element) {
+            const hasText = element.textContent.trim() !== '';
+            const hasImage = element.querySelector('img') !== null;
+            return !hasText && !hasImage;
+        }
+
+        document.querySelectorAll('.soal-container').forEach(soalDiv => {
+            const errorMessages = [];
+            const pertanyaanEl = soalDiv.querySelector('.soal-pertanyaan');
+            const pilihanAEl = soalDiv.querySelector('li:nth-child(1) div');
+            const pilihanBEl = soalDiv.querySelector('li:nth-child(2) div');
+            const pilihanCEl = soalDiv.querySelector('li:nth-child(3) div');
+            const pilihanDEl = soalDiv.querySelector('li:nth-child(4) div');
+            const kunciEl = soalDiv.querySelector('.soal-kunci-jawaban div');
+
+            if (isContentEmpty(pertanyaanEl)) errorMessages.push('Pertanyaan tidak boleh kosong.');
+            if (isContentEmpty(pilihanAEl)) errorMessages.push('Pilihan A tidak boleh kosong.');
+            if (isContentEmpty(pilihanBEl)) errorMessages.push('Pilihan B tidak boleh kosong.');
+            if (isContentEmpty(pilihanCEl)) errorMessages.push('Pilihan C tidak boleh kosong.');
+            if (isContentEmpty(pilihanDEl)) errorMessages.push('Pilihan D tidak boleh kosong.');
+            if (!kunciEl.textContent.trim()) errorMessages.push('Kunci Jawaban tidak boleh kosong.');
+
+            const errorEl = soalDiv.querySelector('.soal-validation-error');
+            if (errorMessages.length > 0) {
+                isAllValid = false;
+                soalDiv.classList.add('invalid-soal');
+                errorEl.innerHTML = errorMessages.join('<br>');
+                errorEl.style.display = 'block';
+            } else {
+                soalDiv.classList.remove('invalid-soal');
+                errorEl.style.display = 'none';
+            }
+        });
+        return isAllValid;
+    }
+
+    publishBtn.addEventListener('click', async () => {
+        if (!validateAllSoal()) {
+            showToast('Terdapat soal yang tidak valid. Harap perbaiki isian yang ditandai merah.', 'error');
+            const firstInvalid = document.querySelector('.invalid-soal');
+            if (firstInvalid) {
+                firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            return;
+        }
+        
+        const soalElements = document.querySelectorAll('.soal-container');
+        if (soalElements.length === 0) {
+            showToast('Tidak ada soal untuk dipublikasikan.', 'error');
+            return;
+        }
+
+        showProcessing(`Mempublikasikan ${soalElements.length} soal...`);
+
+        try {
+            const allImages = outputEl.querySelectorAll('img');
+            for (const img of allImages) {
+                if (img.src.startsWith('data:image')) {
+                    const base64String = img.src.split(',')[1];
+                    const originalFileName = img.dataset.fileName || 'pasted-image.png';
+                    processingText.textContent = `Mengunggah gambar baru: ${originalFileName}...`;
+                    const githubUrl = await uploadImageToGithub({name: originalFileName}, base64String);
+                    img.src = githubUrl;
+                }
+            }
+            processingText.textContent = 'Semua gambar berhasil diunggah. Menyimpan data soal...';
+
+            const kunciList = [];
+            const soalObject = Array.from(soalElements).reduce((acc, soalDiv, index) => {
+                const nomorSoal = index + 1;
+                kunciList.push(soalDiv.querySelector('.soal-kunci-jawaban div').textContent.trim());
+                acc[nomorSoal] = {
+                    pertanyaan: soalDiv.querySelector('.soal-pertanyaan').innerHTML,
+                    pilihanA: soalDiv.querySelector('li:nth-child(1) div').innerHTML,
+                    pilihanB: soalDiv.querySelector('li:nth-child(2) div').innerHTML,
+                    pilihanC: soalDiv.querySelector('li:nth-child(3) div').innerHTML,
+                    pilihanD: soalDiv.querySelector('li:nth-child(4) div').innerHTML,
+                };
+                return acc;
+            }, {});
+
+            const finalData = { ...currentSoalData, terakhirUpdate: new Date().toISOString(), soal: soalObject, kunciJawaban: kunciList.join(',') };
+            const dbPath = getDbPath(finalData);
+            
+            const targetDbNames = [];
+            if (finalData.kelas == '7') targetDbNames.push('7ABC', '7DEF');
+            else if (finalData.kelas == '8') targetDbNames.push('8ABC', '8DEF');
+            else if (finalData.kelas == '9') targetDbNames.push('9ABC', '9DEF');
+
+            if (targetDbNames.length === 0) throw new Error("Kelas tidak valid.");
+
+            const writePromises = targetDbNames.map(appName => {
+                const targetDb = getDatabase(firebaseApps[appName]);
+                return set(ref(targetDb, dbPath), finalData);
+            });
+
+            await Promise.all(writePromises);
+            
+            hideProcessing();
+            showInfoOverlay("Publikasi Berhasil!", "Jika ada kesalahan soal, silakan edit atau unggah ulang file ZIP yang sudah diperbarui kemudian publish soal kembali. Jika ingin menghapus semua soal yang sudah dipublish, silakan pilih tombol <strong>Kosongkan Data</strong> (tindakan ini tidak bisa dikembalikan!).");
+            clearDataBtn.disabled = false;
+
+        } catch (error) {
+            hideProcessing();
+            showToast(`Publikasi Gagal: ${error.message}`, 'error');
+            console.error("Publishing error:", error);
+        }
+    });
+
+    clearDataBtn.addEventListener('click', () => {
+        modalText.textContent = "Apakah Anda YAKIN ingin menghapus SEMUA data dan gambar untuk ujian ini?";
+        confirmationInputContainer.style.display = 'block';
+        confirmationWord.textContent = "HAPUS";
+        confirmationInput.value = '';
+        confirmDeleteBtn.disabled = true;
+        confirmDeleteBtn.onclick = executeClearData;
+        deleteModal.style.display = 'flex';
+    });
+    
+    confirmationInput.addEventListener('input', () => {
+        confirmDeleteBtn.disabled = confirmationInput.value !== "HAPUS";
+    });
+
+    async function executeClearData() {
+        deleteModal.style.display = 'none';
+        showProcessing('Menghapus data...');
+
+        const dbPath = getDbPath(currentSoalData);
+        const { tahunAjaran, kelas, mapel, ujian } = currentSoalData;
+        const githubFolderPath = `${tahunAjaran.replace('/', '-')}/${kelas}/${mapel.replace(/\s+/g, '-')}/${ujian.replace(/\s+/g, '-')}`;
+
+        try {
+            const targetDbNames = [];
+            if (kelas == '7') targetDbNames.push('7ABC', '7DEF');
+            else if (kelas == '8') targetDbNames.push('8ABC', '8DEF');
+            else if (kelas == '9') targetDbNames.push('9ABC', '9DEF');
+
+            if (targetDbNames.length === 0) throw new Error("Kelas tidak valid.");
+
+            processingText.textContent = 'Menghapus data dari server...';
+            const deletePromises = targetDbNames.map(appName => {
+                const targetDb = getDatabase(firebaseApps[appName]);
+                return remove(ref(targetDb, dbPath));
+            });
+            await Promise.all(deletePromises);
+            
+            processingText.textContent = 'Menghapus file gambar...';
+            await deleteGithubFolder(githubFolderPath);
+
+            showToast('Semua data dan gambar berhasil dihapus!', 'success');
+            outputEl.innerHTML = ''; 
+            publishBtn.disabled = true;
+            clearDataBtn.disabled = true;
+            instructionsBox.style.display = 'block';
+
+        } catch(error) {
+            showToast(`Gagal menghapus data: ${error.message}`, 'error');
+            console.error("Clear data error:", error);
+        } finally {
+            hideProcessing();
+        }
+    }
+
+    uploadBtn.addEventListener('click', () => fileInput.click());
+    
+    fileInput.addEventListener('change', async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        showProcessing(`Memproses file: ${file.name}...`);
+        await processZipFile(file);
+        hideProcessing();
+        
+        if (outputEl.children.length > 0) {
+            publishBtn.disabled = false;
+            clearDataBtn.disabled = false;
+            instructionsBox.style.display = 'none';
+            showInfoOverlay("Proses Selesai!", "Silakan review setiap butir soal yang sukses diunggah. Anda bisa mengeditnya langsung atau mengunggah ulang dengan file ZIP yang sudah diperbarui. Jika sudah benar dan sesuai, jangan lupa <strong>Publish Soal</strong>!");
+        }
+        fileInput.value = '';
+    });
+
+    async function processZipFile(file) {
+        outputEl.innerHTML = '';
+        if (activeResizer) removeResizer();
+
+        try {
+            const zip = await JSZip.loadAsync(file);
+            const htmlFile = zip.file(/.+\.html?$/i)[0];
+            if (!htmlFile) throw new Error("File .html tidak ditemukan di dalam ZIP.");
+            
+            const fileContentAsArray = await htmlFile.async('uint8array');
+            const decoder = new TextDecoder('windows-1252');
+            let htmlContent = decoder.decode(fileContentAsArray);
+            const tempDoc = new DOMParser().parseFromString(htmlContent, 'text/html');
+            
+            const imagesInDoc = Array.from(tempDoc.getElementsByTagName('img'));
+            
+            for (const img of imagesInDoc) {
+                const src = img.getAttribute('src');
+                if (src && !src.startsWith('data:') && !src.startsWith('http')) {
+                    try {
+                        const decodedSrc = decodeURIComponent(src);
+                        const imageFile = zip.file(decodedSrc);
+                        if (imageFile) {
+                            const base64Content = await imageFile.async('base64');
+                            const extension = imageFile.name.split('.').pop().toLowerCase();
+                            img.src = `data:image/${extension};base64,${base64Content}`;
+                            img.dataset.fileName = imageFile.name;
+                        }
+                    } catch (e) { console.warn(`Gagal memuat gambar: ${src}`, e); }
+                }
+            }
+            
+            parseHtmlAndDisplay(tempDoc.body);
+        } catch (err) {
+            showToast("Gagal fatal saat memproses file ZIP.", 'error');
+            console.error(err);
+        }
+    }
+    
+    function createSoalElement(soalDetail, kunci, nomor) {
+        const soalDiv = document.createElement('div');
+        soalDiv.className = 'soal-container';
+        
+        soalDiv.innerHTML = `
+            <div class="soal-header">
+                <h3 class="soal-nomor">Soal ${nomor}</h3>
+                <div class="drag-handle" title="Seret untuk mengubah urutan"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                <button class="delete-btn">Hapus</button>
+            </div>
+            <div class="soal-pertanyaan" contenteditable="true" dir="auto">${soalDetail.pertanyaan}</div>
+            <ul>
+                <li><b>A.</b> <div contenteditable="true" dir="auto">${soalDetail.pilihanA}</div></li>
+                <li><b>B.</b> <div contenteditable="true" dir="auto">${soalDetail.pilihanB}</div></li>
+                <li><b>C.</b> <div contenteditable="true" dir="auto">${soalDetail.pilihanC}</div></li>
+                <li><b>D.</b> <div contenteditable="true" dir="auto">${soalDetail.pilihanD}</div></li>
+            </ul>
+            <div class="soal-kunci-jawaban">
+                <span>Kunci Jawaban:</span>
+                <div contenteditable="true" dir="auto">${kunci}</div>
+            </div>
+            <div class="soal-validation-error"></div>
+        `;
+        
+        classifyImages(soalDiv);
+        return soalDiv;
+    }
+
+    function parseHtmlAndDisplay(bodyElement) {
+        const tables = bodyElement.getElementsByTagName('table');
+        if (tables.length === 0) {
+            showToast("Error: Tidak ada tabel format soal ditemukan di dalam file.", 'error');
+            return;
+        }
+        let soalDitemukan = 0;
+        for (const table of tables) {
+            const rows = table.rows;
+            for (let i = 0; i < rows.length; i++) {
+                const firstCell = rows[i]?.cells[0];
+                if (!firstCell || isNaN(parseInt(firstCell.textContent.trim(), 10))) continue;
+                
+                const questionCell = rows[i]?.cells[1];
+                if (!questionCell || !questionCell.textContent.trim()) {
+                    i += 5; 
+                    continue;
+                }
+
+                if (i + 5 >= rows.length) continue;
+
+                try {
+                    soalDitemukan++;
+                    const soalDetail = {
+                        pertanyaan: stripAllStyles(questionCell),
+                        pilihanA: stripAllStyles(rows[i+1]?.cells[1]),
+                        pilihanB: stripAllStyles(rows[i+2]?.cells[1]),
+                        pilihanC: stripAllStyles(rows[i+3]?.cells[1]),
+                        pilihanD: stripAllStyles(rows[i+4]?.cells[1])
+                    };
+                    const kunci = stripAllStyles(rows[i+5]?.cells[1]);
+                    
+                    const soalDiv = createSoalElement(soalDetail, kunci, soalDitemukan);
+                    outputEl.appendChild(soalDiv);
+                    i += 5; 
+                } catch (e) { console.error(`Gagal memproses blok soal.`, e); }
+            }
+        }
+        if (soalDitemukan > 0) {
+            showToast(`Selesai! ${soalDitemukan} soal berhasil dibaca.`, 'success');
+            initializeSortable();
+        } else {
+            showToast(`Selesai, namun tidak ada soal yang cocok formatnya atau semua soal kosong.`, 'error');
+        }
+    }
+
+    function stripAllStyles(element) {
+        if (!element) return '';
+        const clone = element.cloneNode(true);
+        clone.querySelectorAll('*').forEach(child => child.removeAttribute('style'));
+        return clone.innerHTML;
+    }
+
+    function classifyImages(containerElement) {
+        containerElement.querySelectorAll('img').forEach(img => {
+            const p = img.closest('p');
+            if (!p) {
+                img.classList.add('img-inline');
+                return;
+            }
+            const hasOtherContent = Array.from(p.childNodes).some(node => 
+                node !== img && (node.nodeType === 3 && node.textContent.trim() !== '' || node.nodeType === 1 && node.tagName !== 'BR' && !node.contains(img))
+            );
+            img.classList.add(hasOtherContent ? 'img-inline' : 'img-block');
+        });
+    }
+    
+    outputEl.addEventListener('click', function(e) {
+        if (e.target.classList.contains('delete-btn')) {
+             if (activeResizer) removeResizer(); 
+             soalToDelete = e.target.closest('.soal-container'); 
+             modalText.textContent = "Apakah Anda yakin ingin menghapus soal ini saja?";
+             confirmationInputContainer.style.display = 'none';
+             confirmDeleteBtn.disabled = false;
+             confirmDeleteBtn.onclick = executeDeleteSoal;
+             deleteModal.style.display = 'flex'; 
+        }
+        else if (e.target.tagName === 'IMG' && !e.target.closest('.resizable-wrapper')) {
+            makeImageResizable(e.target);
+            e.stopPropagation();
+        }
+    });
+    document.addEventListener('click', function(e) { if (activeResizer && !activeResizer.wrapper.contains(e.target)) removeResizer(); });
+    cancelDeleteBtn.addEventListener('click', () => { deleteModal.style.display = 'none'; });
+    infoModalCloseBtn.addEventListener('click', () => { infoModal.style.display = 'none'; });
+
+    function executeDeleteSoal() { if (soalToDelete) { soalToDelete.remove(); renumberSoal(); showToast('Soal berhasil dihapus.'); } deleteModal.style.display = 'none'; }
+    
+    function makeImageResizable(img) { 
+        if (activeResizer) removeResizer();
+        const wrapper = document.createElement('div'); 
+        wrapper.className = 'resizable-wrapper'; 
+        wrapper.style.width = `${img.offsetWidth}px`;
+        wrapper.style.height = `${img.offsetHeight}px`;
+        img.parentNode.insertBefore(wrapper, img); 
+        wrapper.appendChild(img); 
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.maxHeight = 'none'; 
+        ['top-left', 'top-right', 'bottom-left', 'bottom-right'].forEach(c => { 
+            const h = document.createElement('div'); 
+            h.className = 'resizer ' + c; 
+            wrapper.appendChild(h); 
+            h.addEventListener('mousedown', startResize, { passive: false }); 
+            h.addEventListener('touchstart', startResize, { passive: false }); 
+        }); 
+        activeResizer = { wrapper, img }; 
+    }
+    function removeResizer() { 
+        if (activeResizer) { 
+            const { wrapper, img } = activeResizer; 
+            img.style.width = wrapper.style.width;
+            img.style.height = 'auto'; 
+            img.style.maxHeight = ''; 
+            if (wrapper.parentNode) wrapper.parentNode.insertBefore(img, wrapper); 
+            wrapper.remove(); 
+            activeResizer = null; 
+        } 
+    }
+    function startResize(e) { 
+        e.preventDefault(); 
+        e.stopPropagation(); 
+        const { wrapper, img } = activeResizer; 
+        const aspectRatio = img.naturalWidth / img.naturalHeight;
+        const handle = e.target; 
+        const startX = e.clientX || e.touches[0].clientX; 
+        const startWidth = wrapper.offsetWidth; 
+        function doResize(e) { 
+            const currentX = e.clientX || e.touches[0].clientX; 
+            let newWidth = handle.classList.contains('bottom-right') || handle.classList.contains('top-right') ? startWidth + (currentX - startX) : startWidth - (currentX - startX); 
+            if (newWidth > 20) {
+                wrapper.style.width = newWidth + 'px';
+                wrapper.style.height = `${newWidth / aspectRatio}px`;
+            }
+        } 
+        function stopResize() { 
+            document.removeEventListener('mousemove', doResize); 
+            document.removeEventListener('mouseup', stopResize); 
+            document.removeEventListener('touchmove', doResize); 
+            document.removeEventListener('touchend', stopResize); 
+        } 
+        document.addEventListener('mousemove', doResize); 
+        document.addEventListener('mouseup', stopResize); 
+        document.addEventListener('touchmove', doResize); 
+        document.addEventListener('touchend', stopResize); 
+    }
+    function renumberSoal() { document.querySelectorAll('.soal-container').forEach((soal, index) => { soal.querySelector('.soal-nomor').textContent = `Soal ${index + 1}`; }); }
+    function initializeSortable() { new Sortable(outputEl, { animation: 150, ghostClass: 'sortable-ghost', handle: '.drag-handle', onEnd: renumberSoal }); }
+
+    settingsBtn.addEventListener('click', () => settingsModal.style.display = 'flex');
+    settingsModal.addEventListener('click', (e) => { if (e.target === settingsModal) settingsModal.style.display = 'none'; });
+    lightThemeBtn.addEventListener('click', () => { document.body.classList.remove('dark-mode'); localStorage.setItem('theme', 'light'); settingsModal.style.display = 'none'; });
+    darkThemeBtn.addEventListener('click', () => { document.body.classList.add('dark-mode'); localStorage.setItem('theme', 'dark'); settingsModal.style.display = 'none'; });
+
+    function loadTheme() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') document.body.classList.add('dark-mode');
+        else document.body.classList.remove('dark-mode');
+    }
+    
+    loadTheme();
+    initialize();
+</script>
+</body>
+</html>
