@@ -155,8 +155,6 @@
         .identitas-grid span { color: var(--label-color); }
         .identitas-actions { display: flex; gap: 10px; }
         .btn-block { width: 100%; font-size: 1em; display: flex; justify-content: center; align-items: center; }
-        .btn-publish { background-color: var(--publish-color); }
-        .btn-publish:hover:not(:disabled) { background-color: var(--publish-hover); }
         .btn-danger { background-color: var(--danger-color); }
         .btn-danger:hover:not(:disabled) { background-color: var(--danger-hover); }
         
@@ -165,12 +163,15 @@
         .soal-container {
             background-color: var(--card-background); border: 1px solid var(--border-color); border-radius: 8px;
             padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s, opacity 0.3s;
+            transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
             position: relative;
         }
         .soal-container.disabled {
-            opacity: 0.5;
             pointer-events: none !important; /* The ultimate lock */
+        }
+        .soal-container.is-editing {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.4), 0 4px 12px rgba(0,0,0,0.1);
         }
         .soal-container.invalid-soal {
             border-color: var(--danger-color);
@@ -345,9 +346,11 @@
 
     <div id="loading-view" class="view active">
         <div class="card-wrapper">
-            <div class="spinner"></div>
-            <p id="loading-text">Mempersiapkan Aplikasi & Login...</p>
-            <p id="loading-error" class="error-message"></p>
+            <div class="spinner-container">
+                <div class="spinner"></div>
+                <p id="loading-text">Mempersiapkan Aplikasi & Login...</p>
+                <p id="loading-error" class="error-message"></p>
+            </div>
         </div>
     </div>
 
@@ -431,8 +434,7 @@
                 </div>
             </div>
             <div class="header-col-2">
-                 <button id="publish-btn" class="btn btn-publish btn-block">Publish Soal</button>
-                 <button id="clear-data-btn" class="btn btn-danger btn-block">Kosongkan Data</button>
+                 <button id="clear-data-btn" class="btn btn-danger btn-block">Hapus Semua Soal</button>
             </div>
         </div>
         <input id="file-input" type="file" accept=".zip" />
@@ -496,9 +498,9 @@
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
 <script type="module">
-    import { initializeApp, getApp, getApps } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-auth.js";
-    import { getDatabase, ref, set, get, remove } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
+    import { initializeApp, getApp, getApps } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+    import { getDatabase, ref, set, get, remove } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
     
     const firebaseConfigs = {
         '7ABC': { apiKey: "AIzaSyBAKwT7JY_HGnvK6h3u30-dfgRPXfef8l8", authDomain: "abc-a13ea.firebaseapp.com", databaseURL: "https://abc-a13ea-default-rtdb.firebaseio.com", projectId: "abc-a13ea", storageBucket: "abc-a13ea.appspot.com", messagingSenderId: "1052966795599", appId: "1:1052966795599:web:d4d331199ca9081321ed3a" },
@@ -506,7 +508,8 @@
         '8ABC': { apiKey: "AIzaSyAwilwwwEJ2MAdSf09BotxNH-z6RiXaHXY", authDomain: "abc-43e73.firebaseapp.com", databaseURL: "https://abc-43e73-default-rtdb.firebaseio.com", projectId: "abc-43e73", storageBucket: "abc-43e73.appspot.com", messagingSenderId: "1043754727577", appId: "1:1043754727577:web:56c3732bf2a6ac900c2008" },
         '8DEF': { apiKey: "AIzaSyBeCI57lmZ4-8DAKYJ7nvYjnXOfvy0vqrk", authDomain: "def-efcb2.firebaseapp.com", databaseURL: "https://def-efcb2-default-rtdb.firebaseio.com", projectId: "def-efcb2", storageBucket: "def-efcb2.appspot.com", messagingSenderId: "12569956361", appId: "1:12569956361:web:fea36c4e034e65f33ba8d8" },
         '9ABC': { apiKey: "AIzaSyBZ6JR3ggnUiZFQ-wdrewbfhzMUwFaGGzQ", authDomain: "abc-d272a.firebaseapp.com", databaseURL: "https://abc-d272a-default-rtdb.firebaseio.com", projectId: "abc-d272a", storageBucket: "abc-d272a.appspot.com", messagingSenderId: "1036605132828", appId: "1:1036605132828:web:2b59f91290d50afe304fd9" },
-        '9DEF': { apiKey: "AIzaSyC2iwuDMWTaJIG8g464Wt0En3CXI2DZiz4", authDomain: "def-85f32.firebaseapp.com", databaseURL: "https://def-85f32-default-rtdb.firebaseio.com", projectId: "def-85f32", storageBucket: "def-85f32.appspot.com", messagingSenderId: "82670626048", appId: "1:82670626048:web:f5fdfda8fe078245b6bfe5" }
+        '9DEF': { apiKey: "AIzaSyC2iwuDMWTaJIG8g464Wt0En3CXI2DZiz4", authDomain: "def-85f32.firebaseapp.com", databaseURL: "https://def-85f32-default-rtdb.firebaseio.com", projectId: "def-85f32", storageBucket: "def-85f32.appspot.com", messagingSenderId: "82670626048", appId: "1:82670626048:web:f5fdfda8fe078245b6bfe5" },
+        'SETUP': { apiKey: "AIzaSyBbXJ4VuACXyHJhl2eVSB2vHiT6hrx-XnE", authDomain: "setup-73809.firebaseapp.com", databaseURL: "https://setup-73809-default-rtdb.firebaseio.com", projectId: "setup-73809", storageBucket: "setup-73809.appspot.com", messagingSenderId: "843995999446", appId: "1:843995999446:web:7fd92546f2d0bea73fed77" }
     };
 
     const firebaseApps = {};
@@ -522,7 +525,7 @@
 
     const GITHUB_USERNAME = "speropa";
     const GITHUB_REPO = "gambarbanksoal";
-    const GITHUB_TOKEN = "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";
+    let githubToken = null; // Token will be fetched from Firebase
 
     let mainUser = null;
     let soalToDelete = null;
@@ -553,7 +556,6 @@
     const saveSelectionBtn = document.getElementById('save-selection-btn');
     const downloadBtn = document.getElementById('download-btn');
     const uploadBtn = document.getElementById('upload-btn');
-    const publishBtn = document.getElementById('publish-btn');
     const clearDataBtn = document.getElementById('clear-data-btn');
     const fileInput = document.getElementById('file-input');
     const outputEl = document.getElementById('soal-list-container');
@@ -608,7 +610,6 @@
     function setGlobalActionsState(disabled) {
         uploadBtn.disabled = disabled;
         downloadBtn.disabled = disabled;
-        publishBtn.disabled = disabled;
         clearDataBtn.disabled = disabled;
     }
 
@@ -626,21 +627,48 @@
         return `ujian/${safeTA}/${safeUjian}/${safeMapel}/Kelas-${kelas}`;
     }
 
+    async function fetchGithubToken() {
+        try {
+            const setupDb = getDatabase(firebaseApps['SETUP']);
+            const tokenRef = ref(setupDb, 'github/token');
+            const snapshot = await get(tokenRef);
+            if (snapshot.exists()) {
+                githubToken = snapshot.val();
+                console.log("GitHub token successfully fetched.");
+                return true;
+            } else {
+                throw new Error("Token GitHub tidak ditemukan di database 'SETUP'.");
+            }
+        } catch (error) {
+            console.error("Gagal mengambil token GitHub:", error);
+            loadingError.textContent = `Gagal mengambil token GitHub: ${error.message}`;
+            loadingError.style.display = 'block';
+            return false;
+        }
+    }
+
     async function performAutoLogin() {
         const email = "speropa@gmail.com";
         const password = "Pajangan201184*";
         loadingError.style.display = 'none';
 
         try {
+            loadingText.textContent = 'Login ke semua layanan...';
             const loginPromises = Object.keys(firebaseApps).map(appName => {
                 const appAuth = getAuth(firebaseApps[appName]);
                 return signInWithEmailAndPassword(appAuth, email, password);
             });
             
             await Promise.all(loginPromises);
-            
-            console.log("Successfully logged in to all 6 projects.");
-            showView('selection-view');
+            console.log("Successfully logged in to all 7 projects.");
+
+            loadingText.textContent = 'Mengambil konfigurasi keamanan...';
+            const tokenFetched = await fetchGithubToken();
+
+            if (tokenFetched) {
+                showView('selection-view');
+            }
+            // If token fetch fails, an error is already displayed on the loading screen.
 
         } catch (error) {
             loadingError.textContent = `Login Otomatis Gagal: ${error.message}`;
@@ -755,15 +783,10 @@
             const data = snapshot.val();
             renderSoalFromData(data);
             showToast(`Data berhasil dimuat. ${data.soal ? Object.keys(data.soal).length : 0} soal ditemukan.`, 'success');
-            publishBtn.disabled = false;
-            clearDataBtn.disabled = false;
-            instructionsBox.style.display = 'none';
         } else {
             showToast('Tidak ada data ditemukan. Silakan unggah file ZIP untuk memulai.', 'info');
-            publishBtn.disabled = true;
-            clearDataBtn.disabled = true;
-            instructionsBox.style.display = 'block';
         }
+        updateUIForSoalPresence();
     }
     
     function renderSoalFromData(data) {
@@ -783,6 +806,10 @@
     }
 
     async function uploadImageToGithub(file, base64Content) {
+        if (!githubToken) {
+            showToast('Token keamanan tidak valid. Operasi dibatalkan.', 'error');
+            throw new Error('GitHub token is not available.');
+        }
         const fileName = `${Date.now()}-${file.name}`;
         const { tahunAjaran, kelas, mapel, ujian } = currentSoalData;
         const safePath = `${tahunAjaran.replace('/', '-')}/${kelas}/${mapel.replace(/\s+/g, '-')}/${ujian.replace(/\s+/g, '-')}`;
@@ -796,7 +823,7 @@
             `https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/contents/${path}`,
             {
                 method: 'PUT',
-                headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
+                headers: { 'Authorization': `token ${githubToken}`, 'Content-Type': 'application/json' },
                 body: JSON.stringify(data),
             }
         );
@@ -805,42 +832,76 @@
         return result.content.download_url;
     }
 
-    // --- PERBAIKAN: Penanganan Error Lebih Detail ---
-    async function deleteGithubFolder(path) {
+    async function deleteImageFromGithub(imageUrl) {
+        if (!githubToken) {
+            showToast('Token keamanan tidak valid. Operasi dibatalkan.', 'error');
+            throw new Error('GitHub token is not available.');
+        }
+        if (!imageUrl || !imageUrl.includes('raw.githubusercontent.com')) return;
+        
+        const path = imageUrl.split(`${GITHUB_USERNAME}/${GITHUB_REPO}/main/`)[1];
+        if (!path) return;
+
+        try {
+            const res = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/contents/${path}`, {
+                headers: { 'Authorization': `token ${githubToken}` }
+            });
+            const fileData = await res.json();
+            if (!res.ok) {
+                if (res.status === 404) {
+                     console.log(`Gambar sudah tidak ada di GitHub: ${imageUrl}`);
+                     return;
+                }
+                throw new Error(`Gagal mendapatkan SHA file: ${fileData.message}`);
+            }
+
+            const deleteRes = await fetch(fileData.url, { // Use the API URL from the response
+                method: 'DELETE',
+                headers: { 'Authorization': `token ${githubToken}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: `Hapus gambar: ${fileData.name}`, sha: fileData.sha })
+            });
+            if (!deleteRes.ok) throw new Error(`Gagal menghapus file dari GitHub.`);
+            console.log(`Gambar ${fileData.name} berhasil dihapus.`);
+
+        } catch (error) {
+            console.error(`Gagal menghapus gambar dari GitHub: ${imageUrl}`, error);
+        }
+    }
+
+    async function deleteGithubDirectory(path) {
+        if (!githubToken) {
+            showToast('Token keamanan tidak valid. Operasi dibatalkan.', 'error');
+            throw new Error('GitHub token is not available.');
+        }
         try {
             const response = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/contents/${path}`, {
-                headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
+                headers: { 'Authorization': `token ${githubToken}` }
             });
 
             if (!response.ok) {
                 if (response.status === 404) {
-                    console.log(`Folder ${path} tidak ditemukan di GitHub, tidak perlu dihapus.`);
-                    return; 
+                    console.log(`Folder ${path} tidak ditemukan, tidak perlu dihapus.`);
+                    return;
                 }
-                // Coba baca body respons untuk pesan error yang lebih spesifik dari GitHub
-                const errorData = await response.json().catch(() => null);
-                const errorMessage = errorData ? errorData.message : `HTTP Error ${response.status}`;
-                throw new Error(`Gagal mendapatkan daftar file dari GitHub: ${errorMessage}`);
+                throw new Error(`Gagal mendapatkan konten folder: ${response.statusText}`);
             }
 
-            const files = await response.json();
-            if (!Array.isArray(files)) return;
+            const contents = await response.json();
+            if (!Array.isArray(contents)) return;
 
-            const deletePromises = files.map(file => 
-                fetch(file.url, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: `Hapus file: ${file.name}`, sha: file.sha })
-                })
-            );
-            await Promise.all(deletePromises);
-            console.log(`Semua file di folder ${path} berhasil dihapus dari GitHub.`);
+            for (const item of contents) {
+                if (item.type === 'dir') {
+                    await deleteGithubDirectory(item.path); // Recursive call
+                } else if (item.type === 'file') {
+                    await deleteImageFromGithub(item.download_url); // Delete file
+                }
+            }
         } catch (error) {
-            console.error('Gagal menghapus folder GitHub:', error);
-            throw error;
+            console.error(`Gagal memproses penghapusan folder ${path}:`, error);
         }
     }
 
+    // --- FUNCTION RE-ADDED ---
     function validateAllSoal() {
         let isAllValid = true;
         
@@ -879,55 +940,44 @@
         });
         return isAllValid;
     }
+    // --- END OF RE-ADDED FUNCTION ---
 
-    publishBtn.addEventListener('click', async () => {
-        if (isEditing) {
-            showToast('Harap simpan perubahan pada soal yang sedang diedit terlebih dahulu.', 'error');
-            return;
-        }
+    async function saveAllSoalToDatabase() {
         if (!validateAllSoal()) {
-            showToast('Terdapat soal yang tidak valid. Harap perbaiki isian yang ditandai merah.', 'error');
+            showToast('Terdapat soal yang tidak valid. Perubahan tidak disimpan.', 'error');
             const firstInvalid = document.querySelector('.invalid-soal');
             if (firstInvalid) {
                 firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
+            hideProcessing();
             return;
         }
         
-        const soalElements = document.querySelectorAll('.soal-container');
-        if (soalElements.length === 0) {
-            showToast('Tidak ada soal untuk dipublikasikan.', 'error');
-            return;
-        }
-
-        showProcessing(`Mempublikasikan ${soalElements.length} soal...`);
+        showProcessing('Menyimpan semua perubahan...');
 
         try {
-            const allImages = outputEl.querySelectorAll('img');
-            for (const img of allImages) {
-                if (img.src.startsWith('data:image')) {
-                    const base64String = img.src.split(',')[1];
-                    const originalFileName = img.dataset.fileName || 'pasted-image.png';
-                    processingText.textContent = `Mengunggah gambar baru: ${originalFileName}...`;
-                    const githubUrl = await uploadImageToGithub({name: originalFileName}, base64String);
-                    img.src = githubUrl;
-                }
+            const soalElements = document.querySelectorAll('.soal-container');
+            
+            if (soalElements.length === 0) {
+                 await clearAllDataFromDB();
+                 showToast('Semua soal telah dihapus dan data dikosongkan.', 'success');
+                 hideProcessing();
+                 return;
             }
-            processingText.textContent = 'Semua gambar berhasil diunggah. Menyimpan data soal...';
 
             const kunciList = [];
-            const soalObject = Array.from(soalElements).reduce((acc, soalDiv, index) => {
+            const soalObject = {};
+            soalElements.forEach((soalDiv, index) => {
                 const nomorSoal = index + 1;
                 kunciList.push(soalDiv.querySelector('.soal-kunci-jawaban div').innerHTML);
-                acc[nomorSoal] = {
+                soalObject[nomorSoal] = {
                     pertanyaan: soalDiv.querySelector('.soal-pertanyaan').innerHTML,
                     pilihanA: soalDiv.querySelector('li:nth-child(1) div').innerHTML,
                     pilihanB: soalDiv.querySelector('li:nth-child(2) div').innerHTML,
                     pilihanC: soalDiv.querySelector('li:nth-child(3) div').innerHTML,
                     pilihanD: soalDiv.querySelector('li:nth-child(4) div').innerHTML,
                 };
-                return acc;
-            }, {});
+            });
 
             const finalData = { ...currentSoalData, terakhirUpdate: new Date().toISOString(), soal: soalObject, kunciJawaban: kunciList.join(',') };
             const dbPath = getDbPath(finalData);
@@ -945,24 +995,38 @@
             });
 
             await Promise.all(writePromises);
+            showToast('Perubahan berhasil disimpan!', 'success');
             
-            hideProcessing();
-            showInfoOverlay("Publikasi Berhasil!", "Jika ada kesalahan soal, silakan edit atau unggah ulang file ZIP yang sudah diperbarui kemudian publish soal kembali. Jika ingin menghapus semua soal yang sudah dipublish, silakan pilih tombol <strong>Kosongkan Data</strong> (tindakan ini tidak bisa dikembalikan!).");
-            clearDataBtn.disabled = false;
-
         } catch (error) {
+            showToast(`Penyimpanan Gagal: ${error.message}`, 'error');
+            console.error("Save all error:", error);
+        } finally {
             hideProcessing();
-            showToast(`Publikasi Gagal: ${error.message}`, 'error');
-            console.error("Publishing error:", error);
         }
-    });
+    }
+
+    async function clearAllDataFromDB() {
+        const dbPath = getDbPath(currentSoalData);
+        const targetDbNames = [];
+        if (currentSoalData.kelas == '7') targetDbNames.push('7ABC', '7DEF');
+        else if (currentSoalData.kelas == '8') targetDbNames.push('8ABC', '8DEF');
+        else if (currentSoalData.kelas == '9') targetDbNames.push('9ABC', '9DEF');
+        
+        if (targetDbNames.length === 0) return;
+
+        const deletePromises = targetDbNames.map(appName => {
+            const targetDb = getDatabase(firebaseApps[appName]);
+            return remove(ref(targetDb, dbPath));
+        });
+        await Promise.all(deletePromises);
+    }
 
     clearDataBtn.addEventListener('click', () => {
         if (isEditing) {
             showToast('Harap simpan perubahan pada soal yang sedang diedit terlebih dahulu.', 'error');
             return;
         }
-        modalText.textContent = "Apakah Anda YAKIN ingin menghapus SEMUA data dan gambar untuk ujian ini?";
+        modalText.textContent = "Apakah Anda YAKIN ingin menghapus SEMUA data dan gambar untuk ujian ini? Tindakan ini tidak bisa dibatalkan.";
         confirmationInputContainer.style.display = 'block';
         confirmationWord.textContent = "HAPUS";
         confirmationInput.value = '';
@@ -979,33 +1043,19 @@
         deleteModal.style.display = 'none';
         showProcessing('Menghapus data...');
 
-        const dbPath = getDbPath(currentSoalData);
         const { tahunAjaran, kelas, mapel, ujian } = currentSoalData;
         const githubFolderPath = `${tahunAjaran.replace('/', '-')}/${kelas}/${mapel.replace(/\s+/g, '-')}/${ujian.replace(/\s+/g, '-')}`;
 
         try {
-            const targetDbNames = [];
-            if (kelas == '7') targetDbNames.push('7ABC', '7DEF');
-            else if (kelas == '8') targetDbNames.push('8ABC', '8DEF');
-            else if (kelas == '9') targetDbNames.push('9ABC', '9DEF');
-
-            if (targetDbNames.length === 0) throw new Error("Kelas tidak valid.");
-
             processingText.textContent = 'Menghapus data dari server...';
-            const deletePromises = targetDbNames.map(appName => {
-                const targetDb = getDatabase(firebaseApps[appName]);
-                return remove(ref(targetDb, dbPath));
-            });
-            await Promise.all(deletePromises);
+            await clearAllDataFromDB();
             
             processingText.textContent = 'Menghapus file gambar...';
-            await deleteGithubFolder(githubFolderPath);
+            await deleteGithubDirectory(githubFolderPath);
 
             showToast('Semua data dan gambar berhasil dihapus!', 'success');
             outputEl.innerHTML = ''; 
-            publishBtn.disabled = true;
-            clearDataBtn.disabled = true;
-            instructionsBox.style.display = 'block';
+            updateUIForSoalPresence();
 
         } catch(error) {
             showToast(`Gagal menghapus data: ${error.message}`, 'error');
@@ -1031,13 +1081,11 @@
         await processZipFile(file);
         hideProcessing();
         
+        updateUIForSoalPresence();
         if (outputEl.children.length > 0) {
-            publishBtn.disabled = false;
-            clearDataBtn.disabled = false;
-            instructionsBox.style.display = 'none';
-            showInfoOverlay("Proses Selesai!", "Silakan review setiap butir soal. Untuk mengedit, klik tombol 'Edit Soal' pada soal yang diinginkan.");
+            showInfoOverlay("Proses Selesai!", "Silakan review setiap butir soal. Untuk mengedit, klik tombol 'Edit Soal' pada soal yang diinginkan. Setiap perubahan akan disimpan secara otomatis.");
+            await saveAllSoalToDatabase();
         }
-        fileInput.value = '';
     });
 
     async function processZipFile(file) {
@@ -1081,7 +1129,7 @@
     
     function createSoalElement(soalDetail, kunci, nomor) {
         const soalDiv = document.createElement('div');
-        soalDiv.className = 'soal-container';
+        soalDiv.className = 'soal-container disabled'; // <-- START IN DISABLED STATE
         
         soalDiv.innerHTML = `
             <div class="soal-header">
@@ -1197,103 +1245,148 @@
         });
     }
     
-    // --- START: EDIT/SAVE LOGIC ---
+    // --- START: EDIT/SAVE LOGIC (FINAL REVISION) ---
     function enterEditMode(soalContainer) {
         isEditing = true;
         setGlobalActionsState(true);
 
+        const initialImages = Array.from(soalContainer.querySelectorAll('img')).map(img => img.src);
+        soalContainer.dataset.initialImages = JSON.stringify(initialImages);
+
         document.querySelectorAll('.soal-container').forEach(container => {
             if (container !== soalContainer) {
                 container.classList.add('disabled');
+            } else {
+                container.classList.remove('disabled');
+                container.classList.add('is-editing');
             }
         });
-
-        // Enable the target container
-        soalContainer.classList.remove('disabled');
-        soalContainer.style.pointerEvents = 'auto'; 
 
         soalContainer.querySelectorAll('[contenteditable]').forEach(el => el.setAttribute('contenteditable', 'true'));
         soalContainer.querySelector('.edit-btn').style.display = 'none';
         soalContainer.querySelector('.save-btn').style.display = 'inline-block';
         
-        const firstEditable = soalContainer.querySelector('[contenteditable="true"]');
+        const firstEditable = soalContainer.querySelector('.soal-pertanyaan');
         if (firstEditable) {
             firstEditable.focus();
             showToolbar(firstEditable);
         }
     }
 
-    function exitEditMode(soalContainer) {
-        isEditing = false;
-        setGlobalActionsState(false);
+    async function exitEditMode(soalContainer) {
         if (activeResizer) removeResizer();
+        showProcessing('Menyimpan perubahan...');
 
-        document.querySelectorAll('.soal-container').forEach(container => {
-            container.classList.remove('disabled');
-            container.style.pointerEvents = '';
-        });
+        const initialImages = JSON.parse(soalContainer.dataset.initialImages || '[]');
+        const finalImages = [];
 
+        for (const img of Array.from(soalContainer.querySelectorAll('img'))) {
+            if (img.src.startsWith('data:image')) {
+                const base64String = img.src.split(',')[1];
+                const fileName = img.dataset.fileName || 'pasted-image.png';
+                try {
+                    const githubUrl = await uploadImageToGithub({ name: fileName }, base64String);
+                    img.src = githubUrl;
+                    finalImages.push(githubUrl);
+                } catch (error) {
+                    hideProcessing();
+                    showToast(`Gagal mengunggah gambar: ${error.message}`, 'error');
+                    return;
+                }
+            } else {
+                finalImages.push(img.src);
+            }
+        }
+
+        const imagesToDelete = initialImages.filter(src => src.includes('github') && !finalImages.includes(src));
+        for (const imageUrl of imagesToDelete) {
+            await deleteImageFromGithub(imageUrl);
+        }
+        
+        isEditing = false;
         soalContainer.querySelectorAll('[contenteditable]').forEach(el => el.setAttribute('contenteditable', 'false'));
         soalContainer.querySelector('.edit-btn').style.display = 'inline-block';
         soalContainer.querySelector('.save-btn').style.display = 'none';
+        
+        document.querySelectorAll('.soal-container').forEach(container => {
+            container.classList.add('disabled');
+            container.classList.remove('is-editing');
+        });
+        
         hideToolbar();
+        
+        await saveAllSoalToDatabase();
+        setGlobalActionsState(false);
     }
 
     outputEl.addEventListener('click', function(e) {
         const soalContainer = e.target.closest('.soal-container');
         if (!soalContainer) return;
 
-        // The ultimate gatekeeper: if the container is disabled, do nothing.
-        if (getComputedStyle(soalContainer).pointerEvents === 'none') {
-            // However, allow clicks on the action buttons inside a disabled container
-            // This allows the user to click "Edit" on another question to switch focus.
-            if (!e.target.closest('.soal-actions')) {
-                 return;
-            }
-        }
-
         const editBtn = e.target.closest('.edit-btn');
         const saveBtn = e.target.closest('.save-btn');
         const deleteBtn = e.target.closest('.delete-btn');
-        const isImage = e.target.tagName === 'IMG' && !e.target.closest('.resizable-wrapper');
 
         if (editBtn) {
             if (isEditing) {
-                showToast('Harap simpan soal yang sedang diedit terlebih dahulu.', 'error');
+                showToast('Harap simpan perubahan pada soal lain terlebih dahulu.', 'error');
                 return;
             }
             enterEditMode(soalContainer);
             return;
         }
+
         if (saveBtn) {
             exitEditMode(soalContainer);
             return;
         }
+
         if (deleteBtn) {
              if (isEditing) {
                 showToast('Harap simpan perubahan pada soal yang sedang diedit terlebih dahulu.', 'error');
                 return;
              }
-             soalToDelete = soalContainer; 
-             modalText.textContent = "Apakah Anda yakin ingin menghapus soal ini?";
+             soalToDelete = soalContainer;
+             modalText.textContent = "Apakah Anda yakin ingin menghapus soal ini? Perubahan akan langsung disimpan.";
              confirmationInputContainer.style.display = 'none';
              confirmDeleteBtn.disabled = false;
              confirmDeleteBtn.onclick = executeDeleteSoal;
-             deleteModal.style.display = 'flex'; 
+             deleteModal.style.display = 'flex';
              return;
         }
+
+        if (soalContainer.classList.contains('disabled')) {
+            return;
+        }
+        
+        const isImage = e.target.tagName === 'IMG' && !e.target.closest('.resizable-wrapper');
         if (isImage) {
             makeImageResizable(e.target);
             e.stopPropagation();
         }
     });
-    // --- END: EDIT/SAVE LOGIC ---
+    // --- END: EDIT/SAVE LOGIC (FINAL REVISION) ---
 
     document.addEventListener('click', function(e) { if (activeResizer && !activeResizer.wrapper.contains(e.target)) removeResizer(); });
     cancelDeleteBtn.addEventListener('click', () => { deleteModal.style.display = 'none'; });
     infoModalCloseBtn.addEventListener('click', () => { infoModal.style.display = 'none'; });
 
-    function executeDeleteSoal() { if (soalToDelete) { soalToDelete.remove(); renumberSoal(); showToast('Soal berhasil dihapus.'); } deleteModal.style.display = 'none'; }
+    async function executeDeleteSoal() {
+        if (!soalToDelete) return;
+        deleteModal.style.display = 'none';
+        showProcessing('Menghapus soal...');
+
+        const imagesToDelete = Array.from(soalToDelete.querySelectorAll('img')).map(img => img.src);
+        for (const imageUrl of imagesToDelete) {
+            await deleteImageFromGithub(imageUrl);
+        }
+
+        soalToDelete.remove();
+        renumberSoal();
+        await saveAllSoalToDatabase();
+        soalToDelete = null;
+        updateUIForSoalPresence();
+    }
     
     function makeImageResizable(img) { 
         if (activeResizer) removeResizer();
@@ -1362,7 +1455,17 @@
         document.addEventListener('touchend', stopResize); 
     }
     function renumberSoal() { document.querySelectorAll('.soal-container').forEach((soal, index) => { soal.querySelector('.soal-nomor').textContent = `Soal ${index + 1}`; }); }
-    function initializeSortable() { new Sortable(outputEl, { animation: 150, ghostClass: 'sortable-ghost', handle: '.drag-handle', onEnd: renumberSoal }); }
+    function initializeSortable() { 
+        new Sortable(outputEl, { 
+            animation: 150, 
+            ghostClass: 'sortable-ghost', 
+            handle: '.drag-handle', 
+            onEnd: async function() {
+                renumberSoal();
+                await saveAllSoalToDatabase();
+            } 
+        }); 
+    }
 
     function saveSelection() {
         const selection = window.getSelection();
@@ -1476,6 +1579,12 @@
             reader.readAsDataURL(file);
             toolbarImageInput.value = '';
         });
+    }
+
+    function updateUIForSoalPresence() {
+        const hasSoal = outputEl.children.length > 0;
+        instructionsBox.style.display = hasSoal ? 'none' : 'block';
+        clearDataBtn.disabled = !hasSoal;
     }
 
     settingsBtn.addEventListener('click', () => settingsModal.style.display = 'flex');
