@@ -18,8 +18,8 @@
             --secondary-hover: #5a6268;
             --success-color: #28a745;
             --success-hover: #218838;
-            --publish-color: #F5A623;
-            --publish-hover: #D9931F;
+            --purple-color: #8e44ad;
+            --purple-hover: #732d91;
             --danger-color: #dc3545;
             --danger-hover: #c82333;
             --background-color: #F7F9FC;
@@ -115,15 +115,42 @@
         .form-control:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2); outline: none; }
 
         .btn {
-            display: inline-block; padding: 12px 24px; border: none; border-radius: 8px;
-            background-color: var(--primary-color); color: white; font-size: 1em; font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border: none; border-radius: 8px;
+            background-color: var(--primary-color); color: white; font-size: 0.9em; font-weight: 700;
             cursor: pointer; text-align: center; transition: background-color 0.3s, transform 0.2s, opacity 0.3s; text-decoration: none;
         }
-        .btn:hover:not(:disabled) { background-color: var(--primary-hover); transform: translateY(-2px); }
-        .btn:active:not(:disabled) { transform: translateY(0); }
+        .btn:hover:not([disabled]) { background-color: var(--primary-hover); transform: translateY(-2px); }
+        .btn:active:not([disabled]) { transform: translateY(0); }
         .btn-full { width: 100%; }
-        .btn:disabled { background-color: #ccc; cursor: not-allowed; transform: none; opacity: 0.6; }
-        body.dark-mode .btn:disabled { background-color: #444; color: #888; }
+        
+        .btn:disabled, .btn.disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        body.dark-mode .btn:disabled, body.dark-mode .btn.disabled {
+            background-color: #444;
+            color: #888;
+        }
+
+        .btn-primary { background-color: var(--primary-color); }
+        .btn-primary:hover:not(:disabled) { background-color: var(--primary-hover); }
+        .btn-secondary { background-color: var(--secondary-color); }
+        .btn-secondary:hover:not(:disabled) { background-color: var(--secondary-hover); }
+        .btn-success { background-color: var(--success-color); }
+        .btn-success:hover:not(:disabled) { background-color: var(--success-hover); }
+        .btn-purple { background-color: var(--purple-color); }
+        .btn-purple:hover:not(:disabled) { background-color: var(--purple-hover); }
+        .btn-danger { background-color: var(--danger-color); }
+        .btn-danger:hover:not(:disabled) { background-color: var(--danger-hover); }
+
 
         .error-message { color: var(--danger-color); text-align: center; margin-top: 15px; font-size: 0.9em; display: none; }
 
@@ -135,28 +162,49 @@
             margin: 0;
             flex-grow: 1;
         }
+        
         .editor-header {
-            display: flex;
-            flex-direction: column;
+            display: grid;
+            grid-template-columns: 1fr auto;
             gap: 20px;
+            align-items: start;
             background-color: var(--card-background);
-            padding: 20px;
+            padding: 25px;
             border-radius: 12px;
             border: 1px solid var(--border-color);
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
             margin-bottom: 25px;
             transition: background-color 0.3s, border-color 0.3s;
         }
-        .header-col-1, .header-col-2 { width: 100%; }
-        .header-col-2 { display: flex; gap: 10px; }
-        .header-col-2 .btn { flex-grow: 1; }
-        .identitas-grid { display: grid; grid-template-columns: 1fr; gap: 10px; font-size: 0.95em; margin-bottom: 15px; }
-        .identitas-grid div { background-color: var(--background-color); padding: 8px 12px; border-radius: 6px; transition: background-color 0.3s; }
-        .identitas-grid span { color: var(--label-color); }
-        .identitas-actions { display: flex; gap: 10px; }
-        .btn-block { width: 100%; font-size: 1em; display: flex; justify-content: center; align-items: center; }
-        .btn-danger { background-color: var(--danger-color); }
-        .btn-danger:hover:not(:disabled) { background-color: var(--danger-hover); }
+
+        .identitas-container {
+            display: grid;
+            grid-template-columns: max-content 1fr;
+            gap: 8px 12px;
+            align-items: center;
+            font-size: 0.95em;
+        }
+
+        .identitas-label {
+            font-weight: 500;
+            color: var(--label-color);
+        }
+
+        .identitas-value {
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .actions-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: stretch;
+        }
+        
+        .actions-container .btn {
+            justify-content: flex-start;
+        }
         
         #file-input { display: none; }
         
@@ -188,17 +236,26 @@
             display: none;
         }
         .soal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px; gap: 10px; }
-        .soal-nomor { margin: 0; color: var(--label-color); font-size: 1em; font-weight: 700; flex-shrink: 0; }
+        .soal-nomor-container { display: flex; align-items: center; gap: 5px; }
+        .soal-nomor-input { width: 60px; padding: 4px 8px; font-size: 1em; border: 1px solid var(--border-color); border-radius: 4px; }
         .drag-handle { display: grid; grid-template-columns: repeat(3, 6px); gap: 4px; padding: 10px; cursor: grab; border-radius: 5px; transition: background-color 0.2s; }
         .soal-actions { display: flex; gap: 8px; align-items: center; pointer-events: auto; /* Allow buttons to be clicked even if container is disabled */ }
-        .edit-btn, .save-btn { font-size: 0.85em; padding: 6px 12px; font-weight: 500; }
+        .edit-btn, .save-btn, .cancel-edit-btn { font-size: 0.85em; padding: 6px 12px; font-weight: 500; }
         .save-btn { background-color: var(--success-color); }
         .save-btn:hover:not(:disabled) { background-color: var(--success-hover); }
-        .delete-btn { background-color: #dc3545; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 0.85em; }
+        .delete-btn { font-size: 0.85em; padding: 6px 12px; font-weight: 500; }
 
         [contenteditable="true"] { outline: none; background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; }
         body.dark-mode [contenteditable="true"] { background-color: #2c2c2c; }
         [contenteditable="true"]:focus { box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.25); }
+        
+        [contenteditable][data-placeholder]:empty:before {
+            content: attr(data-placeholder);
+            color: #9ca3af;
+            pointer-events: none;
+            display: block;
+        }
+
         .soal-container ul { list-style-type: none; padding-left: 0; margin-top: 15px; margin-bottom: 0; }
         .soal-container li { padding: 8px 12px; margin-bottom: 5px; border-radius: 4px; display: flex; align-items: baseline; word-break: break-word; }
         .soal-container li b { margin-right: 12px; min-width: 20px; }
@@ -207,15 +264,38 @@
         .soal-kunci-jawaban { margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border-color); display: flex; align-items: center; font-weight: 700; }
         .soal-kunci-jawaban span { margin-right: 10px; color: var(--success-color); }
 
+        .soal-container.review-mode ul {
+            margin-top: 10px;
+        }
+        .soal-container.review-mode li {
+            padding: 2px 12px;
+            margin-bottom: 0;
+        }
+        .soal-container.review-mode .soal-kunci-jawaban {
+            margin-top: 10px;
+            padding-top: 10px;
+        }
+
         .img-inline { max-height: 2.5em; width: auto; vertical-align: middle; cursor: pointer; }
         .img-block { display: block; max-width: 100%; height: auto; margin: 0.8em 0; cursor: pointer; }
         .resizable-wrapper { position: relative; display: inline-block; outline: 2px dashed var(--primary-color); line-height: 0; user-select: none; -webkit-user-select: none; vertical-align: middle; }
         .resizable-wrapper img { display: block; cursor: default !important; width: 100%; height: 100%; max-height: none; }
-        .resizer { position: absolute; width: 16px; height: 16px; background-color: var(--primary-color); border: 2px solid var(--card-background); border-radius: 4px; z-index: 10; box-shadow: 0 1px 4px rgba(0,0,0,0.4); }
-        .resizer.top-left { top: -8px; left: -8px; cursor: nwse-resize; }
-        .resizer.top-right { top: -8px; right: -8px; cursor: nesw-resize; }
-        .resizer.bottom-left { bottom: -8px; left: -8px; cursor: nesw-resize; }
-        .resizer.bottom-right { bottom: -8px; right: -8px; cursor: nwse-resize; }
+        
+        .resizer { 
+            position: absolute; 
+            width: 6px;
+            height: 6px;
+            background-color: var(--primary-color); 
+            border: 1px solid var(--card-background);
+            border-radius: 2px;
+            z-index: 10; 
+            box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        .resizer.top-left { top: -3px; left: -3px; cursor: nwse-resize; }
+        .resizer.top-right { top: -3px; right: -3px; cursor: nesw-resize; }
+        .resizer.bottom-left { bottom: -3px; left: -3px; cursor: nesw-resize; }
+        .resizer.bottom-right { bottom: -3px; right: -3px; cursor: nwse-resize; }
+
         .sortable-ghost { opacity: 0.4; background-color: #c8ebfb; }
         
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); display: none; justify-content: center; align-items: center; z-index: 1000; animation: fadeIn 0.3s; }
@@ -264,7 +344,6 @@
             margin-bottom: 10px;
         }
         
-        /* --- START: Toolbar CSS --- */
         .editor-toolbar {
             position: absolute;
             background-color: #2D3748;
@@ -303,14 +382,18 @@
             background-color: #4A5568;
             margin: 0 4px;
         }
-        /* --- END: Toolbar CSS --- */
 
-        @media (min-width: 768px) {
-            .editor-header { flex-direction: row; align-items: flex-start; }
-            .header-col-1 { flex: 1; }
-            .header-col-2 { flex: 0 0 250px; }
-            .identitas-grid { grid-template-columns: 1fr 1fr; }
-            .header-col-2 .btn { height: calc(50% - 5px); }
+        @media (max-width: 768px) {
+            .editor-header {
+                grid-template-columns: 1fr; /* Stack columns on smaller screens */
+            }
+            .actions-container {
+                flex-direction: row; /* Make buttons side-by-side on smaller screens */
+                flex-wrap: wrap;
+            }
+            .actions-container .btn {
+                flex-grow: 1; /* Allow buttons to grow and fill space */
+            }
         }
     </style>
 </head>
@@ -318,7 +401,6 @@
 
 <div class="container">
 
-    <!-- START: Toolbar HTML -->
     <div id="editor-toolbar" class="editor-toolbar">
         <button data-command="undo" title="Undo (Ctrl+Z)">
             <svg viewBox="0 0 24 24"><path d="M12.5,8C9.85,8,7.45,9,5.6,10.6L2,7V16H11L7.38,12.38C8.77,11.22,10.54,10.5,12.5,10.5C16.04,10.5,19.05,12.81,20.1,16L22.47,15.22C21.08,11.03,17.15,8,12.5,8Z" /></svg>
@@ -342,7 +424,6 @@
         </button>
     </div>
     <input type="file" id="toolbar-image-input" accept="image/*" style="display: none;">
-    <!-- END: Toolbar HTML -->
 
     <div id="loading-view" class="view active">
         <div class="card-wrapper">
@@ -420,31 +501,46 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
             </button>
         </div>
+        
         <div class="editor-header">
-            <div class="header-col-1">
-                <div class="identitas-grid">
-                    <div><span>Ujian:</span> <strong id="info-ujian"></strong></div>
-                    <div><span>Kelas:</span> <strong id="info-kelas"></strong></div>
-                    <div><span>Tahun Ajaran:</span> <strong id="info-ta"></strong></div>
-                    <div><span>Mata Pelajaran:</span> <strong id="info-mapel"></strong></div>
-                </div>
-                <div class="identitas-actions">
-                    <button id="download-btn" class="btn btn-secondary">Download Template</button>
-                    <button id="upload-btn" class="btn btn-success">Upload & Proses ZIP</button>
-                </div>
+            <div class="identitas-container">
+                <span class="identitas-label">Ujian</span>
+                <span class="identitas-value">: <strong id="info-ujian"></strong></span>
+                <span class="identitas-label">Tahun Ajaran</span>
+                <span class="identitas-value">: <strong id="info-ta"></strong></span>
+                <span class="identitas-label">Kelas</span>
+                <span class="identitas-value">: <strong id="info-kelas"></strong></span>
+                <span class="identitas-label">Mata Pelajaran</span>
+                <span class="identitas-value">: <strong id="info-mapel"></strong></span>
             </div>
-            <div class="header-col-2">
-                 <button id="clear-data-btn" class="btn btn-danger btn-block">Hapus Semua Soal</button>
+            <div class="actions-container">
+                <button id="add-soal-btn" class="btn btn-success">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>
+                    <span>Tambah Soal</span>
+                </button>
+                <a href="https://drive.google.com/uc?export=download&id=1ASkItWXmUfAuJGKML-oX-4RT_2qusVD-" target="_blank" id="template-zip-btn" class="btn btn-purple">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg>
+                    <span>Template ZIP</span>
+                </a>
+                <button id="upload-btn" class="btn btn-primary">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/></svg>
+                    <span>Unggah ZIP</span>
+                </button>
+                <button id="clear-data-btn" class="btn btn-danger">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg>
+                    <span>Hapus Semua</span>
+                </button>
             </div>
         </div>
+        
         <input id="file-input" type="file" accept=".zip" />
         <div id="soal-list-container"></div>
         <div class="instructions-box">
             <h3>Petunjuk</h3>
             <ol>
-                <li><strong>Download Template ZIP:</strong> Unduh berkas ZIP yang berisi file HTML sebagai template.</li>
-                <li><strong>Isi Template:</strong> Buka file HTML dan isi bank soal sesuai dengan format dan petunjuk yang ada.</li>
-                <li><strong>Upload & Proses ZIP:</strong> Kembali ke halaman ini, lalu unggah file ZIP yang sudah Anda perbarui.</li>
+                <li><strong>Tambah Soal:</strong> Klik untuk membuat soal baru dari awal.</li>
+                <li><strong>Template ZIP:</strong> Unduh berkas ZIP yang berisi file HTML sebagai template.</li>
+                <li><strong>Unggah ZIP:</strong> Unggah file ZIP yang sudah Anda perbarui untuk diproses.</li>
             </ol>
         </div>
     </div>
@@ -536,7 +632,7 @@
     // --- START: Toolbar variables ---
     const editorToolbar = document.getElementById('editor-toolbar');
     const toolbarImageInput = document.getElementById('toolbar-image-input');
-    let activeEditable = null;
+    let lastFocusedEditable = null; // BUGFIX: Stores the last focused editable element
     let savedSelection = null;
     let imageTargetElement = null;
     // --- END: Toolbar variables ---
@@ -554,7 +650,8 @@
     const mapelLainnyaGroup = document.getElementById('mapel-lainnya-group');
     const mapelLainnyaInput = document.getElementById('mapel-lainnya-input');
     const saveSelectionBtn = document.getElementById('save-selection-btn');
-    const downloadBtn = document.getElementById('download-btn');
+    const addSoalBtn = document.getElementById('add-soal-btn');
+    const templateZipBtn = document.getElementById('template-zip-btn');
     const uploadBtn = document.getElementById('upload-btn');
     const clearDataBtn = document.getElementById('clear-data-btn');
     const fileInput = document.getElementById('file-input');
@@ -599,18 +696,17 @@
     function showProcessing(message) {
         processingText.textContent = message;
         processingModal.style.display = 'flex';
-        setGlobalActionsState(true);
     }
 
     function hideProcessing() {
         processingModal.style.display = 'none';
-        setGlobalActionsState(false);
     }
     
     function setGlobalActionsState(disabled) {
+        addSoalBtn.disabled = disabled;
         uploadBtn.disabled = disabled;
-        downloadBtn.disabled = disabled;
         clearDataBtn.disabled = disabled;
+        templateZipBtn.classList.toggle('disabled', disabled);
     }
 
     function showInfoOverlay(title, message) {
@@ -668,7 +764,6 @@
             if (tokenFetched) {
                 showView('selection-view');
             }
-            // If token fetch fails, an error is already displayed on the loading screen.
 
         } catch (error) {
             loadingError.textContent = `Login Otomatis Gagal: ${error.message}`;
@@ -684,11 +779,11 @@
         const currentMonth = date.getMonth(); // 0-11, so July is 6
 
         let latestAcademicYearStart = currentYear;
-        if (currentMonth < 6) { // Before July (0-5)
+        if (currentMonth < 6) { 
             latestAcademicYearStart = currentYear - 1;
         }
         
-        const firstYear = 2025; // The first academic year to show, as requested
+        const firstYear = 2025;
         
         selectElement.innerHTML = '<option value="" disabled>Pilih tahun ajaran...</option>';
 
@@ -901,7 +996,6 @@
         }
     }
 
-    // --- FUNCTION RE-ADDED ---
     function validateAllSoal() {
         let isAllValid = true;
         
@@ -940,7 +1034,6 @@
         });
         return isAllValid;
     }
-    // --- END OF RE-ADDED FUNCTION ---
 
     async function saveAllSoalToDatabase() {
         if (!validateAllSoal()) {
@@ -1020,6 +1113,30 @@
         });
         await Promise.all(deletePromises);
     }
+
+    addSoalBtn.addEventListener('click', () => {
+        if (isEditing) {
+            showToast('Harap simpan atau batalkan perubahan pada soal yang sedang diedit.', 'error');
+            return;
+        }
+
+        const nomorSoalBaru = document.querySelectorAll('.soal-container').length + 1;
+        const soalDetailKosong = {
+            pertanyaan: '',
+            pilihanA: '',
+            pilihanB: '',
+            pilihanC: '',
+            pilihanD: ''
+        };
+        const kunciKosong = '';
+
+        const soalDivBaru = createSoalElement(soalDetailKosong, kunciKosong, nomorSoalBaru);
+        soalDivBaru.dataset.isNew = 'true'; // Mark as a new question
+        outputEl.appendChild(soalDivBaru);
+
+        enterEditMode(soalDivBaru);
+        soalDivBaru.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
 
     clearDataBtn.addEventListener('click', () => {
         if (isEditing) {
@@ -1129,19 +1246,23 @@
     
     function createSoalElement(soalDetail, kunci, nomor) {
         const soalDiv = document.createElement('div');
-        soalDiv.className = 'soal-container disabled'; // <-- START IN DISABLED STATE
+        soalDiv.className = 'soal-container disabled review-mode';
         
         soalDiv.innerHTML = `
             <div class="soal-header">
-                <h3 class="soal-nomor">Soal ${nomor}</h3>
+                <div class="soal-nomor-container">
+                    <h3 class="soal-nomor" style="display: flex; align-items: center; gap: 5px;">Soal <span>${nomor}</span></h3>
+                    <input type="number" class="soal-nomor-input" value="${nomor}" style="display: none;" min="1">
+                </div>
                 <div class="drag-handle" title="Seret untuk mengubah urutan"><span></span><span></span><span></span><span></span><span></span><span></span></div>
                 <div class="soal-actions">
                     <button class="btn edit-btn">Edit Soal</button>
-                    <button class="btn save-btn" style="display: none;">Simpan Perubahan</button>
-                    <button class="delete-btn">Hapus</button>
+                    <button class="btn delete-btn btn-danger">Hapus</button>
+                    <button class="btn save-btn btn-success" style="display: none;">Simpan</button>
+                    <button class="btn cancel-edit-btn btn-secondary" style="display: none;">Batal</button>
                 </div>
             </div>
-            <div class="soal-pertanyaan" contenteditable="false" dir="auto">${soalDetail.pertanyaan}</div>
+            <div class="soal-pertanyaan" contenteditable="false" data-placeholder="Ketik pertanyaan di sini...">${soalDetail.pertanyaan}</div>
             <ul>
                 <li><b>A.</b> <div contenteditable="false" dir="auto">${soalDetail.pilihanA}</div></li>
                 <li><b>B.</b> <div contenteditable="false" dir="auto">${soalDetail.pilihanB}</div></li>
@@ -1183,13 +1304,13 @@
                 try {
                     soalDitemukan++;
                     const soalDetail = {
-                        pertanyaan: stripAllStyles(questionCell),
-                        pilihanA: stripAllStyles(rows[i+1]?.cells[1]),
-                        pilihanB: stripAllStyles(rows[i+2]?.cells[1]),
-                        pilihanC: stripAllStyles(rows[i+3]?.cells[1]),
-                        pilihanD: stripAllStyles(rows[i+4]?.cells[1])
+                        pertanyaan: cleanHtml(questionCell, true), // Allow paragraphs
+                        pilihanA: cleanHtml(rows[i+1]?.cells[1], false), // No paragraphs
+                        pilihanB: cleanHtml(rows[i+2]?.cells[1], false),
+                        pilihanC: cleanHtml(rows[i+3]?.cells[1], false),
+                        pilihanD: cleanHtml(rows[i+4]?.cells[1], false)
                     };
-                    const kunci = stripAllStyles(rows[i+5]?.cells[1]);
+                    const kunci = cleanHtml(rows[i+5]?.cells[1], false);
                     
                     const soalDiv = createSoalElement(soalDetail, kunci, soalDitemukan);
                     outputEl.appendChild(soalDiv);
@@ -1205,11 +1326,33 @@
         }
     }
 
-    function stripAllStyles(element) {
+    function cleanHtml(element, allowParagraphs) {
         if (!element) return '';
         const clone = element.cloneNode(true);
-        clone.querySelectorAll('*').forEach(child => child.removeAttribute('style'));
-        return clone.innerHTML;
+
+        clone.querySelectorAll('*').forEach(child => {
+            child.removeAttribute('style');
+            child.removeAttribute('class');
+            child.removeAttribute('lang');
+            // Remove other unnecessary attributes if needed
+        });
+        
+        if (!allowParagraphs) {
+            clone.querySelectorAll('p').forEach(p => {
+                if (p.innerHTML.trim() === '' || p.innerHTML.trim() === '&nbsp;') {
+                    p.remove();
+                } else {
+                    p.replaceWith(...p.childNodes, document.createElement('br'));
+                }
+            });
+        }
+        
+        let html = clone.innerHTML;
+        html = html.replace(/&nbsp;/g, ' ');
+        html = html.replace(/(<br\s*\/?>\s*){2,}/gi, '<br>'); 
+        html = html.trim().replace(/^<br\s*\/?>|<br\s*\/?>$/gi, '').trim();
+
+        return html;
     }
 
     function classifyImages(containerElement) {
@@ -1245,11 +1388,52 @@
         });
     }
     
-    // --- START: EDIT/SAVE LOGIC (FINAL REVISION) ---
+    function resetSoalContainerUI(soalContainer) {
+        soalContainer.classList.add('review-mode');
+        soalContainer.classList.remove('is-editing');
+        soalContainer.querySelectorAll('[contenteditable]').forEach(el => el.setAttribute('contenteditable', 'false'));
+
+        soalContainer.querySelector('.soal-nomor').style.display = 'flex';
+        soalContainer.querySelector('.soal-nomor-input').style.display = 'none';
+
+        soalContainer.querySelector('.edit-btn').style.display = 'inline-flex';
+        soalContainer.querySelector('.delete-btn').style.display = 'inline-flex';
+        soalContainer.querySelector('.save-btn').style.display = 'none';
+        soalContainer.querySelector('.cancel-edit-btn').style.display = 'none';
+
+        document.querySelectorAll('.soal-container').forEach(container => {
+            container.classList.add('disabled');
+        });
+    }
+
     function enterEditMode(soalContainer) {
         isEditing = true;
         setGlobalActionsState(true);
+        soalContainer.classList.remove('review-mode');
 
+        const nomorDisplay = soalContainer.querySelector('.soal-nomor');
+        const nomorInput = soalContainer.querySelector('.soal-nomor-input');
+        const totalSoal = document.querySelectorAll('.soal-container').length;
+
+        soalContainer.dataset.originalNumber = nomorDisplay.querySelector('span').textContent;
+        nomorInput.value = soalContainer.dataset.originalNumber;
+        nomorInput.max = soalContainer.dataset.isNew === 'true' ? totalSoal : totalSoal;
+
+        nomorDisplay.style.display = 'none';
+        nomorInput.style.display = 'block';
+
+        if (soalContainer.dataset.isNew !== 'true') {
+            const originalContent = {
+                pertanyaan: soalContainer.querySelector('.soal-pertanyaan').innerHTML,
+                pilihanA: soalContainer.querySelector('li:nth-child(1) div').innerHTML,
+                pilihanB: soalContainer.querySelector('li:nth-child(2) div').innerHTML,
+                pilihanC: soalContainer.querySelector('li:nth-child(3) div').innerHTML,
+                pilihanD: soalContainer.querySelector('li:nth-child(4) div').innerHTML,
+                kunci: soalContainer.querySelector('.soal-kunci-jawaban div').innerHTML,
+            };
+            soalContainer.dataset.originalContent = JSON.stringify(originalContent);
+        }
+        
         const initialImages = Array.from(soalContainer.querySelectorAll('img')).map(img => img.src);
         soalContainer.dataset.initialImages = JSON.stringify(initialImages);
 
@@ -1263,8 +1447,11 @@
         });
 
         soalContainer.querySelectorAll('[contenteditable]').forEach(el => el.setAttribute('contenteditable', 'true'));
+        
         soalContainer.querySelector('.edit-btn').style.display = 'none';
-        soalContainer.querySelector('.save-btn').style.display = 'inline-block';
+        soalContainer.querySelector('.delete-btn').style.display = 'none';
+        soalContainer.querySelector('.save-btn').style.display = 'inline-flex';
+        soalContainer.querySelector('.cancel-edit-btn').style.display = 'inline-flex';
         
         const firstEditable = soalContainer.querySelector('.soal-pertanyaan');
         if (firstEditable) {
@@ -1275,7 +1462,35 @@
 
     async function exitEditMode(soalContainer) {
         if (activeResizer) removeResizer();
+        
+        const nomorInput = soalContainer.querySelector('.soal-nomor-input');
+        const newPosition = parseInt(nomorInput.value, 10);
+        const totalSoal = document.querySelectorAll('.soal-container').length;
+
+        if (isNaN(newPosition) || newPosition < 1 || newPosition > totalSoal) {
+            showToast(`Nomor soal tidak valid. Harus antara 1 dan ${totalSoal}.`, 'error');
+            nomorInput.value = soalContainer.dataset.originalNumber;
+            return;
+        }
+
+        const kunciJawabanEl = soalContainer.querySelector('.soal-kunci-jawaban div');
+        const kunciJawaban = kunciJawabanEl.textContent.trim().toUpperCase();
+        if (!['A', 'B', 'C', 'D'].includes(kunciJawaban)) {
+            showToast('Kunci Jawaban tidak valid. Harap isi dengan A, B, C, atau D.', 'error');
+            return;
+        }
+        kunciJawabanEl.textContent = kunciJawaban;
+
         showProcessing('Menyimpan perubahan...');
+
+        const allSoal = Array.from(outputEl.querySelectorAll('.soal-container'));
+        const originalIndex = allSoal.indexOf(soalContainer);
+        if ((newPosition - 1) !== originalIndex) {
+            const [movedItem] = allSoal.splice(originalIndex, 1);
+            allSoal.splice(newPosition - 1, 0, movedItem);
+            outputEl.innerHTML = '';
+            allSoal.forEach(el => outputEl.appendChild(el));
+        }
 
         const initialImages = JSON.parse(soalContainer.dataset.initialImages || '[]');
         const finalImages = [];
@@ -1303,20 +1518,39 @@
             await deleteImageFromGithub(imageUrl);
         }
         
-        isEditing = false;
-        soalContainer.querySelectorAll('[contenteditable]').forEach(el => el.setAttribute('contenteditable', 'false'));
-        soalContainer.querySelector('.edit-btn').style.display = 'inline-block';
-        soalContainer.querySelector('.save-btn').style.display = 'none';
-        
-        document.querySelectorAll('.soal-container').forEach(container => {
-            container.classList.add('disabled');
-            container.classList.remove('is-editing');
-        });
-        
-        hideToolbar();
-        
+        renumberSoal();
         await saveAllSoalToDatabase();
+        
+        if (!soalContainer.classList.contains('invalid-soal')) {
+            isEditing = false;
+            delete soalContainer.dataset.isNew;
+            resetSoalContainerUI(soalContainer);
+            hideToolbar();
+            setGlobalActionsState(false);
+        }
+    }
+
+    function cancelEditMode(soalContainer) {
+        if (activeResizer) removeResizer();
+
+        if (soalContainer.dataset.isNew === 'true') {
+            soalContainer.remove();
+            renumberSoal();
+        } else {
+            const originalContent = JSON.parse(soalContainer.dataset.originalContent);
+            soalContainer.querySelector('.soal-pertanyaan').innerHTML = originalContent.pertanyaan;
+            soalContainer.querySelector('li:nth-child(1) div').innerHTML = originalContent.pilihanA;
+            soalContainer.querySelector('li:nth-child(2) div').innerHTML = originalContent.pilihanB;
+            soalContainer.querySelector('li:nth-child(3) div').innerHTML = originalContent.pilihanC;
+            soalContainer.querySelector('li:nth-child(4) div').innerHTML = originalContent.pilihanD;
+            soalContainer.querySelector('.soal-kunci-jawaban div').innerHTML = originalContent.kunci;
+            resetSoalContainerUI(soalContainer);
+        }
+        
+        isEditing = false;
+        hideToolbar();
         setGlobalActionsState(false);
+        updateUIForSoalPresence();
     }
 
     outputEl.addEventListener('click', function(e) {
@@ -1326,6 +1560,7 @@
         const editBtn = e.target.closest('.edit-btn');
         const saveBtn = e.target.closest('.save-btn');
         const deleteBtn = e.target.closest('.delete-btn');
+        const cancelBtn = e.target.closest('.cancel-edit-btn');
 
         if (editBtn) {
             if (isEditing) {
@@ -1340,10 +1575,14 @@
             exitEditMode(soalContainer);
             return;
         }
+        
+        if (cancelBtn) {
+            cancelEditMode(soalContainer);
+            return;
+        }
 
         if (deleteBtn) {
              if (isEditing) {
-                showToast('Harap simpan perubahan pada soal yang sedang diedit terlebih dahulu.', 'error');
                 return;
              }
              soalToDelete = soalContainer;
@@ -1365,7 +1604,6 @@
             e.stopPropagation();
         }
     });
-    // --- END: EDIT/SAVE LOGIC (FINAL REVISION) ---
 
     document.addEventListener('click', function(e) { if (activeResizer && !activeResizer.wrapper.contains(e.target)) removeResizer(); });
     cancelDeleteBtn.addEventListener('click', () => { deleteModal.style.display = 'none'; });
@@ -1454,7 +1692,18 @@
         document.addEventListener('touchmove', doResize); 
         document.addEventListener('touchend', stopResize); 
     }
-    function renumberSoal() { document.querySelectorAll('.soal-container').forEach((soal, index) => { soal.querySelector('.soal-nomor').textContent = `Soal ${index + 1}`; }); }
+    function renumberSoal() {
+        document.querySelectorAll('.soal-container').forEach((soal, index) => {
+            const newNumber = index + 1;
+            soal.querySelector('.soal-nomor span').textContent = newNumber;
+            const input = soal.querySelector('.soal-nomor-input');
+            if (input) {
+                input.value = newNumber;
+                input.max = document.querySelectorAll('.soal-container').length;
+            }
+            soal.dataset.originalNumber = newNumber;
+        });
+    }
     function initializeSortable() { 
         new Sortable(outputEl, { 
             animation: 150, 
@@ -1484,7 +1733,6 @@
 
     function showToolbar(element) {
         if (activeResizer) removeResizer();
-        activeEditable = element;
         const rect = element.getBoundingClientRect();
         editorToolbar.style.display = 'flex';
         
@@ -1505,13 +1753,14 @@
 
     function hideToolbar() {
         editorToolbar.style.display = 'none';
-        activeEditable = null;
+        lastFocusedEditable = null;
         savedSelection = null;
     }
 
     function initializeToolbar() {
         outputEl.addEventListener('focusin', (e) => {
             if (e.target.getAttribute('contenteditable') === 'true') {
+                lastFocusedEditable = e.target;
                 showToolbar(e.target);
             }
         });
@@ -1526,26 +1775,21 @@
             e.preventDefault();
             const button = e.target.closest('button');
             if (!button) return;
-            
-            if (!activeEditable) {
-                restoreSelection();
-                if (savedSelection) {
-                    activeEditable = savedSelection.startContainer.parentElement;
-                    while(activeEditable && activeEditable.getAttribute('contenteditable') !== 'true') {
-                        activeEditable = activeEditable.parentElement;
-                    }
-                }
-            }
-            if (!activeEditable) return;
-
-            activeEditable.focus();
-            restoreSelection();
 
             const command = button.dataset.command;
+            const targetElement = lastFocusedEditable;
+            
+            if (!targetElement) {
+                showToast('Silakan klik di dalam area teks terlebih dahulu.', 'error');
+                return;
+            }
+
             if (command === 'insertImage') {
-                imageTargetElement = activeEditable; 
+                imageTargetElement = targetElement;
                 toolbarImageInput.click();
             } else {
+                targetElement.focus();
+                restoreSelection();
                 document.execCommand(command, false, null);
             }
         });
