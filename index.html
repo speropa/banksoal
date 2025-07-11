@@ -428,7 +428,7 @@
             </div>
             <div class="header-row">
                 <div class="identitas-item">Tahun Ajaran: <strong id="info-ta"></strong></div>
-                 <a href="https://drive.google.com/uc?export=download&id=1ASkItWXmUfAuJGKML-oX-4RT_2qusVD-" target="_blank" id="template-zip-btn" class="btn btn-purple header-btn"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg><span>Template ZIP</span></a>
+                 <a href="https://drive.google.com/uc?export=download&id=11J15X750WGz3QeXO8sxcWSzRyfoDkJLb" target="_blank" id="template-zip-btn" class="btn btn-purple header-btn"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg><span>Template Word</span></a>
             </div>
             <div class="header-row">
                 <div class="identitas-item">Kelas: <strong id="info-kelas"></strong></div>
@@ -445,9 +445,9 @@
         <div class="instructions-box">
             <h3>Petunjuk</h3>
             <ol>
-                <li><strong>Tambah Soal:</strong> Klik untuk membuat soal baru dari awal.</li>
-                <li><strong>Template ZIP:</strong> Unduh berkas ZIP yang berisi file HTML sebagai template.</li>
-                <li><strong>Unggah ZIP:</strong> Unggah file ZIP yang sudah Anda perbarui untuk diproses.</li>
+                <li><strong>Tambah Soal Manual:</strong> Untuk membuat soal baru atau menambahkan soal.</li>
+                <li><strong>Template Word:</strong> Unduh file template_bank_soal.docx, petunjuk pengisian terdapat dalam file</li>
+                <li><strong>Unggah ZIP:</strong> Unggah file ZIP Anda untuk diproses, pastikan isi file ZIP sudah sesuai dengan petunjuk pengisian bank soal</li>
             </ol>
         </div>
     </div>
@@ -685,7 +685,7 @@
         const safeTA = tahunAjaran.replace(/[\.\#\$\[\]\/]/g, '-');
         const safeUjian = ujian.replace(/\s+/g, '-');
         const safeMapel = mapel.replace(/\s+/g, '-');
-        return `ujian/${safeTA}/${safeUjian}/${safeMapel}/Kelas-${kelas}`;
+        return `ujian/${safeTA}/${safeUjian}/Kelas-${kelas}/${safeMapel}`;
     }
 
     async function fetchGithubToken() {
@@ -1080,8 +1080,11 @@
             throw new Error('GitHub token is not available.');
         }
         const fileName = `${Date.now()}-${file.name}`;
-        const { tahunAjaran, kelas, mapel, ujian } = currentSoalData;
-        const safePath = `${tahunAjaran.replace('/', '-')}/${kelas}/${mapel.replace(/\s+/g, '-')}/${ujian.replace(/\s+/g, '-')}`;
+        const { tahunAjaran, ujian, kelas, mapel } = currentSoalData;
+        const safeTA = tahunAjaran.replace('/', '-');
+        const safeUjian = ujian.replace(/\s+/g, '-');
+        const safeMapel = mapel.replace(/\s+/g, '-');
+        const safePath = `${safeTA}/${safeUjian}/Kelas-${kelas}/${safeMapel}`;
         const path = `${safePath}/${fileName}`;
 
         const data = {
@@ -1231,19 +1234,29 @@
             }
 
             const soalObject = {};
+            const kunciJawabanArray = [];
             soalElements.forEach((soalDiv, index) => {
                 const nomorSoal = index + 1;
+                const kunci = soalDiv.querySelector('.soal-kunci-jawaban div').textContent.trim().toUpperCase();
                 soalObject[nomorSoal] = {
                     pertanyaan: soalDiv.querySelector('.soal-pertanyaan').innerHTML,
                     pilihanA: soalDiv.querySelector('li:nth-child(1) div').innerHTML,
                     pilihanB: soalDiv.querySelector('li:nth-child(2) div').innerHTML,
                     pilihanC: soalDiv.querySelector('li:nth-child(3) div').innerHTML,
                     pilihanD: soalDiv.querySelector('li:nth-child(4) div').innerHTML,
-                    kunciJawaban: soalDiv.querySelector('.soal-kunci-jawaban div').textContent.trim().toUpperCase()
+                    kunciJawaban: kunci
                 };
+                kunciJawabanArray.push(kunci);
             });
 
-            const finalData = { ...currentSoalData, terakhirUpdate: new Date().toISOString(), soal: soalObject };
+            const kunjabString = kunciJawabanArray.join(',');
+
+            const finalData = { 
+                ...currentSoalData, 
+                terakhirUpdate: new Date().toISOString(), 
+                soal: soalObject,
+                kunjab: kunjabString
+            };
             delete finalData.kunciJawaban;
 
             const dbPath = getDbPath(finalData);
@@ -1331,43 +1344,34 @@
         deleteModal.style.display = 'none';
         showProcessing('Memulai proses penghapusan...');
 
-        const { tahunAjaran, kelas, mapel, ujian } = currentSoalData;
-        const githubFolderPath = `${tahunAjaran.replace('/', '-')}/${kelas}/${mapel.replace(/\s+/g, '-')}/${ujian.replace(/\s+/g, '-')}`;
-        let dotInterval;
+        const imagesToDelete = [];
+        document.querySelectorAll('#soal-list-container img').forEach(img => {
+            if (img.src && img.src.includes('github')) {
+                imagesToDelete.push(img.src);
+            }
+        });
+        const totalImages = imagesToDelete.length;
 
         try {
-            await new Promise(resolve => setTimeout(resolve, 500)); 
-            
             processingText.textContent = 'Menghapus data soal dari server...';
             await clearAllDataFromDB();
             
-            await new Promise(resolve => setTimeout(resolve, 500));
-            
-            processingText.textContent = 'Menghapus file gambar... Proses ini mungkin memakan waktu lama.';
-            
-            const baseText = 'Menghapus file gambar... Proses ini mungkin memakan waktu lama';
-            dotInterval = setInterval(() => {
-                if (processingModal.style.display === 'none') {
-                    clearInterval(dotInterval);
-                    return;
+            if (totalImages > 0) {
+                for (let i = 0; i < totalImages; i++) {
+                    const imageUrl = imagesToDelete[i];
+                    processingText.textContent = `Menghapus gambar ${i + 1} dari ${totalImages}...`;
+                    await deleteImageFromGithub(imageUrl);
                 }
-                const currentText = processingText.textContent;
-                if (currentText.endsWith('...')) {
-                    processingText.textContent = baseText;
-                } else {
-                    processingText.textContent += '.';
-                }
-            }, 600);
+            }
 
-            await deleteGithubDirectory(githubFolderPath);
-            clearInterval(dotInterval);
+            processingText.textContent = 'Menyelesaikan...';
+            await new Promise(resolve => setTimeout(resolve, 500)); 
 
             showToast('Semua data dan gambar berhasil dihapus!', 'success');
             outputEl.innerHTML = ''; 
             updateUIForSoalPresence();
 
         } catch(error) {
-            if(dotInterval) clearInterval(dotInterval);
             showToast(`Gagal menghapus data: ${error.message}`, 'error');
             console.error("Clear data error:", error);
         } finally {
