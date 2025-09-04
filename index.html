@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>Editor Bank Soal (Perbaikan Final)</title>
+    <title>Editor Bank Soal (Pembaruan Antarmuka)</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -115,6 +115,9 @@
             color: var(--text-color);
         }
         .form-control:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2); outline: none; }
+        .form-control:disabled { background-color: #e9ecef; cursor: not-allowed; }
+        body.dark-mode .form-control:disabled { background-color: #2c2f33; }
+
 
         .btn {
             display: inline-flex;
@@ -159,7 +162,7 @@
 
         .error-message { color: var(--danger-color); text-align: center; margin-top: 15px; font-size: 0.9em; display: none; }
 
-        .title-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .title-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
         #editor-view .main-title {
             text-align: center;
             font-weight: 700;
@@ -167,6 +170,8 @@
             margin: 0;
             flex-grow: 1;
         }
+        .editor-top-bar { display: flex; justify-content: flex-end; align-items: center; width: 100%; gap: 10px;}
+        .editor-top-bar p { margin: 0; font-size: 0.9em; color: var(--label-color);}
         
         .editor-header {
             display: flex;
@@ -492,6 +497,29 @@
         </div>
     </div>
 
+    <div id="guru-login-view" class="view">
+        <div class="card-wrapper">
+            <div class="card">
+                <div class="card-header">
+                    <h2>LOGIN GURU</h2>
+                    <p>Silakan masuk menggunakan akun Anda</p>
+                </div>
+                <form id="guru-login-form">
+                    <div class="form-group">
+                        <label for="guru-username">Username</label>
+                        <input type="text" id="guru-username" class="form-control" required autocomplete="username">
+                    </div>
+                    <div class="form-group">
+                        <label for="guru-password">Password</label>
+                        <input type="password" id="guru-password" class="form-control" required autocomplete="current-password">
+                    </div>
+                    <button id="guru-login-btn" type="submit" class="btn btn-full">Login</button>
+                    <p id="guru-login-error" class="error-message"></p>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <div id="selection-view" class="view">
         <div class="card-wrapper">
             <div class="card">
@@ -501,45 +529,25 @@
                 </div>
                 <form id="selection-form">
                     <div class="form-group">
+                        <label for="tahun-ajaran-select">Tahun Ajaran</label>
+                        <select id="tahun-ajaran-select" class="form-control" required></select>
+                    </div>
+                    <div class="form-group">
                         <label for="ujian-select">Ujian</label>
                         <select id="ujian-select" class="form-control" required>
                             <option value="" disabled selected>Pilih jenis asesmen...</option>
-                            <option value="ASTS 1">ASTS 1 (Asesmen Sumatif Tengah Semester 1)</option>
-                            <option value="ASAT 1">ASAT 1 (Asesmen Sumatif Akhir Semester 1)</option>
-                            <option value="ASTS 2">ASTS 2 (Asesmen Sumatif Tengah Semester 2)</option>
-                            <option value="ASAT 2">ASAT 2 (Asesmen Sumatif Akhir Tahun)</option>
-                            <option value="Lainnya">Lainnya...</option>
                         </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="tahun-ajaran-select">Tahun Ajaran</label>
-                        <select id="tahun-ajaran-select" class="form-control" required></select>
                     </div>
                     <div class="form-group">
                         <label for="kelas-select">Kelas</label>
                         <select id="kelas-select" class="form-control" required>
                              <option value="" disabled selected>Pilih kelas...</option>
-                            <option value="7">7</option>
-                            <option value="8">8</option>
-                            <option value="9">9</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="mapel-select">Mata Pelajaran</label>
                         <select id="mapel-select" class="form-control" required>
                             <option value="" disabled selected>Pilih mata pelajaran...</option>
-                            <option>Pendidikan Agama Islam</option>
-                            <option>Pendidikan Pancasila</option>
-                            <option>Matematika</option>
-                            <option>Bahasa Indonesia</option>
-                            <option>Bahasa Inggris</option>
-                            <option>IPA</option>
-                            <option>IPS</option>
-                            <option>PJOK</option>
-                            <option>Bahasa Jawa</option>
-                            <option>Seni Budaya dan Prakarya</option>
-                            <option>Informatika</option>
-                            <option value="Lainnya">Lainnya...</option>
                         </select>
                     </div>
                     <button id="save-selection-btn" class="btn btn-full" disabled>Simpan & Lanjutkan</button>
@@ -551,7 +559,12 @@
     <div id="editor-view" class="view">
         <div class="title-container">
             <h1 class="main-title">EDITOR BANK SOAL</h1>
-            <button class="settings-btn" id="settings-btn" title="Pengaturan Tampilan"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></button>
+            <div class="editor-top-bar">
+                <p>Login sebagai: <strong id="guru-name-display"></strong></p>
+                <button id="back-to-selection-btn" class="btn btn-info">Ganti Data Ujian</button>
+                <button id="logout-btn" class="btn btn-secondary">Logout</button>
+                <button class="settings-btn" id="settings-btn" title="Pengaturan Tampilan"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></button>
+            </div>
         </div>
         
         <div class="editor-header">
@@ -586,50 +599,13 @@
     </div>
 </div>
 
-<div id="ujian-modal" class="modal-overlay">
+<div id="confirm-modal" class="modal-overlay">
     <div class="modal-content">
-        <h3>Manajemen Jenis Ujian Kustom</h3>
-        <div class="form-group">
-            <label for="custom-ujian-select">Pilih Ujian yang Sudah Ada</label>
-            <select id="custom-ujian-select" class="form-control">
-                <option value="">-- Pilih dari daftar --</option>
-            </select>
-        </div>
-        <div class="modal-actions" style="justify-content: flex-start; margin-bottom: 20px;">
-             <button id="select-custom-ujian-btn" class="btn btn-success">Gunakan Ujian Ini</button>
-        </div>
-        <hr style="border: none; border-top: 1px solid var(--border-color); margin: 20px 0;">
-        <div class="form-group">
-            <label for="new-ujian-input">Atau, Buat Jenis Ujian Baru</label>
-            <input type="text" id="new-ujian-input" class="form-control" placeholder="Contoh: Ujian Praktik">
-        </div>
+        <h3 id="confirm-modal-title">Konfirmasi</h3>
+        <p id="confirm-modal-text">Apakah Anda yakin?</p>
         <div class="modal-actions">
-            <button id="modal-cancel-ujian" class="btn-cancel">Batal</button>
-            <button id="save-new-ujian-btn" class="btn btn-primary">Simpan & Gunakan</button>
-        </div>
-    </div>
-</div>
-
-<div id="mapel-modal" class="modal-overlay">
-    <div class="modal-content">
-        <h3>Manajemen Mata Pelajaran Kustom</h3>
-        <div class="form-group">
-            <label for="custom-mapel-select">Pilih Mapel yang Sudah Ada</label>
-            <select id="custom-mapel-select" class="form-control">
-                <option value="">-- Pilih dari daftar --</option>
-            </select>
-        </div>
-        <div class="modal-actions" style="justify-content: flex-start; margin-bottom: 20px;">
-             <button id="select-custom-mapel-btn" class="btn btn-success">Gunakan Mapel Ini</button>
-        </div>
-        <hr style="border: none; border-top: 1px solid var(--border-color); margin: 20px 0;">
-        <div class="form-group">
-            <label for="new-mapel-input">Atau, Buat Mapel Baru</label>
-            <input type="text" id="new-mapel-input" class="form-control" placeholder="Contoh: Bahasa Mandarin">
-        </div>
-        <div class="modal-actions">
-            <button id="modal-cancel-mapel" class="btn-cancel">Batal</button>
-            <button id="save-new-mapel-btn" class="btn btn-primary">Simpan & Gunakan</button>
+            <button id="modal-cancel-confirm" class="btn-cancel">Batal</button>
+            <button id="modal-confirm-action" class="btn-confirm">Ya, Lanjutkan</button>
         </div>
     </div>
 </div>
@@ -730,13 +706,14 @@
     const GITHUB_USERNAME = "speropa";
     const GITHUB_REPO = "gambarbanksoal";
     let githubToken = null;
+    let loggedInGuru = null;
 
     let soalToDelete = null;
     let activeResizer = null;
     let currentSoalData = {}; 
     let isEditing = false;
-    let originalMapelValue = '';
-    let originalUjianValue = '';
+    let ujiansDataCache = null;
+    let aksesDataCache = null;
 
     const editorToolbar = document.getElementById('editor-toolbar');
     const toolbarImageInput = document.getElementById('toolbar-image-input');
@@ -747,6 +724,12 @@
     const loadingView = document.getElementById('loading-view');
     const loadingText = document.getElementById('loading-text');
     const loadingError = document.getElementById('loading-error');
+    const guruLoginView = document.getElementById('guru-login-view');
+    const guruLoginForm = document.getElementById('guru-login-form');
+    const guruUsernameInput = document.getElementById('guru-username');
+    const guruPasswordInput = document.getElementById('guru-password');
+    const guruLoginBtn = document.getElementById('guru-login-btn');
+    const guruLoginError = document.getElementById('guru-login-error');
     const selectionView = document.getElementById('selection-view');
     const editorView = document.getElementById('editor-view');
     const selectionForm = document.getElementById('selection-form');
@@ -755,6 +738,10 @@
     const kelasSelect = document.getElementById('kelas-select');
     const mapelSelect = document.getElementById('mapel-select');
     const saveSelectionBtn = document.getElementById('save-selection-btn');
+    const guruNameDisplay = document.getElementById('guru-name-display');
+    const logoutBtn = document.getElementById('logout-btn');
+    const backToSelectionBtn = document.getElementById('back-to-selection-btn');
+
     const addSoalBtn = document.getElementById('add-soal-btn');
     const templateZipBtn = document.getElementById('template-zip-btn');
     const uploadBtn = document.getElementById('upload-btn');
@@ -762,6 +749,13 @@
     const fileInput = document.getElementById('file-input');
     const outputEl = document.getElementById('soal-list-container');
     const instructionsBox = document.querySelector('.instructions-box');
+    
+    const confirmModal = document.getElementById('confirm-modal');
+    const confirmModalTitle = document.getElementById('confirm-modal-title');
+    const confirmModalText = document.getElementById('confirm-modal-text');
+    const confirmActionBtn = document.getElementById('modal-confirm-action');
+    const cancelConfirmBtn = document.getElementById('modal-cancel-confirm');
+    
     const deleteModal = document.getElementById('delete-modal');
     const confirmDeleteBtn = document.getElementById('modal-confirm-delete');
     const cancelDeleteBtn = document.getElementById('modal-cancel-delete');
@@ -769,6 +763,7 @@
     const confirmationInputContainer = document.querySelector('.confirmation-input-container');
     const confirmationInput = document.getElementById('confirmation-input');
     const confirmationWord = document.getElementById('confirmation-word');
+    
     const toastContainer = document.getElementById('toast-container');
     const processingModal = document.getElementById('processing-modal');
     const processingText = document.getElementById('processing-text');
@@ -780,20 +775,6 @@
     const infoModalTitle = document.getElementById('info-modal-title');
     const infoModalText = document.getElementById('info-modal-text');
     const infoModalCloseBtn = document.getElementById('info-modal-close');
-    
-    const mapelModal = document.getElementById('mapel-modal');
-    const customMapelSelect = document.getElementById('custom-mapel-select');
-    const newMapelInput = document.getElementById('new-mapel-input');
-    const selectCustomMapelBtn = document.getElementById('select-custom-mapel-btn');
-    const saveNewMapelBtn = document.getElementById('save-new-mapel-btn');
-    const cancelMapelBtn = document.getElementById('modal-cancel-mapel');
-
-    const ujianModal = document.getElementById('ujian-modal');
-    const customUjianSelect = document.getElementById('custom-ujian-select');
-    const newUjianInput = document.getElementById('new-ujian-input');
-    const selectCustomUjianBtn = document.getElementById('select-custom-ujian-btn');
-    const saveNewUjianBtn = document.getElementById('save-new-ujian-btn');
-    const cancelUjianBtn = document.getElementById('modal-cancel-ujian');
 
     const previewModal = document.getElementById('preview-modal');
     const previewCloseBtn = document.getElementById('preview-close-btn');
@@ -833,11 +814,18 @@
         clearDataBtn.disabled = disabled;
         templateZipBtn.classList.toggle('disabled', disabled);
     }
+    
+    let confirmCallback = null;
+    function showConfirmModal(title, text, confirmText, confirmClass, callback) {
+        confirmModalTitle.textContent = title;
+        confirmModalText.textContent = text;
+        confirmActionBtn.textContent = confirmText;
+        
+        confirmActionBtn.className = 'btn';
+        confirmActionBtn.classList.add(confirmClass);
 
-    function showInfoOverlay(title, message) {
-        infoModalTitle.textContent = title;
-        infoModalText.innerHTML = message;
-        infoModal.style.display = 'flex';
+        confirmCallback = callback;
+        confirmModal.style.display = 'flex';
     }
 
     function getDbPath(data) {
@@ -886,12 +874,7 @@
             loadingText.textContent = 'Mengambil konfigurasi keamanan...';
             const tokenFetched = await fetchGithubToken();
             if (tokenFetched) {
-                loadingText.textContent = 'Memuat daftar kustom...';
-                await Promise.all([
-                    populateCustomMapelsInMainSelect(),
-                    populateCustomUjiansInMainSelect()
-                ]);
-                showView('selection-view');
+                showView('guru-login-view');
             }
 
         } catch (error) {
@@ -901,31 +884,214 @@
         }
     }
 
-    function populateTahunAjaranDropdown() {
-        const selectElement = document.getElementById('tahun-ajaran-select');
-        const date = new Date();
-        const currentYear = date.getFullYear();
-        const currentMonth = date.getMonth();
-
-        let latestAcademicYearStart = currentYear;
-        if (currentMonth < 6) { 
-            latestAcademicYearStart = currentYear - 1;
-        }
+    guruLoginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = guruUsernameInput.value.trim();
+        const password = guruPasswordInput.value;
+        guruLoginError.style.display = 'none';
         
-        const firstYear = 2025;
-        
-        selectElement.innerHTML = '<option value="" disabled>Pilih tahun ajaran...</option>';
-
-        for (let year = latestAcademicYearStart; year >= firstYear; year--) {
-            const academicYearString = `${year}/${year + 1}`;
-            const option = document.createElement('option');
-            option.value = academicYearString;
-            option.textContent = academicYearString;
-            selectElement.appendChild(option);
+        if (!username || !password) {
+            guruLoginError.textContent = 'Username dan Password tidak boleh kosong.';
+            guruLoginError.style.display = 'block';
+            return;
         }
 
-        const latestOptionValue = `${latestAcademicYearStart}/${latestAcademicYearStart + 1}`;
-        selectElement.value = latestOptionValue;
+        guruLoginBtn.disabled = true;
+        guruLoginBtn.textContent = 'Mencoba Login...';
+
+        try {
+            const setupDb = getDatabase(firebaseApps['SETUP']);
+            const gurusRef = ref(setupDb, 'gurus');
+            const snapshot = await get(gurusRef);
+
+            if (!snapshot.exists()) {
+                throw new Error("Tidak ada data guru yang ditemukan.");
+            }
+
+            const gurusData = snapshot.val();
+            let foundGuru = null;
+
+            for (const [id, guru] of Object.entries(gurusData)) {
+                if (guru.username === username && guru.password === password) {
+                    foundGuru = { id, ...guru };
+                    break;
+                }
+            }
+
+            if (foundGuru) {
+                loggedInGuru = foundGuru;
+                guruNameDisplay.textContent = loggedInGuru.nama;
+                showToast(`Selamat datang, ${loggedInGuru.nama}!`, 'success');
+                showView('loading-view');
+                loadingText.textContent = 'Memuat data hak akses...';
+                await populateSelectionDropdowns();
+                showView('selection-view');
+            } else {
+                throw new Error("Username atau Password salah.");
+            }
+
+        } catch (error) {
+            guruLoginError.textContent = error.message;
+            guruLoginError.style.display = 'block';
+        } finally {
+            guruLoginBtn.disabled = false;
+            guruLoginBtn.textContent = 'Login';
+        }
+    });
+
+    logoutBtn.addEventListener('click', () => {
+        showConfirmModal(
+            'Konfirmasi Logout',
+            'Apakah Anda yakin ingin keluar dari sesi ini?',
+            'Ya, Logout',
+            'btn-danger',
+            () => {
+                loggedInGuru = null;
+                guruUsernameInput.value = '';
+                guruPasswordInput.value = '';
+                outputEl.innerHTML = '';
+                selectionForm.reset();
+                showView('guru-login-view');
+                showToast("Anda telah berhasil logout.", "info");
+            }
+        );
+    });
+
+    backToSelectionBtn.addEventListener('click', () => {
+        if (isEditing) {
+            showToast('Harap simpan atau batalkan perubahan pada soal yang sedang diedit terlebih dahulu.', 'error');
+            return;
+        }
+        
+        showConfirmModal(
+            'Ganti Data Ujian',
+            'Apakah Anda yakin ingin kembali untuk mengganti data ujian?',
+            'Ya, Ganti',
+            'btn-primary',
+            () => {
+                outputEl.innerHTML = ''; 
+                selectionForm.reset();
+                populateSelectionDropdowns();
+                showView('selection-view');
+            }
+        );
+    });
+    
+    async function populateSelectionDropdowns() {
+        const setupDb = getDatabase(firebaseApps['SETUP']);
+        try {
+            if (!ujiansDataCache || !aksesDataCache) {
+                const customUjiansRef = ref(setupDb, 'customUjians');
+                const aksesRef = ref(setupDb, `akses/${loggedInGuru.id}`);
+
+                const [ujiansSnapshot, aksesSnapshot] = await Promise.all([
+                    get(customUjiansRef),
+                    get(aksesRef)
+                ]);
+                
+                if (!ujiansSnapshot.exists()) throw new Error("Data Ujian tidak ditemukan.");
+                if (!aksesSnapshot.exists()) throw new Error("Data hak akses untuk guru ini tidak ditemukan.");
+                
+                ujiansDataCache = ujiansSnapshot.val();
+                aksesDataCache = aksesSnapshot.val();
+            }
+
+            tahunAjaranSelect.innerHTML = '<option value="" disabled selected>Pilih tahun ajaran...</option>';
+            ujianSelect.innerHTML = '<option value="" disabled selected>Pilih jenis asesmen...</option>';
+            kelasSelect.innerHTML = '<option value="" disabled selected>Pilih kelas...</option>';
+            mapelSelect.innerHTML = '<option value="" disabled selected>Pilih mata pelajaran...</option>';
+            
+            ujianSelect.disabled = true;
+            kelasSelect.disabled = true;
+            mapelSelect.disabled = true;
+
+            Object.keys(ujiansDataCache).sort().reverse().forEach(tahun => {
+                const examsInYear = ujiansDataCache[tahun];
+                const hasActiveExam = Object.values(examsInYear).some(exam => exam.active === true);
+                if (hasActiveExam) {
+                    const option = document.createElement('option');
+                    option.value = tahun;
+                    option.textContent = tahun;
+                    tahunAjaranSelect.appendChild(option);
+                }
+            });
+            tahunAjaranSelect.disabled = false;
+            
+        } catch (error) {
+            console.error("Gagal memuat dropdown:", error);
+            showToast(`Error: ${error.message}`, "error");
+            showView('guru-login-view');
+        }
+    }
+
+    function initializeSelectionListeners() {
+        tahunAjaranSelect.addEventListener('change', () => {
+            const selectedTahun = tahunAjaranSelect.value;
+            ujianSelect.innerHTML = '<option value="" disabled selected>Pilih jenis asesmen...</option>';
+            ujianSelect.value = '';
+            ujianSelect.disabled = true;
+
+            if (selectedTahun && ujiansDataCache[selectedTahun]) {
+                const examsInYear = ujiansDataCache[selectedTahun];
+                Object.values(examsInYear).forEach(exam => {
+                    if (exam.active === true) {
+                        const option = document.createElement('option');
+                        option.value = exam.name;
+                        option.textContent = exam.name;
+                        ujianSelect.appendChild(option);
+                    }
+                });
+                ujianSelect.disabled = false;
+            }
+            
+            kelasSelect.value = '';
+            mapelSelect.innerHTML = '<option value="" disabled selected>Pilih mata pelajaran...</option>';
+            kelasSelect.disabled = true;
+            mapelSelect.disabled = true;
+            validateSelectionForm();
+        });
+
+        ujianSelect.addEventListener('change', () => {
+            kelasSelect.innerHTML = '<option value="" disabled selected>Pilih kelas...</option>';
+            if (ujianSelect.value) {
+                const uniqueKelas = [...new Set(aksesDataCache.map(item => item.kelas))].sort();
+                uniqueKelas.forEach(kelas => {
+                    const option = document.createElement('option');
+                    option.value = kelas;
+                    option.textContent = kelas;
+                    kelasSelect.appendChild(option);
+                });
+                kelasSelect.disabled = false;
+            } else {
+                 kelasSelect.disabled = true;
+            }
+            mapelSelect.innerHTML = '<option value="" disabled selected>Pilih mata pelajaran...</option>';
+            mapelSelect.disabled = true;
+            validateSelectionForm();
+        });
+
+        kelasSelect.addEventListener('change', () => {
+            const selectedKelas = kelasSelect.value;
+            mapelSelect.innerHTML = '<option value="" disabled selected>Pilih mata pelajaran...</option>';
+            mapelSelect.value = '';
+            mapelSelect.disabled = true;
+
+            if (selectedKelas) {
+                const mapelForKelas = aksesDataCache
+                    .filter(item => item.kelas === selectedKelas)
+                    .map(item => item.mapel)
+                    .sort();
+                
+                mapelForKelas.forEach(mapel => {
+                    const option = document.createElement('option');
+                    option.value = mapel;
+                    option.textContent = mapel;
+                    mapelSelect.appendChild(option);
+                });
+                mapelSelect.disabled = false;
+            }
+            validateSelectionForm();
+        });
     }
 
     function validateSelectionForm() {
@@ -933,24 +1099,6 @@
     }
 
     selectionForm.addEventListener('input', validateSelectionForm);
-
-    ujianSelect.addEventListener('change', async () => {
-        if (ujianSelect.value === 'Lainnya') {
-            await showUjianModal();
-        } else {
-            originalUjianValue = ujianSelect.value;
-            validateSelectionForm();
-        }
-    });
-
-    mapelSelect.addEventListener('change', async () => {
-        if (mapelSelect.value === 'Lainnya') {
-            await showMapelModal();
-        } else {
-            originalMapelValue = mapelSelect.value;
-            validateSelectionForm();
-        }
-    });
 
     saveSelectionBtn.addEventListener('click', async (e) => {
         e.preventDefault();
@@ -978,210 +1126,6 @@
         await fetchAndRenderSoal();
 
         showView('editor-view');
-    });
-
-    // --- MANAJEMEN UJIAN KUSTOM ---
-    
-    async function fetchCustomUjians() {
-        try {
-            const setupDb = getDatabase(firebaseApps['SETUP']);
-            const ujiansRef = ref(setupDb, 'customUjians');
-            const snapshot = await get(ujiansRef);
-            return snapshot.exists() ? snapshot.val() : [];
-        } catch (error) {
-            console.error("Gagal mengambil daftar ujian kustom:", error);
-            showToast("Gagal memuat daftar ujian kustom.", "error");
-            return [];
-        }
-    }
-
-    async function populateCustomUjiansInMainSelect() {
-        const customUjians = await fetchCustomUjians();
-        const lainnyaOption = ujianSelect.querySelector('option[value="Lainnya"]');
-        ujianSelect.querySelectorAll('.custom-ujian-option').forEach(opt => opt.remove());
-        customUjians.sort().forEach(ujianName => {
-            const option = document.createElement('option');
-            option.value = ujianName;
-            option.textContent = ujianName;
-            option.className = 'custom-ujian-option';
-            ujianSelect.insertBefore(option, lainnyaOption);
-        });
-    }
-
-    async function showUjianModal() {
-        originalUjianValue = ujianSelect.value;
-        ujianSelect.value = '';
-        customUjianSelect.innerHTML = '<option value="">-- Pilih dari daftar --</option>';
-        newUjianInput.value = '';
-        const customUjians = await fetchCustomUjians();
-        if (customUjians.length > 0) {
-            customUjians.sort().forEach(ujianName => {
-                const option = document.createElement('option');
-                option.value = ujianName;
-                option.textContent = ujianName;
-                customUjianSelect.appendChild(option);
-            });
-        }
-        ujianModal.style.display = 'flex';
-    }
-
-    function addAndSelectCustomUjian(ujianName) {
-        let existingOption = ujianSelect.querySelector(`option[value="${ujianName}"]`);
-        if (!existingOption) {
-            const lainnyaOption = ujianSelect.querySelector('option[value="Lainnya"]');
-            const newOption = document.createElement('option');
-            newOption.value = ujianName;
-            newOption.textContent = ujianName;
-            newOption.className = 'custom-ujian-option';
-            ujianSelect.insertBefore(newOption, lainnyaOption);
-        }
-        ujianSelect.value = ujianName;
-        originalUjianValue = ujianName;
-        ujianModal.style.display = 'none';
-        validateSelectionForm();
-    }
-
-    selectCustomUjianBtn.addEventListener('click', () => {
-        const selectedUjian = customUjianSelect.value;
-        if (selectedUjian) {
-            addAndSelectCustomUjian(selectedUjian);
-        } else {
-            showToast("Pilih salah satu jenis ujian dari daftar.", "error");
-        }
-    });
-
-    saveNewUjianBtn.addEventListener('click', async () => {
-        const newUjianName = newUjianInput.value.trim();
-        if (!newUjianName) {
-            showToast("Nama ujian baru tidak boleh kosong.", "error");
-            return;
-        }
-        showProcessing("Menyimpan ujian baru...");
-        const customUjians = await fetchCustomUjians();
-        if (customUjians.some(u => u.toLowerCase() === newUjianName.toLowerCase())) {
-            hideProcessing();
-            showToast("Jenis ujian ini sudah ada.", "error");
-            return;
-        }
-        customUjians.push(newUjianName);
-        try {
-            const setupDb = getDatabase(firebaseApps['SETUP']);
-            await set(ref(setupDb, 'customUjians'), customUjians);
-            addAndSelectCustomUjian(newUjianName);
-            showToast("Ujian baru berhasil disimpan!", "success");
-        } catch (error) {
-            showToast("Gagal menyimpan ujian baru.", "error");
-        } finally {
-            hideProcessing();
-        }
-    });
-
-    cancelUjianBtn.addEventListener('click', () => {
-        ujianSelect.value = originalUjianValue || '';
-        ujianModal.style.display = 'none';
-        validateSelectionForm();
-    });
-
-    // --- MANAJEMEN MAPEL KUSTOM ---
-    
-    async function fetchCustomMapels() {
-        try {
-            const setupDb = getDatabase(firebaseApps['SETUP']);
-            const mapelsRef = ref(setupDb, 'customMapels');
-            const snapshot = await get(mapelsRef);
-            return snapshot.exists() ? snapshot.val() : [];
-        } catch (error) {
-            console.error("Gagal mengambil daftar mapel kustom:", error);
-            showToast("Gagal memuat daftar mapel kustom.", "error");
-            return [];
-        }
-    }
-    
-    async function populateCustomMapelsInMainSelect() {
-        const customMapels = await fetchCustomMapels();
-        const lainnyaOption = mapelSelect.querySelector('option[value="Lainnya"]');
-        mapelSelect.querySelectorAll('.custom-mapel-option').forEach(opt => opt.remove());
-        customMapels.sort().forEach(mapelName => {
-            const option = document.createElement('option');
-            option.value = mapelName;
-            option.textContent = mapelName;
-            option.className = 'custom-mapel-option';
-            mapelSelect.insertBefore(option, lainnyaOption);
-        });
-    }
-
-    async function showMapelModal() {
-        originalMapelValue = mapelSelect.value;
-        mapelSelect.value = '';
-        customMapelSelect.innerHTML = '<option value="">-- Pilih dari daftar --</option>';
-        newMapelInput.value = '';
-        const customMapels = await fetchCustomMapels();
-        if (customMapels.length > 0) {
-            customMapels.sort().forEach(mapelName => {
-                const option = document.createElement('option');
-                option.value = mapelName;
-                option.textContent = mapelName;
-                customMapelSelect.appendChild(option);
-            });
-        }
-        mapelModal.style.display = 'flex';
-    }
-    
-    function addAndSelectCustomMapel(mapelName) {
-        let existingOption = mapelSelect.querySelector(`option[value="${mapelName}"]`);
-        if (!existingOption) {
-            const lainnyaOption = mapelSelect.querySelector('option[value="Lainnya"]');
-            const newOption = document.createElement('option');
-            newOption.value = mapelName;
-            newOption.textContent = mapelName;
-            newOption.className = 'custom-mapel-option';
-            mapelSelect.insertBefore(newOption, lainnyaOption);
-        }
-        mapelSelect.value = mapelName;
-        originalMapelValue = mapelName;
-        mapelModal.style.display = 'none';
-        validateSelectionForm();
-    }
-
-    selectCustomMapelBtn.addEventListener('click', () => {
-        const selectedMapel = customMapelSelect.value;
-        if (selectedMapel) {
-            addAndSelectCustomMapel(selectedMapel);
-        } else {
-            showToast("Pilih salah satu mapel dari daftar.", "error");
-        }
-    });
-
-    saveNewMapelBtn.addEventListener('click', async () => {
-        const newMapelName = newMapelInput.value.trim();
-        if (!newMapelName) {
-            showToast("Nama mapel baru tidak boleh kosong.", "error");
-            return;
-        }
-        showProcessing("Menyimpan mapel baru...");
-        const customMapels = await fetchCustomMapels();
-        if (customMapels.some(m => m.toLowerCase() === newMapelName.toLowerCase())) {
-            hideProcessing();
-            showToast("Mata pelajaran ini sudah ada.", "error");
-            return;
-        }
-        customMapels.push(newMapelName);
-        try {
-            const setupDb = getDatabase(firebaseApps['SETUP']);
-            await set(ref(setupDb, 'customMapels'), customMapels);
-            addAndSelectCustomMapel(newMapelName);
-            showToast("Mapel baru berhasil disimpan!", "success");
-        } catch (error) {
-            showToast("Gagal menyimpan mapel baru.", "error");
-        } finally {
-            hideProcessing();
-        }
-    });
-
-    cancelMapelBtn.addEventListener('click', () => {
-        mapelSelect.value = originalMapelValue || '';
-        mapelModal.style.display = 'none';
-        validateSelectionForm();
     });
     
     async function fetchAndRenderSoal() {
@@ -1510,18 +1454,19 @@
                 imagesToDelete.push(img.src);
             }
         });
-        const totalImages = imagesToDelete.length;
 
         try {
             processingText.textContent = 'Menghapus data soal dari server...';
             await clearAllDataFromDB();
             
-            if (totalImages > 0) {
-                for (let i = 0; i < totalImages; i++) {
-                    const imageUrl = imagesToDelete[i];
-                    processingText.textContent = `Menghapus gambar ${i + 1} dari ${totalImages}...`;
-                    await deleteImageFromGithub(imageUrl);
-                }
+            if (imagesToDelete.length > 0) {
+                 const { tahunAjaran, ujian, kelas, mapel } = currentSoalData;
+                 const safeTA = tahunAjaran.replace('/', '-');
+                 const safeUjian = ujian.replace(/\s+/g, '-');
+                 const safeMapel = mapel.replace(/\s+/g, '-');
+                 const dirPath = `${safeTA}/${safeUjian}/Kelas-${kelas}/${safeMapel}`;
+                 processingText.textContent = `Menghapus folder gambar...`;
+                 await deleteGithubDirectory(dirPath);
             }
 
             processingText.textContent = 'Menyelesaikan...';
@@ -2157,7 +2102,6 @@
             optionsContainer.appendChild(label);
         });
 
-        // Reset to mobile view by default
         previewDeviceWrapper.classList.add('is-mobile');
         previewDeviceWrapper.classList.remove('is-desktop');
         previewMobileBtn.classList.add('active', 'btn-primary');
@@ -2167,7 +2111,6 @@
 
         previewModal.style.display = 'flex';
     }
-
 
     async function executeDeleteSoal() {
         if (!soalToDelete) return;
@@ -2404,10 +2347,29 @@
     }
     
     function initialize() {
-        populateTahunAjaranDropdown();
         initializeFirebaseApps();
         performAutoLogin();
         initializeToolbar();
+        initializeSelectionListeners();
+
+        confirmActionBtn.addEventListener('click', () => {
+            if (typeof confirmCallback === 'function') {
+                confirmCallback();
+            }
+            confirmModal.style.display = 'none';
+        });
+
+        cancelConfirmBtn.addEventListener('click', () => {
+            confirmModal.style.display = 'none';
+            confirmCallback = null;
+        });
+        
+        confirmModal.addEventListener('click', (e) => {
+            if(e.target === confirmModal) {
+                 confirmModal.style.display = 'none';
+                 confirmCallback = null;
+            }
+        });
     }
     
     loadTheme();
@@ -2415,3 +2377,4 @@
 </script>
 </body>
 </html>
+
