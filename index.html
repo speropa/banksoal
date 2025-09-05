@@ -173,24 +173,37 @@
         .editor-top-bar { display: flex; justify-content: flex-end; align-items: center; width: 100%; gap: 10px;}
         .editor-top-bar p { margin: 0; font-size: 0.9em; color: var(--label-color);}
         
-        .editor-header {
+        /* New Header Layout Styles */
+        .editor-header-grid {
             display: flex;
-            flex-direction: column;
-            gap: 12px;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        .editor-header-grid .editor-card {
+            flex: 1;
             background-color: var(--card-background);
-            padding: 25px;
+            padding: 20px;
             border-radius: 12px;
             border: 1px solid var(--border-color);
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            margin-bottom: 25px;
-            transition: background-color 0.3s, border-color 0.3s;
-        }
-
-        .header-row {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
+            gap: 12px;
         }
+        .editor-header-grid .editor-card h3 {
+            margin: 0 0 5px 0;
+            font-size: 1.1em;
+            font-weight: 700;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            color: var(--text-color);
+        }
+        .actions-card .header-btn {
+            width: 100%;
+            justify-content: center;
+        }
+        /* End New Header Layout Styles */
+
 
         .identitas-item {
             font-size: 1.1em;
@@ -202,12 +215,6 @@
             font-weight: 700;
             color: var(--text-color);
         }
-
-        .header-btn {
-            width: 220px;
-            justify-content: flex-start;
-            flex-shrink: 0;
-        }
         
         #file-input { display: none; }
         
@@ -216,13 +223,6 @@
             padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
             position: relative;
-        }
-        .soal-container.disabled {
-            pointer-events: none !important;
-        }
-        .soal-container.is-editing {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.4), 0 4px 12px rgba(0,0,0,0.1);
         }
         .soal-container.invalid-soal {
             border-color: var(--danger-color);
@@ -233,9 +233,10 @@
             font-size: 0.85em;
             font-weight: 500;
             margin-top: 15px;
-            padding: 8px;
+            padding: 12px;
             background-color: var(--error-bg-color);
-            border-radius: 4px;
+            border: 1px solid var(--error-border-color);
+            border-radius: 6px;
             display: none;
         }
         .soal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px; gap: 10px; }
@@ -243,9 +244,7 @@
         .soal-nomor-input { width: 60px; padding: 4px 8px; font-size: 1em; border: 1px solid var(--border-color); border-radius: 4px; }
         .drag-handle { display: grid; grid-template-columns: repeat(3, 6px); gap: 4px; padding: 10px; cursor: grab; border-radius: 5px; transition: background-color 0.2s; }
         .soal-actions { display: flex; gap: 8px; align-items: center; pointer-events: auto; }
-        .edit-btn, .save-btn, .cancel-edit-btn, .preview-btn { font-size: 0.85em; padding: 6px 12px; font-weight: 500; }
-        .save-btn { background-color: var(--success-color); }
-        .save-btn:hover:not(:disabled) { background-color: var(--success-hover); }
+        .preview-btn { font-size: 0.85em; padding: 6px 12px; font-weight: 500; }
         .delete-btn { font-size: 0.85em; padding: 6px 12px; font-weight: 500; }
 
         [contenteditable="true"] { outline: none; background-color: #f8f9fa; padding: 2px 4px; border-radius: 3px; }
@@ -267,10 +266,6 @@
         .soal-kunci-jawaban { margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border-color); display: flex; align-items: center; font-weight: 700; }
         .soal-kunci-jawaban span { margin-right: 10px; color: var(--success-color); }
 
-        .soal-container.review-mode ul { margin-top: 10px; }
-        .soal-container.review-mode li { padding: 2px 12px; margin-bottom: 0; }
-        .soal-container.review-mode .soal-kunci-jawaban { margin-top: 10px; padding-top: 10px; }
-
         .img-inline { max-height: 2.5em; width: auto; vertical-align: middle; cursor: pointer; }
         .img-block { display: block; height: auto; margin: 0.8em 0; cursor: pointer; max-width: 100%; }
         .resizable-wrapper { position: relative; display: inline-block; outline: 2px dashed var(--primary-color); line-height: 0; user-select: none; -webkit-user-select: none; vertical-align: middle; }
@@ -291,7 +286,7 @@
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); display: none; justify-content: center; align-items: center; z-index: 1000; animation: fadeIn 0.3s; }
         .modal-content { background-color: var(--card-background); padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); text-align: left; max-width: 450px; width: 90%; transform: scale(0.95); animation: zoomIn 0.3s forwards; }
         .modal-content h3 { margin-top: 0; text-align: center; }
-        .modal-content p { margin-bottom: 25px; line-height: 1.6; }
+        .modal-content p { margin-bottom: 25px; line-height: 1.6; white-space: pre-wrap; }
         .modal-actions { margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px; }
         .modal-actions button { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin: 0; }
         .btn-confirm { background-color: var(--danger-color); color: white; }
@@ -463,11 +458,25 @@
         .preview-controls .active {
             background-color: var(--primary-hover);
         }
+        
+        #global-save-container {
+            background-color: var(--card-background);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 0 auto 25px auto;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        #global-save-btn {
+            font-size: 1.1em;
+            padding: 12px 24px;
+        }
 
         @media (max-width: 768px) {
-            .header-row { flex-direction: column; align-items: stretch; gap: 10px; }
-            .identitas-item { text-align: center; }
-            .header-btn { width: 100%; justify-content: center; }
+            .editor-header-grid {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
@@ -567,33 +576,40 @@
             </div>
         </div>
         
-        <div class="editor-header">
-            <div class="header-row">
+        <div class="editor-header-grid">
+            <div class="editor-card identitas-card">
+                <h3>Data Ujian</h3>
                 <div class="identitas-item">Ujian: <strong id="info-ujian"></strong></div>
-                <button id="add-soal-btn" class="btn btn-success header-btn"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg><span>Tambah Soal</span></button>
-            </div>
-            <div class="header-row">
                 <div class="identitas-item">Tahun Ajaran: <strong id="info-ta"></strong></div>
-                 <a href="https://drive.google.com/uc?export=download&id=11J15X750WGz3QeXO8sxcWSzRyfoDkJLb" target="_blank" id="template-zip-btn" class="btn btn-purple header-btn"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg><span>Template Word</span></a>
-            </div>
-            <div class="header-row">
                 <div class="identitas-item">Kelas: <strong id="info-kelas"></strong></div>
-                <button id="upload-btn" class="btn btn-primary header-btn"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/></svg><span>Unggah ZIP</span></button>
-            </div>
-            <div class="header-row">
                 <div class="identitas-item">Mata Pelajaran: <strong id="info-mapel"></strong></div>
-                <button id="clear-data-btn" class="btn btn-danger header-btn"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg><span>Hapus Semua</span></button>
+            </div>
+            <div class="editor-card actions-card">
+                 <h3>Aksi Global</h3>
+                 <button id="add-soal-btn" class="btn btn-success header-btn"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg><span>Tambah Soal</span></button>
+                 <a href="https://drive.google.com/uc?export=download&id=11J15X750WGz3QeXO8sxcWSzRyfoDkJLb" target="_blank" id="template-zip-btn" class="btn btn-purple header-btn"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg><span>Template Word</span></a>
+                 <button id="upload-btn" class="btn btn-primary header-btn"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/></svg><span>Unggah ZIP</span></button>
+                 <button id="clear-data-btn" class="btn btn-danger header-btn"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg><span>Hapus Semua</span></button>
             </div>
         </div>
-        
+
         <input id="file-input" type="file" accept=".zip" />
+        
+        <div id="global-save-container" style="display: none;">
+            <button id="global-save-btn" class="btn btn-success" disabled title="Harap perbaiki semua soal yang tidak valid sebelum mengirim.">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M8.5 1.5A.5.5 0 0 1 9 2v4.5A1.5 1.5 0 0 1 7.5 8h-1A1.5 1.5 0 0 1 5 6.5V2a.5.5 0 0 1 .5-.5h3z"/><path d="M14.354 4.354a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L7 11.293l6.646-6.647a.5.5 0 0 1 .708 0z"/><path d="M.5 1a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H.5z"/></svg>
+                <span>Kirim & Simpan Semua ke Server</span>
+            </button>
+        </div>
+
         <div id="soal-list-container"></div>
+
         <div class="instructions-box">
             <h3>Petunjuk</h3>
             <ol>
                 <li><strong>Tambah Soal Manual:</strong> Untuk membuat soal baru atau menambahkan soal.</li>
                 <li><strong>Template Word:</strong> Unduh file template_bank_soal.docx, petunjuk pengisian terdapat dalam file</li>
-                <li><strong>Unggah ZIP:</strong> Unggah file ZIP Anda untuk diproses, pastikan isi file ZIP sudah sesuai dengan petunjuk pengisian bank soal</li>
+                <li><strong>Unggah ZIP:</strong> Unggah file ZIP Anda untuk diproses. Data tidak akan disimpan otomatis. Gunakan tombol "Kirim & Simpan" setelah semua soal valid.</li>
             </ol>
         </div>
     </div>
@@ -680,7 +696,7 @@
 <script type="module">
     import { initializeApp, getApp, getApps } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
-    import { getDatabase, ref, set, get, remove } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+    import { getDatabase, ref, set, get, remove, update } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
     
     const firebaseConfigs = {
         '7ABC': { apiKey: "AIzaSyBAKwT7JY_HGnvK6h3u30-dfgRPXfef8l8", authDomain: "abc-a13ea.firebaseapp.com", databaseURL: "https://abc-a13ea-default-rtdb.firebaseio.com", projectId: "abc-a13ea", storageBucket: "abc-a13ea.appspot.com", messagingSenderId: "1052966795599", appId: "1:1052966795599:web:d4d331199ca9081321ed3a" },
@@ -710,8 +726,8 @@
 
     let soalToDelete = null;
     let activeResizer = null;
-    let currentSoalData = {}; 
-    let isEditing = false;
+    let currentSoalData = {};
+    let initialSoalSnapshots = {};
     let ujiansDataCache = null;
     let aksesDataCache = null;
 
@@ -749,6 +765,8 @@
     const fileInput = document.getElementById('file-input');
     const outputEl = document.getElementById('soal-list-container');
     const instructionsBox = document.querySelector('.instructions-box');
+    const globalSaveContainer = document.getElementById('global-save-container');
+    const globalSaveBtn = document.getElementById('global-save-btn');
     
     const confirmModal = document.getElementById('confirm-modal');
     const confirmModalTitle = document.getElementById('confirm-modal-title');
@@ -807,14 +825,7 @@
     function hideProcessing() {
         processingModal.style.display = 'none';
     }
-    
-    function setGlobalActionsState(disabled) {
-        addSoalBtn.disabled = disabled;
-        uploadBtn.disabled = disabled;
-        clearDataBtn.disabled = disabled;
-        templateZipBtn.classList.toggle('disabled', disabled);
-    }
-    
+        
     let confirmCallback = null;
     function showConfirmModal(title, text, confirmText, confirmClass, callback) {
         confirmModalTitle.textContent = title;
@@ -826,6 +837,12 @@
 
         confirmCallback = callback;
         confirmModal.style.display = 'flex';
+    }
+
+    function showInfoOverlay(title, text) {
+        infoModalTitle.textContent = title;
+        infoModalText.textContent = text;
+        infoModal.style.display = 'flex';
     }
 
     function getDbPath(data) {
@@ -958,14 +975,9 @@
     });
 
     backToSelectionBtn.addEventListener('click', () => {
-        if (isEditing) {
-            showToast('Harap simpan atau batalkan perubahan pada soal yang sedang diedit terlebih dahulu.', 'error');
-            return;
-        }
-        
         showConfirmModal(
             'Ganti Data Ujian',
-            'Apakah Anda yakin ingin kembali untuk mengganti data ujian?',
+            'Data yang belum disimpan akan hilang. Apakah Anda yakin ingin kembali?',
             'Ya, Ganti',
             'btn-primary',
             () => {
@@ -1157,24 +1169,17 @@
     
     function renderSoalFromData(data) {
         if (!data.soal) return;
-        
-        const isOldStructure = data.kunciJawaban && typeof data.kunciJawaban === 'string';
-        const kunciArray = isOldStructure ? data.kunciJawaban.split(',') : [];
-        if (isOldStructure) {
-            showToast("Struktur data lama terdeteksi. Disarankan untuk menyimpan ulang.", "info");
-        }
 
         Object.keys(data.soal).sort((a, b) => parseInt(a) - parseInt(b)).forEach(nomor => {
             const soalDetail = data.soal[nomor];
-            let kunci;
-            if (isOldStructure) {
-                kunci = kunciArray[parseInt(nomor) - 1] || '';
-            } else {
-                kunci = soalDetail.kunciJawaban || '';
-            }
+            const kunci = soalDetail.kunciJawaban || '';
             const soalDiv = createSoalElement(soalDetail, kunci, nomor);
             outputEl.appendChild(soalDiv);
         });
+
+        createInitialSnapshots();
+        prioritizeInvalidSoal();
+        checkAllValidityAndUpdateSaveButton();
         initializeSortable();
     }
 
@@ -1243,42 +1248,57 @@
             console.error(`Gagal menghapus gambar dari GitHub: ${imageUrl}`, error);
         }
     }
-
-    async function deleteGithubDirectory(path) {
-        if (!githubToken) {
-            showToast('Token keamanan tidak valid. Operasi dibatalkan.', 'error');
-            throw new Error('GitHub token is not available.');
-        }
+    
+    async function getAllFilePaths(path, fileList = []) {
+        if (!githubToken) return [];
         try {
-            const response = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/contents/${path}`, {
+            const response = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/contents/${path}?t=${new Date().getTime()}`, {
                 headers: { 'Authorization': `token ${githubToken}` }
             });
-
             if (!response.ok) {
-                if (response.status === 404) {
-                    console.log(`Folder ${path} tidak ditemukan, tidak perlu dihapus.`);
-                    return;
-                }
-                throw new Error(`Gagal mendapatkan konten folder: ${response.statusText}`);
+                if (response.status === 404) return fileList;
+                throw new Error(`GitHub API error: ${response.statusText}`);
             }
-
             const contents = await response.json();
-            if (!Array.isArray(contents)) return;
+            if (!Array.isArray(contents)) return fileList;
 
             for (const item of contents) {
-                if (item.type === 'dir') {
-                    await deleteGithubDirectory(item.path);
-                } else if (item.type === 'file') {
-                    await deleteImageFromGithub(item.download_url);
+                if (item.type === 'file') {
+                    fileList.push(item);
+                } else if (item.type === 'dir') {
+                    await getAllFilePaths(item.path, fileList);
                 }
             }
         } catch (error) {
-            console.error(`Gagal memproses penghapusan folder ${path}:`, error);
+            console.error(`Error fetching file list for path ${path}:`, error);
         }
+        return fileList;
     }
 
-    function validateAllSoal() {
-        let isAllValid = true;
+    function getSoalSnapshot(soalDiv) {
+        const extractImages = (element) => Array.from(element.querySelectorAll('img')).map(img => img.src);
+        
+        return {
+            pertanyaan: soalDiv.querySelector('.soal-pertanyaan').innerHTML,
+            pilihanA: soalDiv.querySelector('li:nth-child(1) div').innerHTML,
+            pilihanB: soalDiv.querySelector('li:nth-child(2) div').innerHTML,
+            pilihanC: soalDiv.querySelector('li:nth-child(3) div').innerHTML,
+            pilihanD: soalDiv.querySelector('li:nth-child(4) div').innerHTML,
+            kunci: soalDiv.querySelector('.soal-kunci-jawaban div').innerHTML,
+            images: extractImages(soalDiv)
+        };
+    }
+
+    function createInitialSnapshots() {
+        initialSoalSnapshots = {};
+        document.querySelectorAll('.soal-container').forEach(soalDiv => {
+            const nomor = soalDiv.dataset.nomor;
+            initialSoalSnapshots[nomor] = getSoalSnapshot(soalDiv);
+        });
+    }
+
+    function validateSoal(soalDiv) {
+        const errorMessages = [];
         
         function isContentEmpty(element) {
             const hasText = element.textContent.trim() !== '';
@@ -1286,110 +1306,68 @@
             return !hasText && !hasImage;
         }
 
-        document.querySelectorAll('.soal-container').forEach(soalDiv => {
-            const errorMessages = [];
-            const pertanyaanEl = soalDiv.querySelector('.soal-pertanyaan');
-            const pilihanAEl = soalDiv.querySelector('li:nth-child(1) div');
-            const pilihanBEl = soalDiv.querySelector('li:nth-child(2) div');
-            const pilihanCEl = soalDiv.querySelector('li:nth-child(3) div');
-            const pilihanDEl = soalDiv.querySelector('li:nth-child(4) div');
-            const kunciEl = soalDiv.querySelector('.soal-kunci-jawaban div');
+        const pertanyaanEl = soalDiv.querySelector('.soal-pertanyaan');
+        const pilihanAEl = soalDiv.querySelector('li:nth-child(1) div');
+        const pilihanBEl = soalDiv.querySelector('li:nth-child(2) div');
+        const pilihanCEl = soalDiv.querySelector('li:nth-child(3) div');
+        const pilihanDEl = soalDiv.querySelector('li:nth-child(4) div');
+        const kunciEl = soalDiv.querySelector('.soal-kunci-jawaban div');
 
-            if (isContentEmpty(pertanyaanEl)) errorMessages.push('Pertanyaan tidak boleh kosong.');
-            if (isContentEmpty(pilihanAEl)) errorMessages.push('Pilihan A tidak boleh kosong.');
-            if (isContentEmpty(pilihanBEl)) errorMessages.push('Pilihan B tidak boleh kosong.');
-            if (isContentEmpty(pilihanCEl)) errorMessages.push('Pilihan C tidak boleh kosong.');
-            if (isContentEmpty(pilihanDEl)) errorMessages.push('Pilihan D tidak boleh kosong.');
-            if (!kunciEl.textContent.trim()) errorMessages.push('Kunci Jawaban tidak boleh kosong.');
+        if (isContentEmpty(pertanyaanEl)) errorMessages.push('Pertanyaan tidak boleh kosong.');
+        if (isContentEmpty(pilihanAEl)) errorMessages.push('Pilihan A tidak boleh kosong.');
+        if (isContentEmpty(pilihanBEl)) errorMessages.push('Pilihan B tidak boleh kosong.');
+        if (isContentEmpty(pilihanCEl)) errorMessages.push('Pilihan C tidak boleh kosong.');
+        if (isContentEmpty(pilihanDEl)) errorMessages.push('Pilihan D tidak boleh kosong.');
+        
+        const kunciText = kunciEl.textContent.trim().toUpperCase();
+        if (!kunciText) {
+            errorMessages.push('Kunci Jawaban tidak boleh kosong.');
+        } else if (!['A', 'B', 'C', 'D'].includes(kunciText)) {
+            errorMessages.push('Kunci Jawaban harus A, B, C, atau D.');
+        }
 
-            const errorEl = soalDiv.querySelector('.soal-validation-error');
-            if (errorMessages.length > 0) {
-                isAllValid = false;
-                soalDiv.classList.add('invalid-soal');
-                errorEl.innerHTML = errorMessages.join('<br>');
-                errorEl.style.display = 'block';
-            } else {
-                soalDiv.classList.remove('invalid-soal');
-                errorEl.style.display = 'none';
-            }
-        });
-        return isAllValid;
+
+        const errorEl = soalDiv.querySelector('.soal-validation-error');
+        if (errorMessages.length > 0) {
+            soalDiv.classList.add('invalid-soal');
+            errorEl.innerHTML = `<strong>Masalah:</strong><br>${errorMessages.join('<br>')}`;
+            errorEl.style.display = 'block';
+            return false;
+        } else {
+            soalDiv.classList.remove('invalid-soal');
+            errorEl.style.display = 'none';
+            return true;
+        }
     }
 
-    async function saveAllSoalToDatabase(manageSpinner = true) {
-        if (!validateAllSoal()) {
-            showToast('Terdapat soal yang tidak valid. Perubahan tidak disimpan.', 'error');
-            const firstInvalid = document.querySelector('.invalid-soal');
-            if (firstInvalid) {
-                firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    function checkAllValidityAndUpdateSaveButton() {
+        let allValid = true;
+        document.querySelectorAll('.soal-container').forEach(soalDiv => {
+            if (!validateSoal(soalDiv)) {
+                allValid = false;
             }
-            throw new Error("Validasi soal gagal.");
-        }
-        
-        if (manageSpinner) showProcessing('Menyimpan semua perubahan...');
+        });
+        globalSaveBtn.disabled = !allValid;
+        globalSaveBtn.title = allValid ? "Simpan semua perubahan ke server" : "Harap perbaiki semua soal yang tidak valid sebelum mengirim.";
+    }
 
-        try {
-            const soalElements = document.querySelectorAll('.soal-container');
+    function prioritizeInvalidSoal() {
+        const container = document.getElementById('soal-list-container');
+        const soalElements = Array.from(container.children);
+
+        soalElements.sort((a, b) => {
+            const aIsInvalid = a.classList.contains('invalid-soal');
+            const bIsInvalid = b.classList.contains('invalid-soal');
+            if (aIsInvalid && !bIsInvalid) return -1; 
+            if (!aIsInvalid && bIsInvalid) return 1;
             
-            if (soalElements.length === 0) {
-                 await clearAllDataFromDB();
-                 if (manageSpinner) showToast('Semua soal telah dihapus dan data dikosongkan.', 'success');
-                 return;
-            }
+            // If both are the same validity, sort by number
+            const numA = parseInt(a.dataset.nomor, 10);
+            const numB = parseInt(b.dataset.nomor, 10);
+            return numA - numB;
+        });
 
-            const soalObject = {};
-            const kunciJawabanArray = [];
-            soalElements.forEach((soalDiv, index) => {
-                const nomorSoal = index + 1;
-                const kunci = soalDiv.querySelector('.soal-kunci-jawaban div').textContent.trim().toUpperCase();
-                soalObject[nomorSoal] = {
-                    pertanyaan: soalDiv.querySelector('.soal-pertanyaan').innerHTML,
-                    pilihanA: soalDiv.querySelector('li:nth-child(1) div').innerHTML,
-                    pilihanB: soalDiv.querySelector('li:nth-child(2) div').innerHTML,
-                    pilihanC: soalDiv.querySelector('li:nth-child(3) div').innerHTML,
-                    pilihanD: soalDiv.querySelector('li:nth-child(4) div').innerHTML,
-                    kunciJawaban: kunci
-                };
-                kunciJawabanArray.push(kunci);
-            });
-
-            const kunjabString = kunciJawabanArray.join(',');
-
-            const finalData = { 
-                ...currentSoalData, 
-                terakhirUpdate: new Date().toISOString(), 
-                soal: soalObject,
-                kunjab: kunjabString
-            };
-            delete finalData.kunciJawaban;
-
-            const dbPath = getDbPath(finalData);
-            
-            const targetDbNames = [];
-            if (finalData.kelas == '7') targetDbNames.push('7ABC', '7DEF');
-            else if (finalData.kelas == '8') targetDbNames.push('8ABC', '8DEF');
-            else if (finalData.kelas == '9') targetDbNames.push('9ABC', '9DEF');
-
-            if (targetDbNames.length === 0) throw new Error("Kelas tidak valid.");
-
-            const writePromises = targetDbNames.map(appName => {
-                const targetDb = getDatabase(firebaseApps[appName]);
-                return set(ref(targetDb, dbPath), finalData);
-            });
-
-            await Promise.all(writePromises);
-            
-            if (manageSpinner) showToast('Perubahan berhasil disimpan!', 'success');
-            
-        } catch (error) {
-            if (error.message !== "Validasi soal gagal.") {
-                showToast(`Penyimpanan Gagal: ${error.message}`, 'error');
-            }
-            console.error("Save all error:", error);
-            throw error;
-        } finally {
-            if (manageSpinner) hideProcessing();
-        }
+        soalElements.forEach(el => container.appendChild(el));
     }
 
     async function clearAllDataFromDB() {
@@ -1409,28 +1387,19 @@
     }
 
     addSoalBtn.addEventListener('click', () => {
-        if (isEditing) {
-            showToast('Harap simpan atau batalkan perubahan pada soal yang sedang diedit.', 'error');
-            return;
-        }
-
         const nomorSoalBaru = document.querySelectorAll('.soal-container').length + 1;
         const soalDetailKosong = { pertanyaan: '', pilihanA: '', pilihanB: '', pilihanC: '', pilihanD: '' };
         const kunciKosong = '';
 
         const soalDivBaru = createSoalElement(soalDetailKosong, kunciKosong, nomorSoalBaru);
-        soalDivBaru.dataset.isNew = 'true';
         outputEl.appendChild(soalDivBaru);
-
-        enterEditMode(soalDivBaru);
+        soalDivBaru.dataset.isNew = 'true';
+        updateUIForSoalPresence();
+        checkAllValidityAndUpdateSaveButton();
         soalDivBaru.scrollIntoView({ behavior: 'smooth', block: 'center' });
     });
 
     clearDataBtn.addEventListener('click', () => {
-        if (isEditing) {
-            showToast('Harap simpan perubahan pada soal yang sedang diedit terlebih dahulu.', 'error');
-            return;
-        }
         modalText.textContent = "Apakah Anda YAKIN ingin menghapus SEMUA data dan gambar untuk ujian ini? Tindakan ini tidak bisa dibatalkan.";
         confirmationInputContainer.style.display = 'block';
         confirmationWord.textContent = "HAPUS";
@@ -1448,33 +1417,36 @@
         deleteModal.style.display = 'none';
         showProcessing('Memulai proses penghapusan...');
 
-        const imagesToDelete = [];
-        document.querySelectorAll('#soal-list-container img').forEach(img => {
-            if (img.src && img.src.includes('github')) {
-                imagesToDelete.push(img.src);
-            }
-        });
-
         try {
             processingText.textContent = 'Menghapus data soal dari server...';
             await clearAllDataFromDB();
             
-            if (imagesToDelete.length > 0) {
-                 const { tahunAjaran, ujian, kelas, mapel } = currentSoalData;
-                 const safeTA = tahunAjaran.replace('/', '-');
-                 const safeUjian = ujian.replace(/\s+/g, '-');
-                 const safeMapel = mapel.replace(/\s+/g, '-');
-                 const dirPath = `${safeTA}/${safeUjian}/Kelas-${kelas}/${safeMapel}`;
-                 processingText.textContent = `Menghapus folder gambar...`;
-                 await deleteGithubDirectory(dirPath);
+            const { tahunAjaran, ujian, kelas, mapel } = currentSoalData;
+            const safeTA = tahunAjaran.replace('/', '-');
+            const safeUjian = ujian.replace(/\s+/g, '-');
+            const safeMapel = mapel.replace(/\s+/g, '-');
+            const dirPath = `${safeTA}/${safeUjian}/Kelas-${kelas}/${safeMapel}`;
+            
+            processingText.textContent = 'Mengumpulkan daftar gambar...';
+            const filesToDelete = await getAllFilePaths(dirPath);
+            const totalFiles = filesToDelete.length;
+
+            if (totalFiles > 0) {
+                let deletedCount = 0;
+                for (const file of filesToDelete) {
+                    deletedCount++;
+                    processingText.textContent = `(${totalFiles - deletedCount + 1}/${totalFiles}) Menghapus gambar...`;
+                    await deleteImageFromGithub(file.download_url);
+                }
             }
 
             processingText.textContent = 'Menyelesaikan...';
             await new Promise(resolve => setTimeout(resolve, 500)); 
 
-            showToast('Semua data dan gambar berhasil dihapus!', 'success');
-            outputEl.innerHTML = ''; 
+            outputEl.innerHTML = '';
+            initialSoalSnapshots = {};
             updateUIForSoalPresence();
+            showToast('Semua data dan gambar berhasil dihapus!', 'success');
 
         } catch(error) {
             showToast(`Gagal menghapus data: ${error.message}`, 'error');
@@ -1484,13 +1456,7 @@
         }
     }
 
-    uploadBtn.addEventListener('click', () => {
-        if (isEditing) {
-            showToast('Harap simpan perubahan pada soal yang sedang diedit terlebih dahulu.', 'error');
-            return;
-        }
-        fileInput.click();
-    });
+    uploadBtn.addEventListener('click', () => fileInput.click() );
     
     fileInput.addEventListener('change', async (event) => {
         const file = event.target.files[0];
@@ -1500,58 +1466,17 @@
         try {
             await processZipFile(file);
             updateUIForSoalPresence();
-
-            if (outputEl.children.length > 0) {
-                await processAndSaveUploadedSoal();
-                hideProcessing();
-                showInfoOverlay("Proses Selesai!", "Semua soal dan gambar telah berhasil diunggah dan disimpan. Silahkan review dan edit setiap soal apabila belum sesuai.");
-            } else {
-                hideProcessing();
-            }
         } catch (error) {
             console.error("Gagal memproses file ZIP:", error);
-            hideProcessing();
         } finally {
             fileInput.value = '';
+            hideProcessing();
         }
     });
 
-    async function processAndSaveUploadedSoal() {
-        const soalElements = document.querySelectorAll('.soal-container');
-        const imagesToUpload = [];
-        soalElements.forEach(soalDiv => {
-            soalDiv.querySelectorAll('img').forEach(img => {
-                if (img.src.startsWith('data:image')) {
-                    imagesToUpload.push(img);
-                }
-            });
-        });
-
-        const totalImages = imagesToUpload.length;
-        if (totalImages > 0) {
-            let uploadedCount = 0;
-            for (const img of imagesToUpload) {
-                uploadedCount++;
-                processingText.textContent = `Mengunggah gambar ${uploadedCount} dari ${totalImages}...`;
-                try {
-                    const base64String = img.src.split(',')[1];
-                    const fileName = img.dataset.fileName || 'pasted-image.png';
-                    const githubUrl = await uploadImageToGithub({ name: fileName }, base64String);
-                    img.src = githubUrl;
-                } catch (error) {
-                    showToast(`Gagal mengunggah gambar: ${error.message}`, 'error');
-                    console.error("Image upload failed:", error);
-                    throw error;
-                }
-            }
-        }
-        
-        processingText.textContent = 'Menyimpan data ke server...';
-        await saveAllSoalToDatabase(false);
-    }
-
     async function processZipFile(file) {
         outputEl.innerHTML = '';
+        initialSoalSnapshots = {};
         if (activeResizer) removeResizer();
 
         try {
@@ -1583,6 +1508,18 @@
             }
             
             parseHtmlAndDisplay(tempDoc.body);
+            
+            const invalidSoalNumbers = [];
+            document.querySelectorAll('.soal-container.invalid-soal').forEach(soalDiv => {
+                invalidSoalNumbers.push(soalDiv.dataset.nomor);
+            });
+
+            if(invalidSoalNumbers.length > 0) {
+                const numberList = invalidSoalNumbers.join(', ');
+                const message = `Ditemukan beberapa soal yang tidak valid setelah impor. Harap periksa dan perbaiki soal nomor berikut sebelum menyimpan:\n\n${numberList}`;
+                showInfoOverlay("Peringatan Validasi", message);
+            }
+
         } catch (err) {
             showToast("Gagal fatal saat memproses file ZIP.", 'error');
             console.error(err);
@@ -1591,33 +1528,30 @@
     
     function createSoalElement(soalDetail, kunci, nomor) {
         const soalDiv = document.createElement('div');
-        soalDiv.className = 'soal-container disabled review-mode';
+        soalDiv.className = 'soal-container';
+        soalDiv.dataset.nomor = nomor;
         
         soalDiv.innerHTML = `
             <div class="soal-header">
                 <div class="soal-nomor-container">
-                    <h3 class="soal-nomor" style="display: flex; align-items: center; gap: 5px;">Soal <span>${nomor}</span></h3>
-                    <input type="number" class="soal-nomor-input" value="${nomor}" style="display: none;" min="1">
+                    <h3 class="soal-nomor">Soal <span>${nomor}</span></h3>
                 </div>
                 <div class="drag-handle" title="Seret untuk mengubah urutan"><span></span><span></span><span></span><span></span><span></span><span></span></div>
                 <div class="soal-actions">
                     <button class="btn preview-btn btn-info">Preview</button>
-                    <button class="btn edit-btn">Edit Soal</button>
                     <button class="btn delete-btn btn-danger">Hapus</button>
-                    <button class="btn save-btn btn-success" style="display: none;">Simpan</button>
-                    <button class="btn cancel-edit-btn btn-secondary" style="display: none;">Batal</button>
                 </div>
             </div>
-            <div class="soal-pertanyaan" contenteditable="false" data-placeholder="Ketik pertanyaan di sini...">${soalDetail.pertanyaan}</div>
+            <div class="soal-pertanyaan" contenteditable="true" data-placeholder="Ketik pertanyaan di sini...">${soalDetail.pertanyaan}</div>
             <ul>
-                <li><b>A.</b> <div contenteditable="false" dir="auto">${soalDetail.pilihanA}</div></li>
-                <li><b>B.</b> <div contenteditable="false" dir="auto">${soalDetail.pilihanB}</div></li>
-                <li><b>C.</b> <div contenteditable="false" dir="auto">${soalDetail.pilihanC}</div></li>
-                <li><b>D.</b> <div contenteditable="false" dir="auto">${soalDetail.pilihanD}</div></li>
+                <li><b>A.</b> <div contenteditable="true" dir="auto">${soalDetail.pilihanA}</div></li>
+                <li><b>B.</b> <div contenteditable="true" dir="auto">${soalDetail.pilihanB}</div></li>
+                <li><b>C.</b> <div contenteditable="true" dir="auto">${soalDetail.pilihanC}</div></li>
+                <li><b>D.</b> <div contenteditable="true" dir="auto">${soalDetail.pilihanD}</div></li>
             </ul>
             <div class="soal-kunci-jawaban">
                 <span>Kunci Jawaban:</span>
-                <div contenteditable="false" dir="auto">${kunci}</div>
+                <div contenteditable="true" dir="auto">${kunci}</div>
             </div>
             <div class="soal-validation-error"></div>
         `;
@@ -1625,6 +1559,27 @@
         classifyImages(soalDiv);
         return soalDiv;
     }
+
+    function stripFormattingFromOption(htmlString) {
+        if (!htmlString) return '';
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = htmlString;
+        
+        let result = '';
+        const walker = document.createTreeWalker(tempDiv, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT, null, false);
+        
+        let node;
+        while(node = walker.nextNode()) {
+            if (node.nodeType === 3) { // Text node
+                result += node.textContent;
+            } else if (node.nodeName === 'IMG') { // Image element
+                result += node.outerHTML;
+            }
+        }
+        
+        return result.replace(/\s+/g, ' ').trim();
+    }
+
 
     function parseHtmlAndDisplay(bodyElement) {
         const tables = bodyElement.getElementsByTagName('table');
@@ -1634,13 +1589,6 @@
         }
         let soalDitemukan = 0;
         
-        function cleanHtmlString(html) {
-            if (!html) return '';
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = html;
-            return cleanHtml(tempDiv, false); 
-        }
-
         for (const table of tables) {
             const rows = table.rows;
             for (let i = 0; i < rows.length; i += 2) {
@@ -1705,18 +1653,19 @@
 
                     const questionContainer = document.createElement('div');
                     questionParts.forEach(part => questionContainer.appendChild(part));
-
+                    
                     const soalDetail = {
                         pertanyaan: cleanHtml(questionContainer, true),
-                        pilihanA: cleanHtmlString(optionParts.get('A')?.join(' ') || ''),
-                        pilihanB: cleanHtmlString(optionParts.get('B')?.join(' ') || ''),
-                        pilihanC: cleanHtmlString(optionParts.get('C')?.join(' ') || ''),
-                        pilihanD: cleanHtmlString(optionParts.get('D')?.join(' ') || '')
+                        pilihanA: stripFormattingFromOption(optionParts.get('A')?.join(' ') || ''),
+                        pilihanB: stripFormattingFromOption(optionParts.get('B')?.join(' ') || ''),
+                        pilihanC: stripFormattingFromOption(optionParts.get('C')?.join(' ') || ''),
+                        pilihanD: stripFormattingFromOption(optionParts.get('D')?.join(' ') || '')
                     };
                     
                     const kunci = cleanHtml(keyCell, false).trim().toUpperCase();
                     
                     const soalDiv = createSoalElement(soalDetail, kunci, soalDitemukan);
+                    soalDiv.dataset.isNew = 'true'; // Mark imported questions as "new" for the first save
                     outputEl.appendChild(soalDiv);
                 } catch (e) {
                     console.error(`Gagal memproses blok soal pada baris ${i}.`, e);
@@ -1724,8 +1673,11 @@
             }
         }
         if (soalDitemukan > 0) {
-            showToast(`Selesai! ${soalDitemukan} soal berhasil dibaca.`, 'success');
+            createInitialSnapshots();
+            prioritizeInvalidSoal();
+            checkAllValidityAndUpdateSaveButton();
             initializeSortable();
+            showToast(`Selesai! ${soalDitemukan} soal berhasil dibaca.`, 'success');
         } else {
             showToast(`Selesai, namun tidak ada soal yang cocok formatnya atau semua soal kosong.`, 'error');
         }
@@ -1806,189 +1758,12 @@
             }
         });
     }
-    
-    function resetSoalContainerUI(soalContainer) {
-        soalContainer.classList.add('review-mode');
-        soalContainer.classList.remove('is-editing');
-        soalContainer.querySelectorAll('[contenteditable]').forEach(el => el.setAttribute('contenteditable', 'false'));
-
-        soalContainer.querySelector('.soal-nomor').style.display = 'flex';
-        soalContainer.querySelector('.soal-nomor-input').style.display = 'none';
-
-        soalContainer.querySelector('.edit-btn').style.display = 'inline-flex';
-        soalContainer.querySelector('.delete-btn').style.display = 'inline-flex';
-        soalContainer.querySelector('.save-btn').style.display = 'none';
-        soalContainer.querySelector('.cancel-edit-btn').style.display = 'none';
-
-        document.querySelectorAll('.soal-container').forEach(container => {
-            container.classList.add('disabled');
-        });
-    }
-
-    function enterEditMode(soalContainer) {
-        isEditing = true;
-        setGlobalActionsState(true);
-        soalContainer.classList.remove('review-mode');
-
-        const nomorDisplay = soalContainer.querySelector('.soal-nomor');
-        const nomorInput = soalContainer.querySelector('.soal-nomor-input');
-        const totalSoal = document.querySelectorAll('.soal-container').length;
-
-        soalContainer.dataset.originalNumber = nomorDisplay.querySelector('span').textContent;
-        nomorInput.value = soalContainer.dataset.originalNumber;
-        nomorInput.max = soalContainer.dataset.isNew === 'true' ? totalSoal : totalSoal;
-
-        nomorDisplay.style.display = 'none';
-        nomorInput.style.display = 'block';
-
-        if (soalContainer.dataset.isNew !== 'true') {
-            const originalContent = {
-                pertanyaan: soalContainer.querySelector('.soal-pertanyaan').innerHTML,
-                pilihanA: soalContainer.querySelector('li:nth-child(1) div').innerHTML,
-                pilihanB: soalContainer.querySelector('li:nth-child(2) div').innerHTML,
-                pilihanC: soalContainer.querySelector('li:nth-child(3) div').innerHTML,
-                pilihanD: soalContainer.querySelector('li:nth-child(4) div').innerHTML,
-                kunci: soalContainer.querySelector('.soal-kunci-jawaban div').innerHTML,
-            };
-            soalContainer.dataset.originalContent = JSON.stringify(originalContent);
-        }
-        
-        const initialImages = Array.from(soalContainer.querySelectorAll('img')).map(img => img.src);
-        soalContainer.dataset.initialImages = JSON.stringify(initialImages);
-
-        document.querySelectorAll('.soal-container').forEach(container => {
-            if (container !== soalContainer) {
-                container.classList.add('disabled');
-            } else {
-                container.classList.remove('disabled');
-                container.classList.add('is-editing');
-            }
-        });
-
-        soalContainer.querySelectorAll('[contenteditable]').forEach(el => el.setAttribute('contenteditable', 'true'));
-        
-        soalContainer.querySelector('.edit-btn').style.display = 'none';
-        soalContainer.querySelector('.delete-btn').style.display = 'none';
-        soalContainer.querySelector('.save-btn').style.display = 'inline-flex';
-        soalContainer.querySelector('.cancel-edit-btn').style.display = 'inline-flex';
-        
-        const firstEditable = soalContainer.querySelector('.soal-pertanyaan');
-        if (firstEditable) {
-            firstEditable.focus();
-            showToolbar(firstEditable);
-        }
-    }
-
-    async function exitEditMode(soalContainer) {
-        if (activeResizer) removeResizer();
-        
-        const nomorInput = soalContainer.querySelector('.soal-nomor-input');
-        const newPosition = parseInt(nomorInput.value, 10);
-        const totalSoal = document.querySelectorAll('.soal-container').length;
-
-        if (isNaN(newPosition) || newPosition < 1 || newPosition > totalSoal) {
-            showToast(`Nomor soal tidak valid. Harus antara 1 dan ${totalSoal}.`, 'error');
-            nomorInput.value = soalContainer.dataset.originalNumber;
-            return;
-        }
-
-        const kunciJawabanEl = soalContainer.querySelector('.soal-kunci-jawaban div');
-        const kunciJawaban = kunciJawabanEl.textContent.trim().toUpperCase();
-        if (!['A', 'B', 'C', 'D'].includes(kunciJawaban)) {
-            showToast('Kunci Jawaban tidak valid. Harap isi dengan A, B, C, atau D.', 'error');
-            return;
-        }
-        
-        hideToolbar();
-        showProcessing('Memvalidasi perubahan...');
-
-        try {
-            kunciJawabanEl.textContent = kunciJawaban;
-
-            const allSoal = Array.from(outputEl.querySelectorAll('.soal-container'));
-            const originalIndex = allSoal.indexOf(soalContainer);
-            if ((newPosition - 1) !== originalIndex) {
-                const [movedItem] = allSoal.splice(originalIndex, 1);
-                allSoal.splice(newPosition - 1, 0, movedItem);
-                outputEl.innerHTML = '';
-                allSoal.forEach(el => outputEl.appendChild(el));
-            }
-
-            const imagesToUpload = Array.from(soalContainer.querySelectorAll('img')).filter(img => img.src.startsWith('data:image'));
-            const initialImages = JSON.parse(soalContainer.dataset.initialImages || '[]');
-            const finalImageSrcs = [];
-
-            if (imagesToUpload.length > 0) {
-                let uploadedCount = 0;
-                for (const img of imagesToUpload) {
-                    uploadedCount++;
-                    processingText.textContent = `Mengunggah gambar baru ${uploadedCount} dari ${imagesToUpload.length}...`;
-                    const base64String = img.src.split(',')[1];
-                    const fileName = img.dataset.fileName || 'pasted-image.png';
-                    const githubUrl = await uploadImageToGithub({ name: fileName }, base64String);
-                    img.src = githubUrl;
-                }
-            }
-            
-            soalContainer.querySelectorAll('img').forEach(img => finalImageSrcs.push(img.src));
-
-            const imagesToDelete = initialImages.filter(src => src.includes('github') && !finalImageSrcs.includes(src));
-            if (imagesToDelete.length > 0) {
-                processingText.textContent = `Menghapus ${imagesToDelete.length} gambar lama...`;
-                for (const imageUrl of imagesToDelete) {
-                    await deleteImageFromGithub(imageUrl);
-                }
-            }
-            
-            processingText.textContent = 'Menyimpan data soal...';
-            renumberSoal();
-            await saveAllSoalToDatabase(false);
-            
-            isEditing = false;
-            delete soalContainer.dataset.isNew;
-            resetSoalContainerUI(soalContainer);
-            setGlobalActionsState(false);
-            showToast("Perubahan berhasil disimpan.", "success");
-
-        } catch (error) {
-            showToast(`Gagal menyimpan: ${error.message}`, 'error');
-            console.error("Error on saving from edit mode:", error);
-        } finally {
-            hideProcessing();
-        }
-    }
-
-    function cancelEditMode(soalContainer) {
-        if (activeResizer) removeResizer();
-
-        if (soalContainer.dataset.isNew === 'true') {
-            soalContainer.remove();
-            renumberSoal();
-        } else {
-            const originalContent = JSON.parse(soalContainer.dataset.originalContent);
-            soalContainer.querySelector('.soal-pertanyaan').innerHTML = originalContent.pertanyaan;
-            soalContainer.querySelector('li:nth-child(1) div').innerHTML = originalContent.pilihanA;
-            soalContainer.querySelector('li:nth-child(2) div').innerHTML = originalContent.pilihanB;
-            soalContainer.querySelector('li:nth-child(3) div').innerHTML = originalContent.pilihanC;
-            soalContainer.querySelector('li:nth-child(4) div').innerHTML = originalContent.pilihanD;
-            soalContainer.querySelector('.soal-kunci-jawaban div').innerHTML = originalContent.kunci;
-            resetSoalContainerUI(soalContainer);
-        }
-        
-        isEditing = false;
-        hideToolbar();
-        setGlobalActionsState(false);
-        updateUIForSoalPresence();
-    }
 
     outputEl.addEventListener('click', function(e) {
         const soalContainer = e.target.closest('.soal-container');
         if (!soalContainer) return;
 
-        const editBtn = e.target.closest('.edit-btn');
-        const saveBtn = e.target.closest('.save-btn');
         const deleteBtn = e.target.closest('.delete-btn');
-        const cancelBtn = e.target.closest('.cancel-edit-btn');
         const previewBtn = e.target.closest('.preview-btn');
 
         if (previewBtn) {
@@ -1996,40 +1771,14 @@
             return;
         }
 
-        if (editBtn) {
-            if (isEditing) {
-                showToast('Harap simpan perubahan pada soal lain terlebih dahulu.', 'error');
-                return;
-            }
-            enterEditMode(soalContainer);
-            return;
-        }
-
-        if (saveBtn) {
-            exitEditMode(soalContainer);
-            return;
-        }
-        
-        if (cancelBtn) {
-            cancelEditMode(soalContainer);
-            return;
-        }
-
         if (deleteBtn) {
-             if (isEditing) {
-                return;
-             }
              soalToDelete = soalContainer;
-             modalText.textContent = "Apakah Anda yakin ingin menghapus soal ini? Perubahan akan langsung disimpan.";
+             modalText.textContent = "Apakah Anda yakin ingin menghapus soal ini? Gambar terkait akan dihapus saat penyimpanan berikutnya.";
              confirmationInputContainer.style.display = 'none';
              confirmDeleteBtn.disabled = false;
              confirmDeleteBtn.onclick = executeDeleteSoal;
              deleteModal.style.display = 'flex';
              return;
-        }
-
-        if (soalContainer.classList.contains('disabled')) {
-            return;
         }
         
         const isImage = e.target.tagName === 'IMG' && !e.target.closest('.resizable-wrapper');
@@ -2112,21 +1861,18 @@
         previewModal.style.display = 'flex';
     }
 
-    async function executeDeleteSoal() {
+    function executeDeleteSoal() {
         if (!soalToDelete) return;
         deleteModal.style.display = 'none';
-        showProcessing('Menghapus soal...');
 
-        const imagesToDelete = Array.from(soalToDelete.querySelectorAll('img')).map(img => img.src);
-        for (const imageUrl of imagesToDelete) {
-            await deleteImageFromGithub(imageUrl);
-        }
-
+        const nomorSoal = soalToDelete.dataset.nomor;
         soalToDelete.remove();
-        renumberSoal();
-        await saveAllSoalToDatabase();
-        soalToDelete = null;
+        delete initialSoalSnapshots[nomorSoal];
+        
+        renumberSoalDOM();
         updateUIForSoalPresence();
+        checkAllValidityAndUpdateSaveButton();
+        showToast(`Soal No. ${nomorSoal} telah dihapus dari editor. Tekan "Kirim & Simpan" untuk finalisasi.`, "info");
     }
     
     function makeImageResizable(img) { 
@@ -2195,26 +1941,24 @@
         document.addEventListener('touchmove', doResize); 
         document.addEventListener('touchend', stopResize); 
     }
-    function renumberSoal() {
-        document.querySelectorAll('.soal-container').forEach((soal, index) => {
+    
+    function renumberSoalDOM() {
+        document.querySelectorAll('#soal-list-container .soal-container').forEach((soalDiv, index) => {
             const newNumber = index + 1;
-            soal.querySelector('.soal-nomor span').textContent = newNumber;
-            const input = soal.querySelector('.soal-nomor-input');
-            if (input) {
-                input.value = newNumber;
-                input.max = document.querySelectorAll('.soal-container').length;
-            }
-            soal.dataset.originalNumber = newNumber;
+            soalDiv.querySelector('.soal-nomor span').textContent = newNumber;
+            soalDiv.dataset.nomor = newNumber;
         });
     }
+
     function initializeSortable() { 
         new Sortable(outputEl, { 
             animation: 150, 
             ghostClass: 'sortable-ghost', 
             handle: '.drag-handle', 
-            onEnd: async function() {
-                renumberSoal();
-                await saveAllSoalToDatabase();
+            onEnd: function() {
+                renumberSoalDOM();
+                checkAllValidityAndUpdateSaveButton();
+                showToast("Urutan soal diubah. Tekan 'Kirim & Simpan' untuk menyimpan urutan baru.", "info");
             } 
         }); 
     }
@@ -2332,6 +2076,7 @@
         const hasSoal = outputEl.children.length > 0;
         instructionsBox.style.display = hasSoal ? 'none' : 'block';
         clearDataBtn.disabled = !hasSoal;
+        globalSaveContainer.style.display = hasSoal ? 'block' : 'none';
         uploadBtn.disabled = hasSoal;
     }
 
@@ -2344,6 +2089,120 @@
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme === 'dark') document.body.classList.add('dark-mode');
         else document.body.classList.remove('dark-mode');
+    }
+
+    async function executeGlobalSave() {
+        showProcessing('Menganalisis perubahan...');
+        
+        try {
+            const imagesToDelete = new Set();
+            
+            const currentSoalElements = Array.from(document.querySelectorAll('.soal-container'));
+            const currentSoalIds = new Set(currentSoalElements.map(el => el.dataset.nomor));
+            const initialSoalIds = new Set(Object.keys(initialSoalSnapshots));
+
+            // 1. Identify deleted questions and collect their images for deletion
+            initialSoalIds.forEach(nomor => {
+                if (!currentSoalIds.has(nomor)) {
+                    initialSoalSnapshots[nomor].images.forEach(imgUrl => {
+                        if (imgUrl.includes('github')) imagesToDelete.add(imgUrl);
+                    });
+                }
+            });
+
+            // 2. Process image uploads for new/updated questions and collect old images to delete
+            let imagesToUpload = [];
+            currentSoalElements.forEach(soalDiv => {
+                soalDiv.querySelectorAll('img').forEach(img => {
+                    if (img.src.startsWith('data:image')) {
+                        imagesToUpload.push(img);
+                    }
+                });
+
+                const nomor = soalDiv.dataset.nomor;
+                if (initialSoalSnapshots[nomor]) { // Only for existing questions
+                    const initialImages = new Set(initialSoalSnapshots[nomor].images.filter(src => src.includes('github')));
+                    const currentImages = new Set(Array.from(soalDiv.querySelectorAll('img')).map(img => img.src).filter(src => src.includes('github')));
+                    initialImages.forEach(imgUrl => {
+                        if (!currentImages.has(imgUrl)) {
+                            imagesToDelete.add(imgUrl);
+                        }
+                    });
+                }
+            });
+
+            if (imagesToUpload.length > 0) {
+                let uploadedCount = 0;
+                for (const img of imagesToUpload) {
+                    uploadedCount++;
+                    processingText.textContent = `(${uploadedCount}/${imagesToUpload.length}) Mengunggah gambar...`;
+                    const base64String = img.src.split(',')[1];
+                    const fileName = img.dataset.fileName || 'pasted-image.png';
+                    const githubUrl = await uploadImageToGithub({ name: fileName }, base64String);
+                    img.src = githubUrl; // Directly update the DOM
+                }
+            }
+            
+            // 3. Prepare final data object for Firebase from the current DOM state
+            processingText.textContent = 'Mempersiapkan data untuk server...';
+            const soalObject = {};
+            currentSoalElements.forEach(soalDiv => {
+                const nomor = soalDiv.dataset.nomor;
+                soalObject[nomor] = {
+                    pertanyaan: soalDiv.querySelector('.soal-pertanyaan').innerHTML,
+                    pilihanA: soalDiv.querySelector('li:nth-child(1) div').innerHTML,
+                    pilihanB: soalDiv.querySelector('li:nth-child(2) div').innerHTML,
+                    pilihanC: soalDiv.querySelector('li:nth-child(3) div').innerHTML,
+                    pilihanD: soalDiv.querySelector('li:nth-child(4) div').innerHTML,
+                    kunciJawaban: soalDiv.querySelector('.soal-kunci-jawaban div').textContent.trim().toUpperCase()
+                };
+            });
+            
+            const allKunjab = Object.keys(soalObject).sort((a,b) => parseInt(a) - parseInt(b)).map(nomor => soalObject[nomor].kunciJawaban || ' ');
+            
+            const finalData = {
+                ...currentSoalData,
+                soal: Object.keys(soalObject).length > 0 ? soalObject : null,
+                kunjab: allKunjab.join(','),
+                terakhirUpdate: new Date().toISOString()
+            };
+
+            // 4. Write to Firebase
+            processingText.textContent = 'Menyimpan data ke server...';
+            const dbPath = getDbPath(currentSoalData);
+            const targetDbNames = [];
+            if (currentSoalData.kelas == '7') targetDbNames.push('7ABC', '7DEF');
+            else if (currentSoalData.kelas == '8') targetDbNames.push('8ABC', '8DEF');
+            else if (currentSoalData.kelas == '9') targetDbNames.push('9ABC', '9DEF');
+
+            const writePromises = targetDbNames.map(appName => {
+                const targetDb = getDatabase(firebaseApps[appName]);
+                return set(ref(targetDb, dbPath), finalData);
+            });
+            await Promise.all(writePromises);
+            
+            // 5. Delete unused images from GitHub
+            if (imagesToDelete.size > 0) {
+                let deletedCount = 0;
+                const totalToDelete = imagesToDelete.size;
+                for (const imageUrl of imagesToDelete) {
+                    deletedCount++;
+                    processingText.textContent = `(${totalToDelete - deletedCount + 1}/${totalToDelete}) Membersihkan gambar lama...`;
+                    await deleteImageFromGithub(imageUrl);
+                }
+            }
+            
+            showToast('Semua perubahan berhasil disimpan!', 'success');
+            createInitialSnapshots(); 
+            prioritizeInvalidSoal(); 
+            checkAllValidityAndUpdateSaveButton();
+
+        } catch (error) {
+            showToast(`Penyimpanan Gagal: ${error.message}`, 'error');
+            console.error("Global save error:", error);
+        } finally {
+            hideProcessing();
+        }
     }
     
     function initialize() {
@@ -2369,6 +2228,22 @@
                  confirmModal.style.display = 'none';
                  confirmCallback = null;
             }
+        });
+
+        outputEl.addEventListener('input', (e) => {
+            if (e.target.closest('[contenteditable="true"]')) {
+                checkAllValidityAndUpdateSaveButton();
+            }
+        });
+
+        globalSaveBtn.addEventListener('click', () => {
+            showConfirmModal(
+                'Konfirmasi Penyimpanan',
+                'Semua perubahan akan dikirim ke server. Pastikan semua data sudah benar. Lanjutkan?',
+                'Ya, Kirim & Simpan',
+                'btn-success',
+                executeGlobalSave
+            );
         });
     }
     
