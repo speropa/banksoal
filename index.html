@@ -52,6 +52,7 @@
             line-height: 1.6; 
             margin: 0;
             padding: 15px; 
+            padding-bottom: 100px; /* Tambahan padding bawah agar konten paling bawah tidak tertutup tombol melayang */
             background-color: var(--background-color); 
             color: var(--text-color);
             transition: background-color 0.3s, color 0.3s;
@@ -460,22 +461,43 @@
         }
         
         #global-save-container {
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 999;
+            width: auto;
+            min-width: 320px;
             background-color: var(--card-background);
             border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 20px;
-            margin: 0 auto 25px auto;
+            border-radius: 50px;
+            padding: 10px 20px;
+            margin: 0;
             text-align: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            animation: slideUpFade 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
+        
+        @keyframes slideUpFade {
+            from { transform: translate(-50%, 100%); opacity: 0; }
+            to { transform: translate(-50%, 0); opacity: 1; }
+        }
+
         #global-save-btn {
-            font-size: 1.1em;
-            padding: 12px 24px;
+            font-size: 1em;
+            padding: 10px 24px;
+            border-radius: 30px;
+            box-shadow: 0 4px 6px rgba(40, 167, 69, 0.2);
         }
 
         @media (max-width: 768px) {
             .editor-header-grid {
                 flex-direction: column;
+            }
+            #global-save-container {
+                width: 90%;
+                min-width: auto;
+                bottom: 15px;
             }
         }
     </style>
@@ -572,7 +594,7 @@
                 <p>Login sebagai: <strong id="guru-name-display"></strong></p>
                 <button id="back-to-selection-btn" class="btn btn-info">Ganti Data Ujian</button>
                 <button id="logout-btn" class="btn btn-secondary">Logout</button>
-                <button class="settings-btn" id="settings-btn" title="Pengaturan Tampilan"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></button>
+                <button class="settings-btn" id="settings-btn" title="Pengaturan Tampilan"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></button>
             </div>
         </div>
         
@@ -964,6 +986,8 @@
             'btn-danger',
             () => {
                 loggedInGuru = null;
+                ujiansDataCache = null; // Clear cache data
+                aksesDataCache = null;  // Clear cache data
                 guruUsernameInput.value = '';
                 guruPasswordInput.value = '';
                 outputEl.innerHTML = '';
@@ -980,11 +1004,24 @@
             'Data yang belum disimpan akan hilang. Apakah Anda yakin ingin kembali?',
             'Ya, Ganti',
             'btn-primary',
-            () => {
+            async () => {
                 outputEl.innerHTML = ''; 
                 selectionForm.reset();
-                populateSelectionDropdowns();
-                showView('selection-view');
+                
+                // Force update data
+                ujiansDataCache = null;
+                aksesDataCache = null;
+                
+                showView('loading-view');
+                loadingText.textContent = 'Memperbarui data ujian dan akses...';
+                
+                try {
+                    await populateSelectionDropdowns();
+                    showView('selection-view');
+                } catch (error) {
+                    // Error is handled inside populateSelectionDropdowns, but we catch here to be safe
+                    console.error("Gagal memperbarui data:", error);
+                }
             }
         );
     });
@@ -2252,4 +2289,3 @@
 </script>
 </body>
 </html>
-
