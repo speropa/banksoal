@@ -119,6 +119,40 @@
         .form-control:disabled { background-color: #e9ecef; cursor: not-allowed; }
         body.dark-mode .form-control:disabled { background-color: #2c2f33; }
 
+        /* Style untuk Password Toggle */
+        .password-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .password-wrapper input {
+            padding-right: 40px; /* Ruang agar teks tidak tertutup ikon */
+        }
+        .password-toggle-icon {
+            position: absolute;
+            right: 10px;
+            cursor: pointer;
+            color: var(--label-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5px;
+            border-radius: 50%;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .password-toggle-icon:hover {
+            background-color: rgba(0,0,0,0.05);
+            color: var(--primary-color);
+        }
+        body.dark-mode .password-toggle-icon:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+        .password-toggle-icon svg {
+            width: 20px;
+            height: 20px;
+            stroke-width: 2;
+        }
+
 
         .btn {
             display: inline-flex;
@@ -542,7 +576,13 @@
                     </div>
                     <div class="form-group">
                         <label for="guru-password">Password</label>
-                        <input type="password" id="guru-password" class="form-control" required autocomplete="current-password">
+                        <div class="password-wrapper">
+                            <input type="password" id="guru-password" class="form-control" required autocomplete="current-password">
+                            <span id="toggle-password-btn" class="password-toggle-icon" title="Lihat Password">
+                                <!-- Ikon Mata (Default) -->
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                            </span>
+                        </div>
                     </div>
                     <button id="guru-login-btn" type="submit" class="btn btn-full">Login</button>
                     <p id="guru-login-error" class="error-message"></p>
@@ -768,6 +808,8 @@
     const guruPasswordInput = document.getElementById('guru-password');
     const guruLoginBtn = document.getElementById('guru-login-btn');
     const guruLoginError = document.getElementById('guru-login-error');
+    const togglePasswordBtn = document.getElementById('toggle-password-btn'); // Ambil tombol toggle
+
     const selectionView = document.getElementById('selection-view');
     const editorView = document.getElementById('editor-view');
     const selectionForm = document.getElementById('selection-form');
@@ -921,6 +963,25 @@
             loadingError.style.display = 'block';
             console.error("Auto-login failed:", error);
         }
+    }
+
+    // Event Listener untuk Toggle Password
+    if (togglePasswordBtn) {
+        togglePasswordBtn.addEventListener('click', () => {
+            const type = guruPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            guruPasswordInput.setAttribute('type', type);
+            
+            // Ganti Ikon
+            if (type === 'text') {
+                // Ikon Mata Dicoret (Hidden/Slash)
+                togglePasswordBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
+                togglePasswordBtn.setAttribute('title', 'Sembunyikan Password');
+            } else {
+                // Ikon Mata Biasa (Show)
+                togglePasswordBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
+                togglePasswordBtn.setAttribute('title', 'Lihat Password');
+            }
+        });
     }
 
     guruLoginForm.addEventListener('submit', async (e) => {
