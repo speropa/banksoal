@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>Editor Bank Soal (Pembaruan Antarmuka)</title>
+    <title>Editor Bank Soal (Single Database)</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -746,30 +746,25 @@
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
 <script type="module">
-    import { initializeApp, getApp, getApps } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
     import { getDatabase, ref, set, get, remove, update } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
     
-    const firebaseConfigs = {
-        '7ABC': { apiKey: "AIzaSyBAKwT7JY_HGnvK6h3u30-dfgRPXfef8l8", authDomain: "abc-a13ea.firebaseapp.com", databaseURL: "https://abc-a13ea-default-rtdb.firebaseio.com", projectId: "abc-a13ea", storageBucket: "abc-a13ea.appspot.com", messagingSenderId: "1052966795599", appId: "1:1052966795599:web:d4d331199ca9081321ed3a" },
-        '7DEF': { apiKey: "AIzaSyBkhBZw3oADXUAJ9FXY9-g7XBsSmQhzZVk", authDomain: "def-ab5ee.firebaseapp.com", databaseURL: "https://def-ab5ee-default-rtdb.firebaseio.com", projectId: "def-ab5ee", storageBucket: "def-ab5ee.appspot.com", messagingSenderId: "129712840107", appId: "1:129712840107:web:ab10576fed95f735dd46ee" },
-        '8ABC': { apiKey: "AIzaSyAwilwwwEJ2MAdSf09BotxNH-z6RiXaHXY", authDomain: "abc-43e73.firebaseapp.com", databaseURL: "https://abc-43e73-default-rtdb.firebaseio.com", projectId: "abc-43e73", storageBucket: "abc-43e73.appspot.com", messagingSenderId: "1043754727577", appId: "1:1043754727577:web:56c3732bf2a6ac900c2008" },
-        '8DEF': { apiKey: "AIzaSyBeCI57lmZ4-8DAKYJ7nvYjnXOfvy0vqrk", authDomain: "def-efcb2.firebaseapp.com", databaseURL: "https://def-efcb2-default-rtdb.firebaseio.com", projectId: "def-efcb2", storageBucket: "def-efcb2.appspot.com", messagingSenderId: "12569956361", appId: "1:12569956361:web:fea36c4e034e65f33ba8d8" },
-        '9ABC': { apiKey: "AIzaSyBZ6JR3ggnUiZFQ-wdrewbfhzMUwFaGGzQ", authDomain: "abc-d272a.firebaseapp.com", databaseURL: "https://abc-d272a-default-rtdb.firebaseio.com", projectId: "abc-d272a", storageBucket: "abc-d272a.appspot.com", messagingSenderId: "1036605132828", appId: "1:1036605132828:web:2b59f91290d50afe304fd9" },
-        '9DEF': { apiKey: "AIzaSyC2iwuDMWTaJIG8g464Wt0En3CXI2DZiz4", authDomain: "def-85f32.firebaseapp.com", databaseURL: "https://def-85f32-default-rtdb.firebaseio.com", projectId: "def-85f32", storageBucket: "def-85f32.appspot.com", messagingSenderId: "82670626048", appId: "1:82670626048:web:f5fdfda8fe078245b6bfe5" },
-        'SETUP': { apiKey: "AIzaSyBbXJ4VuACXyHJhl2eVSB2vHiT6hrx-XnE", authDomain: "setup-73809.firebaseapp.com", databaseURL: "https://setup-73809-default-rtdb.firebaseio.com", projectId: "setup-73809", storageBucket: "setup-73809.appspot.com", messagingSenderId: "843995999446", appId: "1:843995999446:web:7fd92546f2d0bea73fed77" }
+    // KONFIGURASI FIREBASE TUNGGAL (SETUP)
+    const firebaseConfig = {
+        apiKey: "AIzaSyBbXJ4VuACXyHJhl2eVSB2vHiT6hrx-XnE",
+        authDomain: "setup-73809.firebaseapp.com",
+        databaseURL: "https://setup-73809-default-rtdb.firebaseio.com",
+        projectId: "setup-73809",
+        storageBucket: "setup-73809.firebasestorage.app",
+        messagingSenderId: "843995999446",
+        appId: "1:843995999446:web:7fd92546f2d0bea73fed77"
     };
 
-    const firebaseApps = {};
-    function initializeFirebaseApps() {
-        for (const appName in firebaseConfigs) {
-            if (!getApps().find(app => app.name === appName)) {
-                firebaseApps[appName] = initializeApp(firebaseConfigs[appName], appName);
-            } else {
-                firebaseApps[appName] = getApp(appName);
-            }
-        }
-    }
+    // Inisialisasi Firebase App
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
 
     const GITHUB_USERNAME = "speropa";
     const GITHUB_REPO = "gambarbanksoal";
@@ -903,15 +898,14 @@
 
     async function fetchGithubToken() {
         try {
-            const setupDb = getDatabase(firebaseApps['SETUP']);
-            const tokenRef = ref(setupDb, 'github/token');
+            const tokenRef = ref(db, 'github/token');
             const snapshot = await get(tokenRef);
             if (snapshot.exists()) {
                 githubToken = snapshot.val();
                 console.log("GitHub token successfully fetched.");
                 return true;
             } else {
-                throw new Error("Token GitHub tidak ditemukan di database 'SETUP'.");
+                throw new Error("Token GitHub tidak ditemukan di database.");
             }
         } catch (error) {
             console.error("Gagal mengambil token GitHub:", error);
@@ -927,14 +921,10 @@
         loadingError.style.display = 'none';
 
         try {
-            loadingText.textContent = 'Login ke semua layanan...';
-            const loginPromises = Object.keys(firebaseApps).map(appName => {
-                const appAuth = getAuth(firebaseApps[appName]);
-                return signInWithEmailAndPassword(appAuth, email, password);
-            });
-            
-            await Promise.all(loginPromises);
-            console.log("Successfully logged in to all 7 projects.");
+            loadingText.textContent = 'Login ke sistem...';
+            // Login langsung ke Auth tunggal
+            await signInWithEmailAndPassword(auth, email, password);
+            console.log("Successfully logged in.");
 
             loadingText.textContent = 'Mengambil konfigurasi keamanan...';
             const tokenFetched = await fetchGithubToken();
@@ -980,8 +970,7 @@
         guruLoginBtn.textContent = 'Mencoba Login...';
 
         try {
-            const setupDb = getDatabase(firebaseApps['SETUP']);
-            const gurusRef = ref(setupDb, 'gurus');
+            const gurusRef = ref(db, 'gurus');
             const snapshot = await get(gurusRef);
 
             if (!snapshot.exists()) {
@@ -1068,11 +1057,10 @@
     });
     
     async function populateSelectionDropdowns() {
-        const setupDb = getDatabase(firebaseApps['SETUP']);
         try {
             if (!ujiansDataCache || !aksesDataCache) {
-                const customUjiansRef = ref(setupDb, 'customUjians');
-                const aksesRef = ref(setupDb, `akses/${loggedInGuru.id}`);
+                const customUjiansRef = ref(db, 'customUjians');
+                const aksesRef = ref(db, `akses/${loggedInGuru.id}`);
 
                 const [ujiansSnapshot, aksesSnapshot] = await Promise.all([
                     get(customUjiansRef),
@@ -1220,17 +1208,8 @@
     
     async function fetchAndRenderSoal() {
         const dbPath = getDbPath(currentSoalData);
-        let primaryDbName;
-        if (currentSoalData.kelas == '7') primaryDbName = '7ABC';
-        else if (currentSoalData.kelas == '8') primaryDbName = '8ABC';
-        else if (currentSoalData.kelas == '9') primaryDbName = '9ABC';
+        // Kita tidak perlu lagi memilih primaryDbName karena hanya ada 1 DB
         
-        if (!primaryDbName) {
-            showToast('Kelas tidak valid.', 'error');
-            return;
-        }
-        
-        const db = getDatabase(firebaseApps[primaryDbName]);
         const snapshot = await get(ref(db, dbPath));
 
         outputEl.innerHTML = ''; 
@@ -1450,18 +1429,8 @@
 
     async function clearAllDataFromDB() {
         const dbPath = getDbPath(currentSoalData);
-        const targetDbNames = [];
-        if (currentSoalData.kelas == '7') targetDbNames.push('7ABC', '7DEF');
-        else if (currentSoalData.kelas == '8') targetDbNames.push('8ABC', '8DEF');
-        else if (currentSoalData.kelas == '9') targetDbNames.push('9ABC', '9DEF');
-        
-        if (targetDbNames.length === 0) return;
-
-        const deletePromises = targetDbNames.map(appName => {
-            const targetDb = getDatabase(firebaseApps[appName]);
-            return remove(ref(targetDb, dbPath));
-        });
-        await Promise.all(deletePromises);
+        // Hapus data hanya dari satu database
+        await remove(ref(db, dbPath));
     }
 
     addSoalBtn.addEventListener('click', () => {
@@ -2198,19 +2167,12 @@
                 terakhirUpdate: new Date().toISOString()
             };
 
-            // 4. Write to Firebase
+            // 4. Write to Firebase (Single DB)
             processingText.textContent = 'Menyimpan data ke server...';
             const dbPath = getDbPath(currentSoalData);
-            const targetDbNames = [];
-            if (currentSoalData.kelas == '7') targetDbNames.push('7ABC', '7DEF');
-            else if (currentSoalData.kelas == '8') targetDbNames.push('8ABC', '8DEF');
-            else if (currentSoalData.kelas == '9') targetDbNames.push('9ABC', '9DEF');
-
-            const writePromises = targetDbNames.map(appName => {
-                const targetDb = getDatabase(firebaseApps[appName]);
-                return set(ref(targetDb, dbPath), finalData);
-            });
-            await Promise.all(writePromises);
+            
+            // Simpan data hanya ke satu database
+            await set(ref(db, dbPath), finalData);
             
             // 5. Delete unused images from GitHub
             if (imagesToDelete.size > 0) {
@@ -2237,7 +2199,7 @@
     }
     
     function initialize() {
-        initializeFirebaseApps();
+        // initializeFirebaseApps(); // Tidak diperlukan lagi
         performAutoLogin();
         initializeToolbar();
         initializeSelectionListeners();
@@ -2283,3 +2245,11 @@
 </script>
 </body>
 </html>
+```
+
+### Ringkasan Perubahan:
+1.  **Konfigurasi Firebase Tunggal:** Kode `firebaseConfigs` yang berisi banyak database telah dihapus dan diganti dengan satu konfigurasi `firebaseConfig` yang mengarah ke project `setup-73809`.
+2.  **Login Otomatis:** Fungsi `performAutoLogin` sekarang hanya melakukan login ke satu aplikasi Firebase tersebut.
+3.  **Pengambilan Data:** Semua fungsi pengambilan data (Dropdown, Soal, Token Github) kini menggunakan instance `db` tunggal.
+4.  **Penyimpanan & Penghapusan:** Logika untuk menyimpan atau menghapus data ke banyak database (`7ABC`, `8DEF`, dll.) telah disederhanakan menjadi satu operasi ke database pusat.
+5.  **Struktur Data:** Struktur path database (`ujian/TAHUN/NAMA_UJIAN/KELAS/MAPEL`) tetap dipertahankan agar kompatibel dengan data yang mungkin sudah ada atau struktur yang diinginkan aplikasi siswa.
