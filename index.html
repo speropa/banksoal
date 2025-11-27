@@ -2245,11 +2245,3 @@
 </script>
 </body>
 </html>
-```
-
-### Ringkasan Perubahan:
-1.  **Konfigurasi Firebase Tunggal:** Kode `firebaseConfigs` yang berisi banyak database telah dihapus dan diganti dengan satu konfigurasi `firebaseConfig` yang mengarah ke project `setup-73809`.
-2.  **Login Otomatis:** Fungsi `performAutoLogin` sekarang hanya melakukan login ke satu aplikasi Firebase tersebut.
-3.  **Pengambilan Data:** Semua fungsi pengambilan data (Dropdown, Soal, Token Github) kini menggunakan instance `db` tunggal.
-4.  **Penyimpanan & Penghapusan:** Logika untuk menyimpan atau menghapus data ke banyak database (`7ABC`, `8DEF`, dll.) telah disederhanakan menjadi satu operasi ke database pusat.
-5.  **Struktur Data:** Struktur path database (`ujian/TAHUN/NAMA_UJIAN/KELAS/MAPEL`) tetap dipertahankan agar kompatibel dengan data yang mungkin sudah ada atau struktur yang diinginkan aplikasi siswa.
