@@ -4,14 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>Editor Bank Soal (Universal - Support WPS/Office)</title>
+    <title>Editor Bank Soal (Single Database) - Fix Word Lists</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
 
     <style>
-        /* --- GAYA CSS DARI VERSI UI LENGKAP --- */
         :root {
             --primary-color: #4A90E2;
             --primary-hover: #357ABD;
@@ -34,6 +33,7 @@
             --error-text-color: #721C24;
             --error-border-color: #f5c6cb;
             --info-bg-color: #e2f0ff;
+            /* Warna khusus editor yang lebih jelas */
             --editor-bg: #eef2f7; 
             --editor-border: #cbd5e0;
         }
@@ -57,13 +57,14 @@
             line-height: 1.6; 
             margin: 0;
             padding: 15px; 
-            padding-bottom: 100px; 
+            padding-bottom: 100px; /* Tambahan padding bawah agar konten paling bawah tidak tertutup tombol melayang */
             background-color: var(--background-color); 
             color: var(--text-color);
             transition: background-color 0.3s, color 0.3s;
         }
         .container {
             width: 100%;
+            /* MELEBARKAN CONTAINER UTAMA AGAR MUAT 2 KOLOM */
             max-width: 1200px; 
             margin: 0 auto;
         }
@@ -124,16 +125,47 @@
         .form-control:disabled { background-color: #e9ecef; cursor: not-allowed; }
         body.dark-mode .form-control:disabled { background-color: #2c2f33; }
 
-        .password-wrapper { position: relative; display: flex; align-items: center; }
-        .password-wrapper input { padding-right: 40px; }
-        .password-toggle-icon { position: absolute; right: 10px; cursor: pointer; color: var(--label-color); display: flex; align-items: center; justify-content: center; padding: 5px; border-radius: 50%; transition: background-color 0.2s, color 0.2s; }
-        .password-toggle-icon:hover { background-color: rgba(0,0,0,0.05); color: var(--primary-color); }
-        body.dark-mode .password-toggle-icon:hover { background-color: rgba(255,255,255,0.1); }
-        .password-toggle-icon svg { width: 20px; height: 20px; stroke-width: 2; }
+        /* Style untuk Password Toggle */
+        .password-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .password-wrapper input {
+            padding-right: 40px; /* Ruang agar teks tidak tertutup ikon */
+        }
+        .password-toggle-icon {
+            position: absolute;
+            right: 10px;
+            cursor: pointer;
+            color: var(--label-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5px;
+            border-radius: 50%;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .password-toggle-icon:hover {
+            background-color: rgba(0,0,0,0.05);
+            color: var(--primary-color);
+        }
+        body.dark-mode .password-toggle-icon:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+        .password-toggle-icon svg {
+            width: 20px;
+            height: 20px;
+            stroke-width: 2;
+        }
 
         .btn {
-            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-            padding: 10px 20px; border: none; border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border: none; border-radius: 8px;
             background-color: var(--primary-color); color: white; font-size: 0.9em; font-weight: 700;
             cursor: pointer; text-align: center; transition: background-color 0.3s, transform 0.2s, opacity 0.3s; text-decoration: none;
             box-sizing: border-box;
@@ -142,8 +174,17 @@
         .btn:active:not([disabled]) { transform: translateY(0); }
         .btn-full { width: 100%; }
         
-        .btn:disabled, .btn.disabled { background-color: #ccc; cursor: not-allowed; transform: none; opacity: 0.6; pointer-events: none; }
-        body.dark-mode .btn:disabled, body.dark-mode .btn.disabled { background-color: #444; color: #888; }
+        .btn:disabled, .btn.disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        body.dark-mode .btn:disabled, body.dark-mode .btn.disabled {
+            background-color: #444;
+            color: #888;
+        }
 
         .btn-primary { background-color: var(--primary-color); }
         .btn-primary:hover:not(:disabled) { background-color: var(--primary-hover); }
@@ -158,103 +199,258 @@
         .btn-info { background-color: var(--info-color); }
         .btn-info:hover:not(:disabled) { background-color: var(--info-hover); }
 
+
         .error-message { color: var(--danger-color); text-align: center; margin-top: 15px; font-size: 0.9em; display: none; }
 
         .title-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
-        #editor-view .main-title { text-align: center; font-weight: 700; font-size: 1.8em; margin: 0; flex-grow: 1; }
+        #editor-view .main-title {
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.8em;
+            margin: 0;
+            flex-grow: 1;
+        }
         .editor-top-bar { display: flex; justify-content: flex-end; align-items: center; width: 100%; gap: 10px;}
         .editor-top-bar p { margin: 0; font-size: 0.9em; color: var(--label-color);}
         
-        .editor-header-grid { display: flex; gap: 20px; margin-bottom: 25px; }
-        .editor-header-grid .editor-card { flex: 1; background-color: var(--card-background); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 12px; }
-        .editor-header-grid .editor-card h3 { margin: 0 0 5px 0; font-size: 1.1em; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; color: var(--text-color); }
-        .actions-card .header-btn { width: 100%; justify-content: center; }
+        /* New Header Layout Styles */
+        .editor-header-grid {
+            display: flex;
+            gap: 20px; /* Jarak antar kartu atas adalah 20px */
+            margin-bottom: 25px;
+        }
+        .editor-header-grid .editor-card {
+            flex: 1;
+            background-color: var(--card-background);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .editor-header-grid .editor-card h3 {
+            margin: 0 0 5px 0;
+            font-size: 1.1em;
+            font-weight: 700;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            color: var(--text-color);
+        }
+        .actions-card .header-btn {
+            width: 100%;
+            justify-content: center;
+        }
+        /* End New Header Layout Styles */
 
-        .identitas-item { font-size: 1.1em; font-weight: 500; color: var(--label-color); }
-        .identitas-item strong { font-weight: 700; color: var(--text-color); }
+
+        .identitas-item {
+            font-size: 1.1em;
+            font-weight: 500;
+            color: var(--label-color);
+        }
+
+        .identitas-item strong {
+            font-weight: 700;
+            color: var(--text-color);
+        }
         
         #file-input { display: none; }
 
-        #soal-list-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; align-items: start; }
-        @media (max-width: 900px) { #soal-list-container { grid-template-columns: 1fr; } }
+        /* LAYOUT GRID 2 KOLOM UNTUK DAFTAR SOAL */
+        #soal-list-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* 2 Kolom Kiri-Kanan */
+            gap: 20px; /* UBAH JADI 20px AGAR LURUS DENGAN KARTU ATAS (Data Ujian & Aksi Global) */
+            align-items: start;
+        }
+
+        /* Responsif: Kembali ke 1 kolom jika layar kecil (Tablet/HP) */
+        @media (max-width: 900px) {
+            #soal-list-container {
+                grid-template-columns: 1fr;
+            }
+        }
         
         .soal-container {
             background-color: var(--card-background); 
-            border: 8px solid #333; 
-            border-radius: 30px; 
-            padding: 20px 5mm; 
+            /* Ubah border menjadi lebih tebal untuk simulasi bezel HP */
+            border: 8px solid #333; /* Bezel lebih tebal dan gelap seperti frame HP */
+            border-radius: 30px; /* Sudut lebih membulat */
+            padding: 20px 5mm; /* UBAH: Padding kiri/kanan jadi 5mm (sekitar 19px) */
             margin-bottom: 0; 
             box-shadow: 0 15px 35px rgba(0,0,0,0.2);
             transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
             position: relative;
-            box-sizing: border-box; 
+            box-sizing: border-box; /* Pastikan padding/border tidak menambah lebar total */
+
+            /* LEBAR MENGIKUTI INDUK (Sama dengan Data Ujian/Aksi Global) */
             width: 100%;
             max-width: 100%; 
             margin: 0;
+            
+            /* RASIO HP POTRAIT (1:2) */
             aspect-ratio: 1 / 2; 
-            overflow-y: auto; 
-            overflow-x: hidden; 
-            word-wrap: break-word; 
-            overflow-wrap: break-word; 
+            
+            overflow-y: auto; /* Scroll jika konten melebihi layar */
+            overflow-x: hidden; /* TAMBAHAN: Matikan scroll horizontal */
+            word-wrap: break-word; /* TAMBAHAN: Paksa teks turun ke bawah */
+            overflow-wrap: break-word; /* TAMBAHAN: Kompatibilitas browser */
             display: flex;
             flex-direction: column;
         }
 
-        .soal-container::-webkit-scrollbar { width: 8px; }
-        .soal-container::-webkit-scrollbar-track { background-color: transparent; margin-block: 20px; border-radius: 100vw; }
-        .soal-container::-webkit-scrollbar-thumb { background-color: rgba(0, 0, 0, 0.2); border-radius: 100vw; border: 2px solid transparent; background-clip: content-box; transition: background-color 0.3s; }
-        .soal-container::-webkit-scrollbar-thumb:hover { background-color: rgba(0, 0, 0, 0.4); }
-        body.dark-mode .soal-container::-webkit-scrollbar-thumb { background-color: rgba(255, 255, 255, 0.2); }
-        body.dark-mode .soal-container::-webkit-scrollbar-thumb:hover { background-color: rgba(255, 255, 255, 0.4); }
+        /* PERCANTIK SCROLLBAR (Scrollbar Modern) */
+        .soal-container::-webkit-scrollbar {
+            width: 8px; /* Lebar scrollbar */
+        }
+        .soal-container::-webkit-scrollbar-track {
+            background-color: transparent;
+            margin-block: 20px; /* Jarak track dari atas/bawah agar tidak nabrak rounded corner */
+            border-radius: 100vw;
+        }
+        .soal-container::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.2); /* Warna thumb transparan gelap */
+            border-radius: 100vw; /* Membuatnya bulat lonjong */
+            border: 2px solid transparent; /* Trik agar terlihat 'mengambang' */
+            background-clip: content-box;
+            transition: background-color 0.3s;
+        }
+        .soal-container::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(0, 0, 0, 0.4); /* Lebih gelap saat dihover */
+        }
 
-        .soal-container.invalid-soal { border-color: var(--danger-color); box-shadow: 0 0 15px rgba(220, 53, 69, 0.4); }
+        body.dark-mode .soal-container::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        body.dark-mode .soal-container::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .soal-container.invalid-soal {
+            border-color: var(--danger-color);
+            box-shadow: 0 0 15px rgba(220, 53, 69, 0.4);
+        }
         .soal-validation-error {
-            color: var(--danger-color); font-size: 0.85em; font-weight: 500; margin-top: 15px; padding: 12px;
-            background-color: var(--error-bg-color); border: 1px solid var(--error-border-color);
-            border-radius: 6px; display: none; flex-shrink: 0; 
+            color: var(--danger-color);
+            font-size: 0.85em;
+            font-weight: 500;
+            margin-top: 15px;
+            padding: 12px;
+            background-color: var(--error-bg-color);
+            border: 1px solid var(--error-border-color);
+            border-radius: 6px;
+            display: none;
+            flex-shrink: 0; /* Mencegah error message gepeng */
         }
         .soal-header { 
-            display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border-color); 
-            padding-bottom: 15px; margin-bottom: 20px; gap: 10px; flex-shrink: 0; position: sticky;
-            top: -20px; background-color: var(--card-background); z-index: 10; margin-top: -10px; padding-top: 10px;
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-bottom: 2px solid var(--border-color); 
+            padding-bottom: 15px; 
+            margin-bottom: 20px; 
+            gap: 10px; /* UBAH: Kembalikan gap normal karena ruang lebih lega */
+            flex-shrink: 0; /* Header tetap di atas saat scroll */
+            position: sticky;
+            top: -20px; /* Kompensasi padding atas container */
+            background-color: var(--card-background);
+            z-index: 10;
+            margin-top: -10px; /* Sedikit penyesuaian posisi */
+            padding-top: 10px;
         }
         
         .soal-nomor-container { display: flex; align-items: center; gap: 5px; }
+        
+        /* STYLE BARU UNTUK INPUT NOMOR */
         .soal-nomor-input { 
-            width: 60px; padding: 5px 8px; font-size: 1em; border: 2px solid var(--primary-color); border-radius: 8px; 
-            margin-left: 8px; text-align: center; font-weight: 700; color: var(--primary-color); background-color: white;
-            transition: all 0.3s; -moz-appearance: textfield; 
+            width: 60px; 
+            padding: 5px 8px; 
+            font-size: 1em; 
+            border: 2px solid var(--primary-color); 
+            border-radius: 8px; 
+            margin-left: 8px;
+            text-align: center;
+            font-weight: 700;
+            color: var(--primary-color);
+            background-color: white;
+            transition: all 0.3s;
+            /* Hilangkan spinner di Firefox */
+            -moz-appearance: textfield; 
         }
-        .soal-nomor-input::-webkit-outer-spin-button, .soal-nomor-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-        .soal-nomor-input:focus { outline: none; background-color: var(--primary-color); color: white; box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.2); }
+
+        /* Hilangkan spinner di Chrome, Safari, Edge, Opera */
+        .soal-nomor-input::-webkit-outer-spin-button,
+        .soal-nomor-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        
+        .soal-nomor-input:focus {
+            outline: none;
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.2);
+        }
 
         .drag-handle { display: grid; grid-template-columns: repeat(3, 6px); gap: 4px; padding: 10px; cursor: grab; border-radius: 5px; transition: background-color 0.2s; }
         .soal-actions { display: flex; gap: 8px; align-items: center; pointer-events: auto; }
         .delete-btn { font-size: 0.85em; padding: 6px 12px; font-weight: 500; }
 
+        /* UBAH WARNA LATAR EDITOR AGAR LEBIH JELAS */
         [contenteditable="true"] { 
-            outline: none; background-color: var(--editor-bg); border: 1px solid var(--editor-border); 
-            padding: 8px 10px; border-radius: 6px; transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
-            box-sizing: border-box; 
+            outline: none; 
+            background-color: var(--editor-bg); /* Menggunakan variabel warna baru */
+            border: 1px solid var(--editor-border); /* Border tegas */
+            padding: 8px 10px; /* Padding sedikit diperbesar */
+            border-radius: 6px; 
+            transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
+            box-sizing: border-box; /* TAMBAHAN: Agar padding tidak menambah lebar total */
         }
-        [contenteditable="true"]:focus { background-color: #ffffff; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.15); }
-        [contenteditable][data-placeholder]:empty:before { content: attr(data-placeholder); color: #9ca3af; pointer-events: none; display: block; }
+        
+        [contenteditable="true"]:focus { 
+            background-color: #ffffff; /* Putih saat fokus */
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.15); 
+        }
+        
+        [contenteditable][data-placeholder]:empty:before {
+            content: attr(data-placeholder);
+            color: #9ca3af;
+            pointer-events: none;
+            display: block;
+        }
 
         .soal-container ul { list-style-type: none; padding-left: 0; margin-top: 15px; margin-bottom: 0; }
-        .soal-container li { padding: 8px 5px; margin-bottom: 5px; border-radius: 4px; display: flex; align-items: baseline; word-break: break-word; }
-        .soal-container li b { margin-right: 8px; min-width: 18px; }
-        .soal-container li div { width: 100%; max-width: 100%; }
-        .soal-container .soal-pertanyaan { width: auto; max-width: 100%; margin-right: 5px; }
+        .soal-container li { padding: 8px 5px; margin-bottom: 5px; border-radius: 4px; display: flex; align-items: baseline; word-break: break-word; } /* UBAH: Padding li disesuaikan sedikit */
+        .soal-container li b { margin-right: 8px; min-width: 18px; } /* UBAH: Margin disesuaikan */
+        
+        /* PEMISAHAN STYLE UNTUK PENYESUAIAN LEBAR SOAL */
+        .soal-container li div { 
+            width: 100%; 
+            max-width: 100%; 
+        }
+        
+        .soal-container .soal-pertanyaan { 
+            width: auto; /* UBAH: Auto agar margin-right berfungsi tanpa overflow */
+            max-width: 100%;
+            margin-right: 5px; /* TAMBAHAN: Menyamakan sisi kanan dengan pilihan ganda (kompensasi padding li) */
+        }
         
         .soal-kunci-jawaban { margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border-color); display: flex; align-items: center; font-weight: 700; }
         .soal-kunci-jawaban span { margin-right: 10px; color: var(--success-color); }
 
-        .img-inline { max-height: 2.5em; width: auto; vertical-align: middle; cursor: pointer; max-width: 100%; }
+        .img-inline { max-height: 2.5em; width: auto; vertical-align: middle; cursor: pointer; max-width: 100%; } /* UBAH: Tambah max-width */
         .img-block { display: block; height: auto; margin: 0.8em 0; cursor: pointer; max-width: 100%; }
-        .resizable-wrapper { position: relative; display: inline-block; outline: 2px dashed var(--primary-color); line-height: 0; user-select: none; -webkit-user-select: none; vertical-align: middle; max-width: 100%; }
+        .resizable-wrapper { position: relative; display: inline-block; outline: 2px dashed var(--primary-color); line-height: 0; user-select: none; -webkit-user-select: none; vertical-align: middle; max-width: 100%; } /* UBAH: Tambah max-width */
         .resizable-wrapper img { display: block; cursor: default !important; width: 100%; height: 100%; max-height: none; }
         
-        .resizer { position: absolute; width: 6px; height: 6px; background-color: var(--primary-color); border: 1px solid var(--card-background); border-radius: 2px; z-index: 10; box-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+        .resizer { 
+            position: absolute; width: 6px; height: 6px;
+            background-color: var(--primary-color); border: 1px solid var(--card-background);
+            border-radius: 2px; z-index: 10; box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
         .resizer.top-left { top: -3px; left: -3px; cursor: nwse-resize; }
         .resizer.top-right { top: -3px; right: -3px; cursor: nesw-resize; }
         .resizer.bottom-left { bottom: -3px; left: -3px; cursor: nesw-resize; }
@@ -288,7 +484,10 @@
         #processing-modal .spinner-container p { font-size: 1.2em; color: white; font-weight: 500; }
         #processing-modal .spinner { border-top-color: white; border-left-color: white; }
         
-        .instructions-box { background-color: var(--info-bg-color); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-top: 30px; font-size: 0.95em; }
+        .instructions-box {
+            background-color: var(--info-bg-color); border: 1px solid var(--border-color);
+            border-radius: 12px; padding: 20px; margin-top: 30px; font-size: 0.95em;
+        }
         .instructions-box h3 { margin-top: 0; color: var(--text-color); font-size: 1.1em; }
         .instructions-box ol { padding-left: 20px; margin-bottom: 0; }
         .instructions-box li { margin-bottom: 10px; }
@@ -298,26 +497,53 @@
             padding: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 1001;
             display: none; align-items: center; gap: 4px; transition: opacity 0.1s;
         }
-        .editor-toolbar button { background: transparent; border: none; color: white; padding: 7px; cursor: pointer; border-radius: 5px; display: flex; align-items: center; justify-content: center; }
+        .editor-toolbar button {
+            background: transparent; border: none; color: white; padding: 7px;
+            cursor: pointer; border-radius: 5px; display: flex; align-items: center; justify-content: center;
+        }
         .editor-toolbar button:hover { background-color: #4A5568; }
         .editor-toolbar button svg { width: 20px; height: 20px; fill: currentColor; }
         .editor-toolbar .separator { width: 1px; height: 20px; background-color: #4A5568; margin: 0 4px; }
 
         #global-save-container {
-            position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); z-index: 999;
-            width: auto; min-width: 320px; background-color: var(--card-background);
-            border: 1px solid var(--border-color); border-radius: 50px; padding: 10px 20px; margin: 0;
-            text-align: center; box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 999;
+            width: auto;
+            min-width: 320px;
+            background-color: var(--card-background);
+            border: 1px solid var(--border-color);
+            border-radius: 50px;
+            padding: 10px 20px;
+            margin: 0;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
             animation: slideUpFade 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         
-        @keyframes slideUpFade { from { transform: translate(-50%, 100%); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+        @keyframes slideUpFade {
+            from { transform: translate(-50%, 100%); opacity: 0; }
+            to { transform: translate(-50%, 0); opacity: 1; }
+        }
 
-        #global-save-btn { font-size: 1em; padding: 10px 24px; border-radius: 30px; box-shadow: 0 4px 6px rgba(40, 167, 69, 0.2); }
+        #global-save-btn {
+            font-size: 1em;
+            padding: 10px 24px;
+            border-radius: 30px;
+            box-shadow: 0 4px 6px rgba(40, 167, 69, 0.2);
+        }
 
         @media (max-width: 768px) {
-            .editor-header-grid { flex-direction: column; }
-            #global-save-container { width: 90%; min-width: auto; bottom: 15px; }
+            .editor-header-grid {
+                flex-direction: column;
+            }
+            #global-save-container {
+                width: 90%;
+                min-width: auto;
+                bottom: 15px;
+            }
         }
     </style>
 </head>
@@ -337,7 +563,6 @@
     </div>
     <input type="file" id="toolbar-image-input" accept="image/*" style="display: none;">
 
-    <!-- UI: Loading -->
     <div id="loading-view" class="view active">
         <div class="card-wrapper">
             <div class="spinner-container">
@@ -348,7 +573,6 @@
         </div>
     </div>
 
-    <!-- UI: Login -->
     <div id="guru-login-view" class="view">
         <div class="card-wrapper">
             <div class="card">
@@ -377,7 +601,6 @@
         </div>
     </div>
 
-    <!-- UI: Selection -->
     <div id="selection-view" class="view">
         <div class="card-wrapper">
             <div class="card">
@@ -414,7 +637,6 @@
         </div>
     </div>
 
-    <!-- UI: Editor Utama -->
     <div id="editor-view" class="view">
         <div class="title-container">
             <h1 class="main-title">EDITOR BANK SOAL</h1>
@@ -438,7 +660,7 @@
                  <h3>Aksi Global</h3>
                  <button id="add-soal-btn" class="btn btn-success header-btn"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg><span>Tambah Soal</span></button>
                  <a href="https://drive.google.com/uc?export=download&id=11J15X750WGz3QeXO8sxcWSzRyfoDkJLb" target="_blank" id="template-zip-btn" class="btn btn-purple header-btn"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg><span>Template Word</span></a>
-                 <button id="upload-btn" class="btn btn-primary header-btn"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/></svg><span>Unggah ZIP (Word/WPS)</span></button>
+                 <button id="upload-btn" class="btn btn-primary header-btn"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/></svg><span>Unggah ZIP</span></button>
                  <button id="clear-data-btn" class="btn btn-danger header-btn"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg><span>Hapus Semua</span></button>
             </div>
         </div>
@@ -457,15 +679,14 @@
         <div class="instructions-box">
             <h3>Petunjuk</h3>
             <ol>
-                <li><strong>Universal Upload:</strong> Fitur unggah ZIP sekarang mendukung file dari WPS Office, Microsoft Word (semua versi), dan Windows versi lama. Sistem akan otomatis memperbaiki karakter aneh dan mendeteksi daftar soal otomatis.</li>
-                <li><strong>Template Word:</strong> Gunakan template yang disediakan untuk hasil terbaik, tapi file hasil "Save as Web Page" biasa juga bisa diterima.</li>
-                <li><strong>Simpan:</strong> Pastikan tidak ada soal berwarna merah sebelum menekan tombol Kirim & Simpan.</li>
+                <li><strong>Tambah Soal Manual:</strong> Untuk membuat soal baru atau menambahkan soal.</li>
+                <li><strong>Template Word:</strong> Unduh file template_bank_soal.docx, petunjuk pengisian terdapat dalam file</li>
+                <li><strong>Unggah ZIP:</strong> Unggah file ZIP Anda untuk diproses. Data tidak akan disimpan otomatis. Gunakan tombol "Kirim & Simpan" setelah semua soal valid.</li>
             </ol>
         </div>
     </div>
 </div>
 
-<!-- Modal dan Overlay (Tetap sama) -->
 <div id="confirm-modal" class="modal-overlay">
     <div class="modal-content">
         <h3 id="confirm-modal-title">Konfirmasi</h3>
@@ -528,7 +749,7 @@
     import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
     import { getDatabase, ref, set, get, remove, update } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
     
-    // KONFIGURASI FIREBASE
+    // KONFIGURASI FIREBASE TUNGGAL (SETUP)
     const firebaseConfig = {
         apiKey: "AIzaSyBbXJ4VuACXyHJhl2eVSB2vHiT6hrx-XnE",
         authDomain: "setup-73809.firebaseapp.com",
@@ -539,6 +760,7 @@
         appId: "1:843995999446:web:7fd92546f2d0bea73fed77"
     };
 
+    // Inisialisasi Firebase App
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getDatabase(app);
@@ -555,7 +777,6 @@
     let ujiansDataCache = null;
     let aksesDataCache = null;
 
-    // --- VARIABEL UI ---
     const editorToolbar = document.getElementById('editor-toolbar');
     const toolbarImageInput = document.getElementById('toolbar-image-input');
     let lastFocusedEditable = null;
@@ -595,7 +816,6 @@
     const globalSaveContainer = document.getElementById('global-save-container');
     const globalSaveBtn = document.getElementById('global-save-btn');
     
-    // --- MODAL VARIABEL ---
     const confirmModal = document.getElementById('confirm-modal');
     const confirmModalTitle = document.getElementById('confirm-modal-title');
     const confirmModalText = document.getElementById('confirm-modal-text');
@@ -622,7 +842,6 @@
     const infoModalText = document.getElementById('info-modal-text');
     const infoModalCloseBtn = document.getElementById('info-modal-close');
 
-    // --- HELPER FUNCTIONS ---
     function showView(viewId) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
         document.getElementById(viewId).classList.add('active');
@@ -676,7 +895,6 @@
         return `ujian/${safeTA}/${safeUjian}/Kelas-${kelas}/${safeMapel}`;
     }
 
-    // --- FIREBASE & AUTH LOGIC ---
     async function fetchGithubToken() {
         try {
             const tokenRef = ref(db, 'github/token');
@@ -703,6 +921,7 @@
 
         try {
             loadingText.textContent = 'Login ke sistem...';
+            // Login langsung ke Auth tunggal
             await signInWithEmailAndPassword(auth, email, password);
             console.log("Successfully logged in.");
 
@@ -719,11 +938,11 @@
         }
     }
     
-    // --- EVENT LISTENERS UI ---
     if (togglePasswordBtn) {
         togglePasswordBtn.addEventListener('click', () => {
             const type = guruPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
             guruPasswordInput.setAttribute('type', type);
+            
             if (type === 'text') {
                 togglePasswordBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
                 togglePasswordBtn.setAttribute('title', 'Sembunyikan Password');
@@ -740,6 +959,12 @@
         const password = guruPasswordInput.value;
         guruLoginError.style.display = 'none';
         
+        if (!username || !password) {
+            guruLoginError.textContent = 'Username dan Password tidak boleh kosong.';
+            guruLoginError.style.display = 'block';
+            return;
+        }
+
         guruLoginBtn.disabled = true;
         guruLoginBtn.textContent = 'Mencoba Login...';
 
@@ -747,7 +972,9 @@
             const gurusRef = ref(db, 'gurus');
             const snapshot = await get(gurusRef);
 
-            if (!snapshot.exists()) throw new Error("Tidak ada data guru yang ditemukan.");
+            if (!snapshot.exists()) {
+                throw new Error("Tidak ada data guru yang ditemukan.");
+            }
 
             const gurusData = snapshot.val();
             let foundGuru = null;
@@ -780,250 +1007,53 @@
         }
     });
 
-    // --- ZIP PROCESSING LOGIC (NEW UNIVERSAL) ---
-    // Logika ini menggantikan processZipFile lama agar bisa baca WPS/Word List
-    
-    uploadBtn.addEventListener('click', () => fileInput.click() );
-    
-    fileInput.addEventListener('change', async (event) => {
-        const file = event.target.files[0];
-        if (!file) return;
-        
-        showProcessing(`Memproses file universal: ${file.name}...`);
-        try {
-            await processZipFileUniversal(file);
-            updateUIForSoalPresence();
-        } catch (error) {
-            console.error("Gagal memproses file ZIP:", error);
-            showToast(`Gagal: ${error.message}`, 'error');
-        } finally {
-            fileInput.value = '';
-            hideProcessing();
-        }
+    logoutBtn.addEventListener('click', () => {
+        showConfirmModal(
+            'Konfirmasi Logout',
+            'Apakah Anda yakin ingin keluar dari sesi ini?',
+            'Ya, Logout',
+            'btn-danger',
+            () => {
+                loggedInGuru = null;
+                ujiansDataCache = null; // Clear cache data
+                aksesDataCache = null;  // Clear cache data
+                guruUsernameInput.value = '';
+                guruPasswordInput.value = '';
+                outputEl.innerHTML = '';
+                selectionForm.reset();
+                showView('guru-login-view');
+                showToast("Anda telah berhasil logout.", "info");
+            }
+        );
     });
 
-    async function processZipFileUniversal(file) {
-        outputEl.innerHTML = '';
-        initialSoalSnapshots = {};
-        if (activeResizer) removeResizer();
-
-        const zip = await JSZip.loadAsync(file);
-        
-        // 1. Cari File HTML
-        const htmlFiles = Object.keys(zip.files).filter(name => name.match(/\.(htm|html)$/i) && !name.startsWith('__MACOSX'));
-        if (htmlFiles.length === 0) throw new Error("Tidak ada file HTML dalam ZIP.");
-
-        // Prioritaskan file di root (biasanya bukan file header/footer)
-        htmlFiles.sort((a, b) => a.split('/').length - b.split('/').length);
-        
-        let questions = [];
-        let validHtmlFound = false;
-
-        for (const htmlFileName of htmlFiles) {
-            // 2. Smart Encoding Detection
-            const fileData = await zip.file(htmlFileName).async('uint8array');
-            let htmlContent = new TextDecoder('windows-1252').decode(fileData);
-            
-            // Jika encoding salah (simbol aneh), coba UTF-8
-            if (htmlContent.includes('') || !htmlContent.match(/<table/i)) {
-                const textUtf8 = new TextDecoder('utf-8').decode(fileData);
-                if (textUtf8.match(/<table/i)) {
-                    htmlContent = textUtf8;
+    backToSelectionBtn.addEventListener('click', () => {
+        showConfirmModal(
+            'Ganti Data Ujian',
+            'Data yang belum disimpan akan hilang. Apakah Anda yakin ingin kembali?',
+            'Ya, Ganti',
+            'btn-primary',
+            async () => {
+                outputEl.innerHTML = ''; 
+                selectionForm.reset();
+                
+                // Force update data
+                ujiansDataCache = null;
+                aksesDataCache = null;
+                
+                showView('loading-view');
+                loadingText.textContent = 'Memperbarui data ujian dan akses...';
+                
+                try {
+                    await populateSelectionDropdowns();
+                    showView('selection-view');
+                } catch (error) {
+                    // Error is handled inside populateSelectionDropdowns, but we catch here to be safe
+                    console.error("Gagal memperbarui data:", error);
                 }
             }
-
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(htmlContent, 'text/html');
-            
-            // 3. Proses Gambar (Pre-load Base64)
-            const images = doc.getElementsByTagName('img');
-            for (let img of images) {
-                const src = img.getAttribute('src');
-                if (src && !src.startsWith('data:') && !src.startsWith('http')) {
-                    const imgFileName = src.split('/').pop(); 
-                    const zipImgPath = Object.keys(zip.files).find(n => n.endsWith(imgFileName));
-                    
-                    if (zipImgPath) {
-                        const imgExt = zipImgPath.split('.').pop().toLowerCase();
-                        const imgData = await zip.file(zipImgPath).async('base64');
-                        let mime = 'image/jpeg';
-                        if (imgExt === 'png') mime = 'image/png';
-                        else if (imgExt === 'gif') mime = 'image/gif';
-                        
-                        img.src = `data:${mime};base64,${imgData}`;
-                        img.dataset.fileName = imgFileName; // Simpan nama asli untuk referensi upload
-                    }
-                }
-                // Hapus style bawaan word agar responsif
-                img.removeAttribute('width');
-                img.removeAttribute('height');
-                img.style.width = '';
-                img.style.height = '';
-                img.style.maxWidth = '100%';
-            }
-
-            // 4. Ekstraksi Soal (Universal Logic)
-            const extracted = extractQuestionsUniversal(doc.body);
-            if (extracted.length > 0) {
-                questions = extracted;
-                validHtmlFound = true;
-                break; 
-            }
-        }
-
-        if (!validHtmlFound) throw new Error("Tidak ditemukan format soal yang valid (Tabel Soal & Kunci).");
-
-        // 5. Render ke UI
-        questions.forEach(q => {
-            const soalDiv = createSoalElement(q.detail, q.kunci, q.nomor);
-            soalDiv.dataset.isNew = 'true';
-            outputEl.appendChild(soalDiv);
-        });
-        
-        createInitialSnapshots();
-        prioritizeInvalidSoal();
-        checkAllValidityAndUpdateSaveButton();
-        initializeSortable();
-        showToast(`Berhasil memuat ${questions.length} soal!`, 'success');
-    }
-
-    function extractQuestionsUniversal(body) {
-        const results = [];
-        const tables = body.getElementsByTagName('table');
-        let questionCounter = 0;
-
-        for (let t = 0; t < tables.length; t++) {
-            const rows = tables[t].rows;
-            
-            for (let i = 0; i < rows.length; i++) {
-                const cells = rows[i].cells;
-                let contentCell = null;
-                
-                // Cari sel yang berisi Konten Soal (teks panjang atau gambar atau list)
-                for (let c = 0; c < cells.length; c++) {
-                    const txt = cells[c].textContent.trim();
-                    const hasImg = cells[c].querySelector('img');
-                    const hasList = cells[c].querySelector('ol, ul');
-                    
-                    // Asumsi: Sel soal punya konten > 5 char ATAU punya gambar ATAU punya list
-                    // Dan bukan sel nomor (biasanya sempit dan cuma angka)
-                    if ((txt.length > 5 || hasImg || hasList) && !txt.match(/^\d+$/)) {
-                        contentCell = cells[c];
-                        break; 
-                    }
-                }
-
-                if (!contentCell) continue;
-
-                // Validasi: Apakah ini baris soal PG? Harus ada opsi A,B,C,D
-                const innerHTML = contentCell.innerHTML;
-                const hasManualOptions = innerHTML.match(/[A-Da-d][\.\)]/); // A. atau A)
-                const hasList = contentCell.querySelector('ol, ul');
-                
-                if (!hasManualOptions && !hasList) continue; // Skip jika tidak ada tanda-tanda PG
-
-                // Cari Kunci Jawaban di baris berikutnya (i+1)
-                let kunci = '';
-                if (i + 1 < rows.length) {
-                    const nextRowText = rows[i+1].textContent.trim();
-                    const matchKunci = nextRowText.match(/(?:Kunci|Jawaban|Key)\s*[:]?\s*([A-D])/i) || nextRowText.match(/^\s*([A-D])\s*$/i);
-                    if (matchKunci) {
-                        kunci = matchKunci[1].toUpperCase();
-                        i++; // Skip baris kunci agar tidak diproses ulang
-                    }
-                }
-
-                // Parsing Konten
-                const parsed = parseQuestionContent(contentCell);
-                
-                // Minimal ada pertanyaan dan 2 opsi
-                if (parsed.opsi.length >= 2) {
-                    questionCounter++;
-                    
-                    const soalDetail = {
-                        pertanyaan: parsed.soal,
-                        pilihanA: parsed.opsi[0] || '',
-                        pilihanB: parsed.opsi[1] || '',
-                        pilihanC: parsed.opsi[2] || '',
-                        pilihanD: parsed.opsi[3] || ''
-                    };
-
-                    results.push({
-                        detail: soalDetail,
-                        kunci: kunci,
-                        nomor: questionCounter
-                    });
-                }
-            }
-        }
-        return results;
-    }
-
-    function parseQuestionContent(cell) {
-        const div = document.createElement('div');
-        div.innerHTML = cell.innerHTML; // Clone content
-
-        const options = [];
-        let currentOptIdx = 0;
-
-        // 1. Cek LIST AUTOMATIC (OL/UL) - Ini yg sering dipakai Word modern/WPS
-        const lists = div.querySelectorAll('ol, ul');
-        lists.forEach(list => {
-            const items = list.querySelectorAll('li');
-            // Cek apakah list ini berisi opsi (pendek-pendek atau jumlahnya 4-5)
-            // Asumsi: List di dalam soal biasanya adalah opsi jawaban
-            items.forEach(li => {
-                if (currentOptIdx < 5) {
-                    options.push(cleanHtml(li.innerHTML));
-                    currentOptIdx++;
-                }
-                li.remove(); // Hapus dari konten pertanyaan
-            });
-            list.remove();
-        });
-
-        // 2. Cek LIST MANUAL (A. Teks...) - Untuk Word lama/Manual typing
-        if (options.length === 0) {
-            const children = Array.from(div.children); // p, div, etc
-            const manualOptRegex = /^\s*([A-Ea-e])[\.\)]\s+(.*)/;
-
-            children.forEach(child => {
-                const text = child.textContent.trim();
-                const match = text.match(manualOptRegex);
-                
-                if (match) {
-                    // Simpan teks opsinya saja (tanpa huruf A.)
-                    options.push(cleanHtml(match[2] || child.innerHTML.replace(/^[A-Ea-e][\.\)]/, '')));
-                    child.remove(); // Hapus dari konten pertanyaan
-                }
-            });
-        }
-
-        // Sisa konten di 'div' adalah Pertanyaan
-        let questionHtml = cleanHtml(div.innerHTML);
-
-        return {
-            soal: questionHtml,
-            opsi: options
-        };
-    }
-
-    function cleanHtml(html) {
-        if (!html) return "";
-        // Sanitasi dasar untuk menghapus style Word yang mengganggu layout
-        return html
-            .replace(/class="[^"]*"/g, "") // Hapus class word
-            .replace(/style="[^"]*"/g, "") // Hapus inline style word (font-family, margin aneh)
-            .replace(/<span[^>]*>/g, "<span>")
-            .replace(/<p>\s*<\/p>/g, "")
-            .replace(/&nbsp;/g, " ")
-            .trim();
-    }
-
-    // --- END UNIVERSAL LOGIC ---
-
-    // --- FUNGSI EXISTING (Firebase Save, UI, dll) TETAP SAMA ---
-    // (Bagian di bawah ini sama dengan kode sebelumnya untuk menjaga fitur)
+        );
+    });
     
     async function populateSelectionDropdowns() {
         try {
@@ -1177,6 +1207,8 @@
     
     async function fetchAndRenderSoal() {
         const dbPath = getDbPath(currentSoalData);
+        // Kita tidak perlu lagi memilih primaryDbName karena hanya ada 1 DB
+        
         const snapshot = await get(ref(db, dbPath));
 
         outputEl.innerHTML = ''; 
@@ -1207,10 +1239,9 @@
         initializeSortable();
     }
 
-    // --- IMAGE & GITHUB ---
     async function uploadImageToGithub(file, base64Content) {
         if (!githubToken) {
-            showToast('Token keamanan tidak valid.', 'error');
+            showToast('Token keamanan tidak valid. Operasi dibatalkan.', 'error');
             throw new Error('GitHub token is not available.');
         }
         const fileName = `${Date.now()}-${file.name}`;
@@ -1234,12 +1265,17 @@
             }
         );
         const result = await response.json();
-        if (!response.ok) throw new Error(`Gagal mengunggah: ${result.message}`);
+        if (!response.ok) throw new Error(`Gagal mengunggah ke GitHub: ${result.message}`);
         return result.content.download_url;
     }
 
     async function deleteImageFromGithub(imageUrl) {
-        if (!githubToken || !imageUrl || !imageUrl.includes('raw.githubusercontent.com')) return;
+        if (!githubToken) {
+            showToast('Token keamanan tidak valid. Operasi dibatalkan.', 'error');
+            throw new Error('GitHub token is not available.');
+        }
+        if (!imageUrl || !imageUrl.includes('raw.githubusercontent.com')) return;
+        
         const path = imageUrl.split(`${GITHUB_USERNAME}/${GITHUB_REPO}/main/`)[1];
         if (!path) return;
 
@@ -1249,276 +1285,55 @@
             });
             const fileData = await res.json();
             if (!res.ok) {
-                if (res.status === 404) return;
+                if (res.status === 404) {
+                     console.log(`Gambar sudah tidak ada di GitHub: ${imageUrl}`);
+                     return;
+                }
                 throw new Error(`Gagal mendapatkan SHA file: ${fileData.message}`);
             }
 
-            await fetch(fileData.url, {
+            const deleteRes = await fetch(fileData.url, {
                 method: 'DELETE',
                 headers: { 'Authorization': `token ${githubToken}`, 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message: `Hapus gambar: ${fileData.name}`, sha: fileData.sha })
             });
+            if (!deleteRes.ok) throw new Error(`Gagal menghapus file dari GitHub.`);
+            console.log(`Gambar ${fileData.name} berhasil dihapus.`);
+
         } catch (error) {
-            console.error(`Gagal menghapus gambar: ${imageUrl}`, error);
+            console.error(`Gagal menghapus gambar dari GitHub: ${imageUrl}`, error);
         }
     }
     
-    // --- SOAL DOM MANIPULATION ---
-    function createSoalElement(soalDetail, kunci, nomor) {
-        const soalDiv = document.createElement('div');
-        soalDiv.className = 'soal-container';
-        soalDiv.dataset.nomor = nomor;
-        
-        soalDiv.innerHTML = `
-            <div class="soal-header">
-                <div class="soal-nomor-container">
-                    <h3 class="soal-nomor">Soal 
-                        <input type="number" class="soal-nomor-input" value="${nomor}" min="1">
-                    </h3>
-                </div>
-                <div class="drag-handle"><span></span><span></span><span></span><span></span><span></span><span></span></div>
-                <div class="soal-actions">
-                    <button class="btn delete-btn btn-danger">Hapus</button>
-                </div>
-            </div>
-            <div class="soal-pertanyaan" contenteditable="true" data-placeholder="Ketik pertanyaan di sini...">${soalDetail.pertanyaan}</div>
-            <ul>
-                <li><b>A.</b> <div contenteditable="true" dir="auto">${soalDetail.pilihanA}</div></li>
-                <li><b>B.</b> <div contenteditable="true" dir="auto">${soalDetail.pilihanB}</div></li>
-                <li><b>C.</b> <div contenteditable="true" dir="auto">${soalDetail.pilihanC}</div></li>
-                <li><b>D.</b> <div contenteditable="true" dir="auto">${soalDetail.pilihanD}</div></li>
-            </ul>
-            <div class="soal-kunci-jawaban">
-                <span>Kunci Jawaban:</span>
-                <div contenteditable="true" dir="auto">${kunci}</div>
-            </div>
-            <div class="soal-validation-error"></div>
-        `;
-        
-        const nomorInput = soalDiv.querySelector('.soal-nomor-input');
-        nomorInput.addEventListener('change', sortSoalByInput);
-        
-        classifyImages(soalDiv);
-        return soalDiv;
-    }
-
-    function sortSoalByInput() {
-        const container = document.getElementById('soal-list-container');
-        const items = Array.from(container.children);
-        items.sort((a, b) => {
-            const valA = parseFloat(a.querySelector('.soal-nomor-input').value) || 0;
-            const valB = parseFloat(b.querySelector('.soal-nomor-input').value) || 0;
-            return valA - valB;
-        });
-        items.forEach(item => container.appendChild(item));
-        renumberSoalDOM();
-        showToast("Urutan soal diperbarui.", "info");
-    }
-
-    function classifyImages(containerElement) {
-        containerElement.querySelectorAll('img').forEach(img => {
-            if (img.style.width) {
-                if (!img.style.height) img.style.height = 'auto';
-                return;
+    async function getAllFilePaths(path, fileList = []) {
+        if (!githubToken) return [];
+        try {
+            const response = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/contents/${path}?t=${new Date().getTime()}`, {
+                headers: { 'Authorization': `token ${githubToken}` }
+            });
+            if (!response.ok) {
+                if (response.status === 404) return fileList;
+                throw new Error(`GitHub API error: ${response.statusText}`);
             }
-            img.classList.add('img-block');
-            img.style.maxWidth = '100%';
-        });
-    }
+            const contents = await response.json();
+            if (!Array.isArray(contents)) return fileList;
 
-    outputEl.addEventListener('click', function(e) {
-        const soalContainer = e.target.closest('.soal-container');
-        if (!soalContainer) return;
-
-        const deleteBtn = e.target.closest('.delete-btn');
-        if (deleteBtn) {
-             soalToDelete = soalContainer;
-             modalText.textContent = "Apakah Anda yakin ingin menghapus soal ini?";
-             confirmationInputContainer.style.display = 'none';
-             confirmDeleteBtn.disabled = false;
-             confirmDeleteBtn.onclick = executeDeleteSoal;
-             deleteModal.style.display = 'flex';
-             return;
+            for (const item of contents) {
+                if (item.type === 'file') {
+                    fileList.push(item);
+                } else if (item.type === 'dir') {
+                    await getAllFilePaths(item.path, fileList);
+                }
+            }
+        } catch (error) {
+            console.error(`Error fetching file list for path ${path}:`, error);
         }
-        
-        const isImage = e.target.tagName === 'IMG' && !e.target.closest('.resizable-wrapper');
-        if (isImage) {
-            makeImageResizable(e.target);
-            e.stopPropagation();
-        }
-    });
-
-    document.addEventListener('click', function(e) { if (activeResizer && !activeResizer.wrapper.contains(e.target)) removeResizer(); });
-    cancelDeleteBtn.addEventListener('click', () => { deleteModal.style.display = 'none'; });
-    infoModalCloseBtn.addEventListener('click', () => { infoModal.style.display = 'none'; });
-
-    function executeDeleteSoal() {
-        if (!soalToDelete) return;
-        deleteModal.style.display = 'none';
-        const nomorSoal = soalToDelete.dataset.nomor;
-        soalToDelete.remove();
-        delete initialSoalSnapshots[nomorSoal];
-        renumberSoalDOM();
-        updateUIForSoalPresence();
-        checkAllValidityAndUpdateSaveButton();
-    }
-    
-    function makeImageResizable(img) { 
-        if (activeResizer) removeResizer();
-        const wrapper = document.createElement('div'); 
-        wrapper.className = 'resizable-wrapper'; 
-        wrapper.style.width = img.style.width || `${img.offsetWidth}px`;
-        wrapper.style.height = img.style.height || `${img.offsetHeight}px`;
-        img.parentNode.insertBefore(wrapper, img); 
-        wrapper.appendChild(img); 
-        img.style.width = '100%'; img.style.height = '100%';
-        ['top-left', 'top-right', 'bottom-left', 'bottom-right'].forEach(c => { 
-            const h = document.createElement('div'); 
-            h.className = 'resizer ' + c; wrapper.appendChild(h); 
-            h.addEventListener('mousedown', startResize); 
-            h.addEventListener('touchstart', startResize); 
-        }); 
-        activeResizer = { wrapper, img }; 
-    }
-    
-    function removeResizer() { 
-        if (activeResizer) { 
-            const { wrapper, img } = activeResizer; 
-            img.style.width = wrapper.style.width; img.style.height = wrapper.style.height; 
-            img.classList.remove('img-inline', 'img-block');
-            if (wrapper.parentNode) { wrapper.parentNode.insertBefore(img, wrapper); wrapper.remove(); }
-            activeResizer = null; 
-        } 
-    }
-
-    function startResize(e) { 
-        e.preventDefault(); e.stopPropagation(); 
-        const { wrapper, img } = activeResizer; 
-        const aspectRatio = img.naturalWidth / img.naturalHeight;
-        const startX = e.clientX || e.touches[0].clientX; 
-        const startWidth = wrapper.offsetWidth; 
-        function doResize(e) { 
-            const currentX = e.clientX || e.touches[0].clientX; 
-            let newWidth = startWidth + (currentX - startX); 
-            if (newWidth > 20) { wrapper.style.width = newWidth + 'px'; wrapper.style.height = `${newWidth / aspectRatio}px`; }
-        } 
-        function stopResize() { 
-            document.removeEventListener('mousemove', doResize); document.removeEventListener('mouseup', stopResize); 
-            document.removeEventListener('touchmove', doResize); document.removeEventListener('touchend', stopResize); 
-        } 
-        document.addEventListener('mousemove', doResize); document.addEventListener('mouseup', stopResize); 
-        document.addEventListener('touchmove', doResize); document.addEventListener('touchend', stopResize); 
-    }
-    
-    function renumberSoalDOM() {
-        document.querySelectorAll('#soal-list-container .soal-container').forEach((soalDiv, index) => {
-            const newNumber = index + 1;
-            const inputNomor = soalDiv.querySelector('.soal-nomor-input');
-            if (inputNomor) inputNomor.value = newNumber;
-            soalDiv.dataset.nomor = newNumber;
-        });
-    }
-
-    function initializeSortable() { 
-        new Sortable(outputEl, { 
-            animation: 150, ghostClass: 'sortable-ghost', handle: '.drag-handle', 
-            onEnd: function() { renumberSoalDOM(); checkAllValidityAndUpdateSaveButton(); showToast("Urutan soal diubah.", "info"); } 
-        }); 
-    }
-
-    // --- TOOLBAR & EXECCOMMAND ---
-    function saveSelection() {
-        const selection = window.getSelection();
-        if (selection.rangeCount > 0) savedSelection = selection.getRangeAt(0);
-    }
-
-    function restoreSelection() {
-        if (savedSelection) {
-            const selection = window.getSelection();
-            selection.removeAllRanges(); selection.addRange(savedSelection);
-        }
-    }
-
-    // Fungsi sembunyikan toolbar
-    function hideToolbar() {
-        editorToolbar.style.display = 'none';
-    }
-
-    function showToolbar(element) {
-        if (activeResizer) removeResizer();
-        const rect = element.getBoundingClientRect();
-        editorToolbar.style.display = 'flex';
-        let top = window.scrollY + rect.top - editorToolbar.offsetHeight - 8;
-        if (top < window.scrollY) top = window.scrollY + rect.bottom + 8;
-        let left = window.scrollX + rect.left;
-        editorToolbar.style.top = `${top}px`;
-        editorToolbar.style.left = `${left}px`;
-    }
-
-    function initializeToolbar() {
-        outputEl.addEventListener('focusin', (e) => {
-            if (e.target.getAttribute('contenteditable') === 'true') {
-                lastFocusedEditable = e.target;
-                showToolbar(e.target);
-            }
-        });
-        outputEl.addEventListener('focusout', (e) => { if (e.target.getAttribute('contenteditable') === 'true') saveSelection(); });
-
-        // LOGIKA BARU: Klik di luar area editor/toolbar = tutup toolbar
-        document.addEventListener('mousedown', (e) => {
-            const clickedToolbar = editorToolbar.contains(e.target);
-            const clickedEditable = e.target.closest('[contenteditable="true"]');
-            const clickedInput = e.target === toolbarImageInput;
-
-            // Jika klik bukan di toolbar, bukan di text editor, dan bukan input gambar -> Sembunyikan
-            if (!clickedToolbar && !clickedEditable && !clickedInput) {
-                hideToolbar();
-            }
-        });
-
-        editorToolbar.addEventListener('mousedown', (e) => {
-            e.preventDefault();
-            const button = e.target.closest('button');
-            if (!button) return;
-            const command = button.dataset.command;
-            const targetElement = lastFocusedEditable;
-            if (!targetElement) return;
-
-            if (command === 'insertImage') {
-                imageTargetElement = targetElement;
-                toolbarImageInput.click();
-            } else {
-                targetElement.focus();
-                restoreSelection();
-                document.execCommand(command, false, null);
-            }
-        });
-
-        toolbarImageInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file || !imageTargetElement) return;
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                const imgHTML = `<img src="${event.target.result}" data-file-name="${file.name}">`;
-                imageTargetElement.focus(); restoreSelection(); document.execCommand('insertHTML', false, imgHTML);
-                classifyImages(imageTargetElement.closest('.soal-container'));
-            };
-            reader.readAsDataURL(file);
-            toolbarImageInput.value = '';
-        });
-    }
-
-    // --- SAVE LOGIC ---
-    function updateUIForSoalPresence() {
-        const hasSoal = outputEl.children.length > 0;
-        instructionsBox.style.display = hasSoal ? 'none' : 'block';
-        clearDataBtn.disabled = !hasSoal;
-        globalSaveContainer.style.display = hasSoal ? 'block' : 'none';
-        uploadBtn.disabled = hasSoal;
+        return fileList;
     }
 
     function getSoalSnapshot(soalDiv) {
         const extractImages = (element) => Array.from(element.querySelectorAll('img')).map(img => img.src);
+        
         return {
             pertanyaan: soalDiv.querySelector('.soal-pertanyaan').innerHTML,
             pilihanA: soalDiv.querySelector('li:nth-child(1) div').innerHTML,
@@ -1540,13 +1355,33 @@
 
     function validateSoal(soalDiv) {
         const errorMessages = [];
-        const isContentEmpty = (el) => !el.textContent.trim() && !el.querySelector('img');
+        
+        function isContentEmpty(element) {
+            const hasText = element.textContent.trim() !== '';
+            const hasImage = element.querySelector('img') !== null;
+            return !hasText && !hasImage;
+        }
 
-        if (isContentEmpty(soalDiv.querySelector('.soal-pertanyaan'))) errorMessages.push('Pertanyaan kosong.');
-        if (isContentEmpty(soalDiv.querySelector('li:nth-child(1) div'))) errorMessages.push('Pilihan A kosong.');
-        // ... cek pilihan lain ...
-        const kunci = soalDiv.querySelector('.soal-kunci-jawaban div').textContent.trim().toUpperCase();
-        if (!kunci || !['A','B','C','D'].includes(kunci)) errorMessages.push('Kunci harus A/B/C/D.');
+        const pertanyaanEl = soalDiv.querySelector('.soal-pertanyaan');
+        const pilihanAEl = soalDiv.querySelector('li:nth-child(1) div');
+        const pilihanBEl = soalDiv.querySelector('li:nth-child(2) div');
+        const pilihanCEl = soalDiv.querySelector('li:nth-child(3) div');
+        const pilihanDEl = soalDiv.querySelector('li:nth-child(4) div');
+        const kunciEl = soalDiv.querySelector('.soal-kunci-jawaban div');
+
+        if (isContentEmpty(pertanyaanEl)) errorMessages.push('Pertanyaan tidak boleh kosong.');
+        if (isContentEmpty(pilihanAEl)) errorMessages.push('Pilihan A tidak boleh kosong.');
+        if (isContentEmpty(pilihanBEl)) errorMessages.push('Pilihan B tidak boleh kosong.');
+        if (isContentEmpty(pilihanCEl)) errorMessages.push('Pilihan C tidak boleh kosong.');
+        if (isContentEmpty(pilihanDEl)) errorMessages.push('Pilihan D tidak boleh kosong.');
+        
+        const kunciText = kunciEl.textContent.trim().toUpperCase();
+        if (!kunciText) {
+            errorMessages.push('Kunci Jawaban tidak boleh kosong.');
+        } else if (!['A', 'B', 'C', 'D'].includes(kunciText)) {
+            errorMessages.push('Kunci Jawaban harus A, B, C, atau D.');
+        }
+
 
         const errorEl = soalDiv.querySelector('.soal-validation-error');
         if (errorMessages.length > 0) {
@@ -1564,54 +1399,857 @@
     function checkAllValidityAndUpdateSaveButton() {
         let allValid = true;
         document.querySelectorAll('.soal-container').forEach(soalDiv => {
-            if (!validateSoal(soalDiv)) allValid = false;
+            if (!validateSoal(soalDiv)) {
+                allValid = false;
+            }
         });
         globalSaveBtn.disabled = !allValid;
+        globalSaveBtn.title = allValid ? "Simpan semua perubahan ke server" : "Harap perbaiki semua soal yang tidak valid sebelum mengirim.";
     }
 
     function prioritizeInvalidSoal() {
         const container = document.getElementById('soal-list-container');
-        const items = Array.from(container.children);
-        items.sort((a, b) => {
-            const aInvalid = a.classList.contains('invalid-soal');
-            const bInvalid = b.classList.contains('invalid-soal');
-            if (aInvalid && !bInvalid) return -1;
-            if (!aInvalid && bInvalid) return 1;
-            return parseInt(a.dataset.nomor) - parseInt(b.dataset.nomor);
+        const soalElements = Array.from(container.children);
+
+        soalElements.sort((a, b) => {
+            const aIsInvalid = a.classList.contains('invalid-soal');
+            const bIsInvalid = b.classList.contains('invalid-soal');
+            if (aIsInvalid && !bIsInvalid) return -1; 
+            if (!aIsInvalid && bIsInvalid) return 1;
+            
+            // If both are the same validity, sort by number
+            const numA = parseInt(a.dataset.nomor, 10);
+            const numB = parseInt(b.dataset.nomor, 10);
+            return numA - numB;
         });
-        items.forEach(el => container.appendChild(el));
+
+        soalElements.forEach(el => container.appendChild(el));
+    }
+
+    async function clearAllDataFromDB() {
+        const dbPath = getDbPath(currentSoalData);
+        // Hapus data hanya dari satu database
+        await remove(ref(db, dbPath));
+    }
+
+    addSoalBtn.addEventListener('click', () => {
+        const nomorSoalBaru = document.querySelectorAll('.soal-container').length + 1;
+        const soalDetailKosong = { pertanyaan: '', pilihanA: '', pilihanB: '', pilihanC: '', pilihanD: '' };
+        const kunciKosong = '';
+
+        const soalDivBaru = createSoalElement(soalDetailKosong, kunciKosong, nomorSoalBaru);
+        outputEl.appendChild(soalDivBaru);
+        soalDivBaru.dataset.isNew = 'true';
+        updateUIForSoalPresence();
+        checkAllValidityAndUpdateSaveButton();
+        soalDivBaru.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+
+    clearDataBtn.addEventListener('click', () => {
+        modalText.textContent = "Apakah Anda YAKIN ingin menghapus SEMUA data dan gambar untuk ujian ini? Tindakan ini tidak bisa dibatalkan.";
+        confirmationInputContainer.style.display = 'block';
+        confirmationWord.textContent = "HAPUS";
+        confirmationInput.value = '';
+        confirmDeleteBtn.disabled = true;
+        confirmDeleteBtn.onclick = executeClearData;
+        deleteModal.style.display = 'flex';
+    });
+    
+    confirmationInput.addEventListener('input', () => {
+        confirmDeleteBtn.disabled = confirmationInput.value !== "HAPUS";
+    });
+
+    async function executeClearData() {
+        deleteModal.style.display = 'none';
+        showProcessing('Memulai proses penghapusan...');
+
+        try {
+            processingText.textContent = 'Menghapus data soal dari server...';
+            await clearAllDataFromDB();
+            
+            const { tahunAjaran, ujian, kelas, mapel } = currentSoalData;
+            const safeTA = tahunAjaran.replace('/', '-');
+            const safeUjian = ujian.replace(/\s+/g, '-');
+            const safeMapel = mapel.replace(/\s+/g, '-');
+            const dirPath = `${safeTA}/${safeUjian}/Kelas-${kelas}/${safeMapel}`;
+            
+            processingText.textContent = 'Mengumpulkan daftar gambar...';
+            const filesToDelete = await getAllFilePaths(dirPath);
+            const totalFiles = filesToDelete.length;
+
+            if (totalFiles > 0) {
+                let deletedCount = 0;
+                for (const file of filesToDelete) {
+                    deletedCount++;
+                    processingText.textContent = `(${totalFiles - deletedCount + 1}/${totalFiles}) Menghapus gambar...`;
+                    await deleteImageFromGithub(file.download_url);
+                }
+            }
+
+            processingText.textContent = 'Menyelesaikan...';
+            await new Promise(resolve => setTimeout(resolve, 500)); 
+
+            outputEl.innerHTML = '';
+            initialSoalSnapshots = {};
+            updateUIForSoalPresence();
+            showToast('Semua data dan gambar berhasil dihapus!', 'success');
+
+        } catch(error) {
+            showToast(`Gagal menghapus data: ${error.message}`, 'error');
+            console.error("Clear data error:", error);
+        } finally {
+            hideProcessing();
+        }
+    }
+
+    uploadBtn.addEventListener('click', () => fileInput.click() );
+    
+    fileInput.addEventListener('change', async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        showProcessing(`Memproses file: ${file.name}...`);
+        try {
+            await processZipFile(file);
+            updateUIForSoalPresence();
+        } catch (error) {
+            console.error("Gagal memproses file ZIP:", error);
+        } finally {
+            fileInput.value = '';
+            hideProcessing();
+        }
+    });
+
+    async function processZipFile(file) {
+        outputEl.innerHTML = '';
+        initialSoalSnapshots = {};
+        if (activeResizer) removeResizer();
+
+        try {
+            const zip = await JSZip.loadAsync(file);
+            // Cari semua file HTML
+            const htmlFiles = zip.file(/.+\.html?$/i);
+            
+            if (htmlFiles.length === 0) throw new Error("File .html tidak ditemukan di dalam ZIP.");
+            
+            // Prioritaskan file yang BUKAN header/footer/filelist jika ada banyak
+            // Sort agar file utama (yang biasanya lebih besar atau nama pendek) diproses duluan, atau exclude yg mengandung _files
+            htmlFiles.sort((a, b) => {
+                const aName = a.name.toLowerCase();
+                const bName = b.name.toLowerCase();
+                // Penalti untuk file di dalam folder _files atau bernama header/footer
+                const aIsAux = aName.includes('_files') || aName.includes('header') || aName.includes('footer');
+                const bIsAux = bName.includes('_files') || bName.includes('header') || bName.includes('footer');
+                if (aIsAux && !bIsAux) return 1;
+                if (!aIsAux && bIsAux) return -1;
+                return 0;
+            });
+
+            let questionsFound = [];
+            let validHtmlContent = null;
+            let usedZipObject = null;
+
+            // Iterasi untuk mencari file yang benar-benar berisi soal
+            for (const htmlFile of htmlFiles) {
+                try {
+                    const fileContentAsArray = await htmlFile.async('uint8array');
+                    const decoder = new TextDecoder('windows-1252'); // Coba encoding default Word
+                    const htmlContent = decoder.decode(fileContentAsArray);
+                    const tempDoc = new DOMParser().parseFromString(htmlContent, 'text/html');
+                    
+                    // Coba ekstrak
+                    const extracted = extractQuestionsFromDom(tempDoc.body);
+                    if (extracted.length > 0) {
+                        questionsFound = extracted;
+                        validHtmlContent = htmlContent; // Simpan untuk referensi gambar jika perlu
+                        usedZipObject = htmlFile; // File ini yang benar
+                        break; // Ketemu! Berhenti mencari
+                    }
+                } catch (e) {
+                    console.warn("Gagal memparsing file kandidat:", htmlFile.name, e);
+                }
+            }
+
+            if (questionsFound.length === 0) {
+                throw new Error("Tidak ada tabel format soal yang valid ditemukan di dalam file manapun di ZIP ini.");
+            }
+
+            // Proses Gambar hanya untuk file yang valid
+            if (usedZipObject) {
+                 // Kita perlu memuat ulang tempDoc dari validHtmlContent agar referensi gambar benar saat diproses
+                 const tempDoc = new DOMParser().parseFromString(validHtmlContent, 'text/html');
+                 // Pre-load images
+                 const imagesInDoc = Array.from(tempDoc.getElementsByTagName('img'));
+                 for (const img of imagesInDoc) {
+                    const src = img.getAttribute('src');
+                    if (src && !src.startsWith('data:') && !src.startsWith('http')) {
+                        try {
+                            const decodedSrc = decodeURIComponent(src);
+                            // Cari file gambar di zip. Path gambar di HTML mungkin relatif
+                            // Kita perlu resolusi path yang lebih pintar jika file HTML ada di subfolder
+                            // Tapi biasanya Word export: File.htm dan File_files/image.png ada di level yg sama
+                            
+                            // Simplifikasi: coba cari loose match di zip jika exact match gagal
+                            let imageFile = zip.file(decodedSrc);
+                            
+                            // Jika tidak ketemu, coba cari by filename saja (risky tapi membantu jika path beda)
+                            if (!imageFile) {
+                                const cleanName = decodedSrc.split('/').pop();
+                                const potentialMatches = zip.file(new RegExp(cleanName + "$", "i"));
+                                if (potentialMatches.length > 0) imageFile = potentialMatches[0];
+                            }
+
+                            if (imageFile) {
+                                const base64Content = await imageFile.async('base64');
+                                const extension = imageFile.name.split('.').pop().toLowerCase();
+                                img.src = `data:image/${extension};base64,${base64Content}`;
+                                img.dataset.fileName = imageFile.name;
+                            }
+                        } catch (e) { console.warn(`Gagal memuat gambar: ${src}`, e); }
+                    }
+                }
+                // Ekstrak ulang dengan gambar yang sudah di-embed
+                questionsFound = extractQuestionsFromDom(tempDoc.body);
+            }
+
+            // Render hasil ke layar
+            questionsFound.forEach(q => {
+                const soalDiv = createSoalElement(q.detail, q.kunci, q.nomor);
+                soalDiv.dataset.isNew = 'true';
+                outputEl.appendChild(soalDiv);
+            });
+            
+            createInitialSnapshots();
+            prioritizeInvalidSoal();
+            checkAllValidityAndUpdateSaveButton();
+            initializeSortable();
+            
+            const invalidSoalNumbers = [];
+            document.querySelectorAll('.soal-container.invalid-soal').forEach(soalDiv => {
+                invalidSoalNumbers.push(soalDiv.dataset.nomor);
+            });
+
+            if(invalidSoalNumbers.length > 0) {
+                const numberList = invalidSoalNumbers.join(', ');
+                const message = `Ditemukan beberapa soal yang tidak valid setelah impor. Harap periksa dan perbaiki soal nomor berikut sebelum menyimpan:\n\n${numberList}`;
+                showInfoOverlay("Peringatan Validasi", message);
+            } else {
+                showToast(`Selesai! ${questionsFound.length} soal berhasil dibaca.`, 'success');
+            }
+
+        } catch (err) {
+            showToast(`Gagal memproses ZIP: ${err.message}`, 'error');
+            console.error(err);
+        }
+    }
+
+    function extractQuestionsFromDom(bodyElement) {
+        const tables = bodyElement.getElementsByTagName('table');
+        const results = [];
+        let soalDitemukan = 0;
+        
+        for (const table of tables) {
+            const rows = table.rows;
+            for (let i = 0; i < rows.length; i += 2) {
+                const firstCell = rows[i]?.cells[0];
+                if (!firstCell) continue;
+                
+                const nomorText = firstCell.textContent.trim();
+                // Validasi sederhana: cell pertama harus angka
+                if (!nomorText || isNaN(parseInt(nomorText, 10))) continue;
+
+                if (i + 1 >= rows.length) continue;
+
+                const mainContentCell = rows[i]?.cells[1];
+                const keyCell = rows[i + 1]?.cells[1];
+
+                if (!mainContentCell || !keyCell) {
+                    console.warn(`Skipping incomplete question block at row index ${i}`);
+                    continue;
+                }
+                
+                // Jika konten kosong sama sekali, skip
+                if (!mainContentCell.textContent.trim() && !mainContentCell.querySelector('img')) {
+                    continue;
+                }
+
+                try {
+                    soalDitemukan++;
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = mainContentCell.innerHTML;
+
+                    const questionParts = [];
+                    const optionParts = new Map([['A', []], ['B', []], ['C', []], ['D', []]]);
+                    const optionKeys = ['A', 'B', 'C', 'D'];
+                    let currentOptionIndex = 0; // 0=A, 1=B, 2=C, 3=D
+                    let foundOptions = false;
+
+                    for (const node of Array.from(tempDiv.childNodes)) {
+                        // LOGIKA BARU: Cek jika node adalah LIST (OL/UL)
+                        if (node.tagName === 'OL' || node.tagName === 'UL') {
+                            const listItems = node.querySelectorAll('li');
+                            
+                            // Jika list memiliki atribut start, kita sesuaikan indexnya
+                            // Namun, amannya kita lanjutkan saja urutan dari index terakhir
+                            
+                            listItems.forEach(li => {
+                                if (currentOptionIndex < 4) {
+                                    foundOptions = true;
+                                    const key = optionKeys[currentOptionIndex];
+                                    optionParts.get(key).push(li.innerHTML);
+                                    currentOptionIndex++;
+                                }
+                            });
+                            continue; // Lanjut ke node berikutnya
+                        }
+
+                        const nodeText = node.textContent.trim();
+                        // Deteksi opsi jawaban manual A. B. C. D.
+                        const match = nodeText.match(/^([A-D])\.\s*/);
+
+                        if (match) {
+                            foundOptions = true;
+                            const keyMatch = match[1];
+                            currentOptionIndex = optionKeys.indexOf(keyMatch); // Set index sesuai huruf yang ditemukan
+                            
+                            const tempNode = node.cloneNode(true);
+                            const markerRegex = new RegExp(`^\\s*${keyMatch}\\.\\s*`);
+                            
+                            const walker = document.createTreeWalker(tempNode, NodeFilter.SHOW_TEXT, null, false);
+                            let textNodeToModify = walker.nextNode();
+                            while(textNodeToModify && textNodeToModify.nodeValue.trim() === '') {
+                                textNodeToModify = walker.nextNode();
+                            }
+                            
+                            if (textNodeToModify) {
+                                textNodeToModify.nodeValue = textNodeToModify.nodeValue.replace(markerRegex, '').trim();
+                            }
+
+                            const contentToAdd = tempNode.innerHTML.trim();
+                            if (contentToAdd) {
+                                optionParts.get(keyMatch).push(contentToAdd);
+                            }
+                            currentOptionIndex++; // Siapkan untuk huruf berikutnya
+                        } else if (foundOptions) {
+                            // Jika sudah masuk mode opsi, tapi tidak ada marker A/B/C/D
+                            // Kemungkinan ini adalah kelanjutan teks dari opsi sebelumnya
+                            // ATAU ini adalah list item yang tidak terdeteksi
+                            
+                            if (currentOptionIndex > 0 && currentOptionIndex <= 4) {
+                                const lastKey = optionKeys[currentOptionIndex - 1];
+                                optionParts.get(lastKey).push(node.outerHTML || node.textContent);
+                            }
+                        } else {
+                            questionParts.push(node.cloneNode(true));
+                        }
+                    }
+
+                    const questionContainer = document.createElement('div');
+                    questionParts.forEach(part => questionContainer.appendChild(part));
+                    
+                    const soalDetail = {
+                        pertanyaan: cleanHtml(questionContainer, true),
+                        pilihanA: stripFormattingFromOption(optionParts.get('A')?.join(' ') || ''),
+                        pilihanB: stripFormattingFromOption(optionParts.get('B')?.join(' ') || ''),
+                        pilihanC: stripFormattingFromOption(optionParts.get('C')?.join(' ') || ''),
+                        pilihanD: stripFormattingFromOption(optionParts.get('D')?.join(' ') || '')
+                    };
+                    
+                    const kunci = cleanHtml(keyCell, false).trim().toUpperCase();
+                    
+                    results.push({
+                        detail: soalDetail,
+                        kunci: kunci,
+                        nomor: soalDitemukan
+                    });
+
+                } catch (e) {
+                    console.error(`Gagal memproses blok soal pada baris ${i}.`, e);
+                }
+            }
+        }
+        return results;
+    }
+    
+    function createSoalElement(soalDetail, kunci, nomor) {
+        const soalDiv = document.createElement('div');
+        soalDiv.className = 'soal-container';
+        soalDiv.dataset.nomor = nomor;
+        
+        soalDiv.innerHTML = `
+            <div class="soal-header">
+                <div class="soal-nomor-container">
+                    <h3 class="soal-nomor">Soal 
+                        <input type="number" class="soal-nomor-input" value="${nomor}" min="1">
+                    </h3>
+                </div>
+                <div class="drag-handle" title="Seret untuk mengubah urutan"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                <div class="soal-actions">
+                    <button class="btn delete-btn btn-danger">Hapus</button>
+                </div>
+            </div>
+            <div class="soal-pertanyaan" contenteditable="true" data-placeholder="Ketik pertanyaan di sini...">${soalDetail.pertanyaan}</div>
+            <ul>
+                <li><b>A.</b> <div contenteditable="true" dir="auto">${soalDetail.pilihanA}</div></li>
+                <li><b>B.</b> <div contenteditable="true" dir="auto">${soalDetail.pilihanB}</div></li>
+                <li><b>C.</b> <div contenteditable="true" dir="auto">${soalDetail.pilihanC}</div></li>
+                <li><b>D.</b> <div contenteditable="true" dir="auto">${soalDetail.pilihanD}</div></li>
+            </ul>
+            <div class="soal-kunci-jawaban">
+                <span>Kunci Jawaban:</span>
+                <div contenteditable="true" dir="auto">${kunci}</div>
+            </div>
+            <div class="soal-validation-error"></div>
+        `;
+        
+        const nomorInput = soalDiv.querySelector('.soal-nomor-input');
+        nomorInput.addEventListener('change', () => {
+            sortSoalByInput();
+        });
+        
+        classifyImages(soalDiv);
+        return soalDiv;
+    }
+
+    function sortSoalByInput() {
+        const container = document.getElementById('soal-list-container');
+        const items = Array.from(container.children);
+
+        items.sort((a, b) => {
+            const valA = parseFloat(a.querySelector('.soal-nomor-input').value) || 0;
+            const valB = parseFloat(b.querySelector('.soal-nomor-input').value) || 0;
+            return valA - valB;
+        });
+
+        items.forEach(item => container.appendChild(item));
+        renumberSoalDOM();
+        showToast("Urutan soal diperbarui.", "info");
+    }
+
+    function stripFormattingFromOption(htmlString) {
+        if (!htmlString) return '';
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = htmlString;
+        
+        let result = '';
+        const walker = document.createTreeWalker(tempDiv, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT, null, false);
+        
+        let node;
+        while(node = walker.nextNode()) {
+            if (node.nodeType === 3) { // Text node
+                result += node.textContent;
+            } else if (node.nodeName === 'IMG') { // Image element
+                result += node.outerHTML;
+            }
+        }
+        
+        return result.replace(/\s+/g, ' ').trim();
+    }
+
+
+    function parseHtmlAndDisplay(bodyElement) {
+        // Fungsi ini sekarang digantikan oleh extractQuestionsFromDom
+        // Tapi kita biarkan kosong atau hapus jika tidak dipakai lagi
+        // Untuk menjaga kompatibilitas jika ada panggilan lain, kita bisa log warning
+        console.warn("parseHtmlAndDisplay is deprecated. Use processZipFile logic instead.");
+    }
+
+    function cleanHtml(element, allowParagraphs) {
+        if (!element) return '';
+        const clone = element.cloneNode(true);
+
+        clone.querySelectorAll('style, script').forEach(el => el.remove());
+        clone.querySelectorAll('*').forEach(child => {
+            child.removeAttribute('class');
+            child.removeAttribute('lang');
+            if (child.tagName === 'IMG' && child.hasAttribute('style')) {
+                const width = child.style.width;
+                const height = child.style.height;
+                child.removeAttribute('style');
+                if (width) child.style.width = width;
+                if (height) child.style.height = height;
+            } else if (child.tagName !== 'IMG') {
+                 child.removeAttribute('style');
+            }
+        });
+        
+        if (!allowParagraphs) {
+            clone.querySelectorAll('p').forEach(p => {
+                if (p.innerHTML.trim() === '' || p.innerHTML.trim() === '&nbsp;') {
+                    p.remove();
+                } else {
+                    p.replaceWith(...p.childNodes, document.createElement('br'));
+                }
+            });
+        }
+        
+        let html = clone.innerHTML;
+        html = html.replace(/&nbsp;/g, ' ');
+        html = html.replace(/(<br\s*\/?>\s*){2,}/gi, '<br>'); 
+        html = html.trim().replace(/^<br\s*\/?>|<br\s*\/?>$/gi, '').trim();
+
+        return html;
+    }
+
+    function classifyImages(containerElement) {
+        containerElement.querySelectorAll('img').forEach(img => {
+            if (img.style.width) {
+                if (!img.style.height) {
+                    img.style.height = 'auto';
+                }
+                return;
+            }
+
+            const wrapper = img.closest('.resizable-wrapper');
+            const elementToCheck = wrapper || img;
+            const p = elementToCheck.closest('p, div');
+
+            if (!p) {
+                img.classList.add('img-inline');
+                img.classList.remove('img-block');
+                return;
+            }
+            
+            const hasMeaningfulSiblings = Array.from(p.childNodes).some(sibling => {
+                if (sibling === elementToCheck) return false;
+                if (sibling.nodeType === 3 && sibling.textContent.trim().length > 0) return true; // Text node
+                if (sibling.nodeType === 1 && sibling.tagName !== 'BR' && !sibling.contains(elementToCheck)) return true; // Element node
+                return false;
+            });
+
+
+            if (hasMeaningfulSiblings) {
+                img.classList.add('img-inline');
+                img.classList.remove('img-block');
+                img.style.maxWidth = '';
+            } else {
+                img.classList.add('img-block');
+                img.classList.remove('img-inline');
+                img.style.maxWidth = '100%';
+            }
+        });
+    }
+
+    outputEl.addEventListener('click', function(e) {
+        const soalContainer = e.target.closest('.soal-container');
+        if (!soalContainer) return;
+
+        const deleteBtn = e.target.closest('.delete-btn');
+
+        if (deleteBtn) {
+             soalToDelete = soalContainer;
+             modalText.textContent = "Apakah Anda yakin ingin menghapus soal ini? Gambar terkait akan dihapus saat penyimpanan berikutnya.";
+             confirmationInputContainer.style.display = 'none';
+             confirmDeleteBtn.disabled = false;
+             confirmDeleteBtn.onclick = executeDeleteSoal;
+             deleteModal.style.display = 'flex';
+             return;
+        }
+        
+        const isImage = e.target.tagName === 'IMG' && !e.target.closest('.resizable-wrapper');
+        if (isImage) {
+            makeImageResizable(e.target);
+            e.stopPropagation();
+        }
+    });
+
+    document.addEventListener('click', function(e) { if (activeResizer && !activeResizer.wrapper.contains(e.target)) removeResizer(); });
+    cancelDeleteBtn.addEventListener('click', () => { deleteModal.style.display = 'none'; });
+    infoModalCloseBtn.addEventListener('click', () => { infoModal.style.display = 'none'; });
+
+    function executeDeleteSoal() {
+        if (!soalToDelete) return;
+        deleteModal.style.display = 'none';
+
+        const nomorSoal = soalToDelete.dataset.nomor;
+        soalToDelete.remove();
+        delete initialSoalSnapshots[nomorSoal];
+        
+        renumberSoalDOM();
+        updateUIForSoalPresence();
+        checkAllValidityAndUpdateSaveButton();
+        showToast(`Soal No. ${nomorSoal} telah dihapus dari editor. Tekan "Kirim & Simpan" untuk finalisasi.`, "info");
+    }
+    
+    function makeImageResizable(img) { 
+        if (activeResizer) removeResizer();
+        const wrapper = document.createElement('div'); 
+        wrapper.className = 'resizable-wrapper'; 
+        
+        wrapper.style.width = img.style.width || `${img.offsetWidth}px`;
+        wrapper.style.height = img.style.height || `${img.offsetHeight}px`;
+
+        img.parentNode.insertBefore(wrapper, img); 
+        wrapper.appendChild(img); 
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.maxHeight = 'none'; 
+        ['top-left', 'top-right', 'bottom-left', 'bottom-right'].forEach(c => { 
+            const h = document.createElement('div'); 
+            h.className = 'resizer ' + c; 
+            wrapper.appendChild(h); 
+            h.addEventListener('mousedown', startResize, { passive: false }); 
+            h.addEventListener('touchstart', startResize, { passive: false }); 
+        }); 
+        activeResizer = { wrapper, img }; 
+    }
+    
+    function removeResizer() { 
+        if (activeResizer) { 
+            const { wrapper, img } = activeResizer; 
+            img.style.width = wrapper.style.width;
+            img.style.height = wrapper.style.height; 
+            img.classList.remove('img-inline', 'img-block');
+            img.style.verticalAlign = 'middle';
+            img.style.maxHeight = '';
+            if (wrapper.parentNode) {
+                wrapper.parentNode.insertBefore(img, wrapper); 
+                wrapper.remove(); 
+            }
+            activeResizer = null; 
+        } 
+    }
+
+    function startResize(e) { 
+        e.preventDefault(); 
+        e.stopPropagation(); 
+        const { wrapper, img } = activeResizer; 
+        const aspectRatio = img.naturalWidth / img.naturalHeight;
+        const handle = e.target; 
+        const startX = e.clientX || e.touches[0].clientX; 
+        const startWidth = wrapper.offsetWidth; 
+        function doResize(e) { 
+            const currentX = e.clientX || e.touches[0].clientX; 
+            let newWidth = handle.classList.contains('bottom-right') || handle.classList.contains('top-right') ? startWidth + (currentX - startX) : startWidth - (currentX - startX); 
+            if (newWidth > 20) {
+                wrapper.style.width = newWidth + 'px';
+                wrapper.style.height = `${newWidth / aspectRatio}px`;
+            }
+        } 
+        function stopResize() { 
+            document.removeEventListener('mousemove', doResize); 
+            document.removeEventListener('mouseup', stopResize); 
+            document.removeEventListener('touchmove', doResize); 
+            document.removeEventListener('touchend', stopResize); 
+        } 
+        document.addEventListener('mousemove', doResize); 
+        document.addEventListener('mouseup', stopResize); 
+        document.addEventListener('touchmove', doResize); 
+        document.addEventListener('touchend', stopResize); 
+    }
+    
+    function renumberSoalDOM() {
+        document.querySelectorAll('#soal-list-container .soal-container').forEach((soalDiv, index) => {
+            const newNumber = index + 1;
+            
+            const inputNomor = soalDiv.querySelector('.soal-nomor-input');
+            if (inputNomor) {
+                inputNomor.value = newNumber;
+            } else {
+                 const nomorSpan = soalDiv.querySelector('.soal-nomor span');
+                 if(nomorSpan) nomorSpan.textContent = newNumber;
+            }
+            soalDiv.dataset.nomor = newNumber;
+        });
+    }
+
+    function initializeSortable() { 
+        new Sortable(outputEl, { 
+            animation: 150, 
+            ghostClass: 'sortable-ghost', 
+            handle: '.drag-handle', 
+            onEnd: function() {
+                renumberSoalDOM();
+                checkAllValidityAndUpdateSaveButton();
+                showToast("Urutan soal diubah. Tekan 'Kirim & Simpan' untuk menyimpan urutan baru.", "info");
+            } 
+        }); 
+    }
+
+    function saveSelection() {
+        const selection = window.getSelection();
+        if (selection.rangeCount > 0) {
+            savedSelection = selection.getRangeAt(0);
+        }
+    }
+
+    function restoreSelection() {
+        if (savedSelection) {
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(savedSelection);
+        }
+    }
+
+    function showToolbar(element) {
+        if (activeResizer) removeResizer();
+        const rect = element.getBoundingClientRect();
+        editorToolbar.style.display = 'flex';
+        
+        let top = window.scrollY + rect.top - editorToolbar.offsetHeight - 8;
+        if (top < window.scrollY) {
+            top = window.scrollY + rect.bottom + 8;
+        }
+
+        let left = window.scrollX + rect.left + (rect.width / 2) - (editorToolbar.offsetWidth / 2);
+        if (left < 0) left = 5;
+        if (left + editorToolbar.offsetWidth > window.innerWidth) {
+            left = window.innerWidth - editorToolbar.offsetWidth - 5;
+        }
+
+        editorToolbar.style.top = `${top}px`;
+        editorToolbar.style.left = `${left}px`;
+    }
+
+    function hideToolbar() {
+        editorToolbar.style.display = 'none';
+        lastFocusedEditable = null;
+        savedSelection = null;
+    }
+
+    function initializeToolbar() {
+        outputEl.addEventListener('focusin', (e) => {
+            if (e.target.getAttribute('contenteditable') === 'true') {
+                lastFocusedEditable = e.target;
+                showToolbar(e.target);
+            }
+        });
+
+        outputEl.addEventListener('focusout', (e) => {
+            if (e.target.getAttribute('contenteditable') === 'true') {
+                saveSelection();
+            }
+        });
+
+        editorToolbar.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            const button = e.target.closest('button');
+            if (!button) return;
+
+            const command = button.dataset.command;
+            const targetElement = lastFocusedEditable;
+            
+            if (!targetElement) {
+                showToast('Silakan klik di dalam area teks terlebih dahulu.', 'error');
+                return;
+            }
+
+            if (command === 'insertImage') {
+                imageTargetElement = targetElement;
+                toolbarImageInput.click();
+            } else {
+                targetElement.focus();
+                restoreSelection();
+                document.execCommand(command, false, null);
+            }
+        });
+
+        toolbarImageInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file || !imageTargetElement) {
+                imageTargetElement = null;
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const imgHTML = `<img src="${event.target.result}" data-file-name="${file.name}">`;
+                
+                imageTargetElement.focus();
+                restoreSelection();
+                document.execCommand('insertHTML', false, imgHTML);
+                
+                const container = imageTargetElement.closest('.soal-container');
+                if (container) {
+                    classifyImages(container);
+                }
+
+                setTimeout(() => {
+                    imageTargetElement.focus();
+                    showToolbar(imageTargetElement);
+                    imageTargetElement = null;
+                }, 100);
+            };
+            reader.readAsDataURL(file);
+            toolbarImageInput.value = '';
+        });
+    }
+
+    function updateUIForSoalPresence() {
+        const hasSoal = outputEl.children.length > 0;
+        instructionsBox.style.display = hasSoal ? 'none' : 'block';
+        clearDataBtn.disabled = !hasSoal;
+        globalSaveContainer.style.display = hasSoal ? 'block' : 'none';
+        uploadBtn.disabled = hasSoal;
+    }
+
+    settingsBtn.addEventListener('click', () => settingsModal.style.display = 'flex');
+    settingsModal.addEventListener('click', (e) => { if (e.target === settingsModal) settingsModal.style.display = 'none'; });
+    lightThemeBtn.addEventListener('click', () => { document.body.classList.remove('dark-mode'); localStorage.setItem('theme', 'light'); settingsModal.style.display = 'none'; });
+    darkThemeBtn.addEventListener('click', () => { document.body.classList.add('dark-mode'); localStorage.setItem('theme', 'dark'); settingsModal.style.display = 'none'; });
+
+    function loadTheme() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') document.body.classList.add('dark-mode');
+        else document.body.classList.remove('dark-mode');
     }
 
     async function executeGlobalSave() {
         showProcessing('Menganalisis perubahan...');
+        
         try {
-            // 1. Delete Old Images Logic
-            const currentSoalIds = new Set(Array.from(document.querySelectorAll('.soal-container')).map(el => el.dataset.nomor));
             const imagesToDelete = new Set();
             
-            Object.keys(initialSoalSnapshots).forEach(nomor => {
+            const currentSoalElements = Array.from(document.querySelectorAll('.soal-container'));
+            const currentSoalIds = new Set(currentSoalElements.map(el => el.dataset.nomor));
+            const initialSoalIds = new Set(Object.keys(initialSoalSnapshots));
+
+            // 1. Identify deleted questions and collect their images for deletion
+            initialSoalIds.forEach(nomor => {
                 if (!currentSoalIds.has(nomor)) {
-                    initialSoalSnapshots[nomor].images.forEach(img => { if (img.includes('github')) imagesToDelete.add(img); });
+                    initialSoalSnapshots[nomor].images.forEach(imgUrl => {
+                        if (imgUrl.includes('github')) imagesToDelete.add(imgUrl);
+                    });
                 }
             });
 
-            // 2. Upload New Images Logic
-            const soalElements = document.querySelectorAll('.soal-container');
-            for (const soalDiv of soalElements) {
-                const imgs = soalDiv.querySelectorAll('img');
-                for (const img of imgs) {
+            // 2. Process image uploads for new/updated questions and collect old images to delete
+            let imagesToUpload = [];
+            currentSoalElements.forEach(soalDiv => {
+                soalDiv.querySelectorAll('img').forEach(img => {
                     if (img.src.startsWith('data:image')) {
-                        const base64 = img.src.split(',')[1];
-                        const name = img.dataset.fileName || 'image.png';
-                        const url = await uploadImageToGithub({name}, base64);
-                        img.src = url;
+                        imagesToUpload.push(img);
                     }
+                });
+
+                const nomor = soalDiv.dataset.nomor;
+                if (initialSoalSnapshots[nomor]) { // Only for existing questions
+                    const initialImages = new Set(initialSoalSnapshots[nomor].images.filter(src => src.includes('github')));
+                    const currentImages = new Set(Array.from(soalDiv.querySelectorAll('img')).map(img => img.src).filter(src => src.includes('github')));
+                    initialImages.forEach(imgUrl => {
+                        if (!currentImages.has(imgUrl)) {
+                            imagesToDelete.add(imgUrl);
+                        }
+                    });
+                }
+            });
+
+            if (imagesToUpload.length > 0) {
+                let uploadedCount = 0;
+                for (const img of imagesToUpload) {
+                    uploadedCount++;
+                    processingText.textContent = `(${uploadedCount}/${imagesToUpload.length}) Mengunggah gambar...`;
+                    const base64String = img.src.split(',')[1];
+                    const fileName = img.dataset.fileName || 'pasted-image.png';
+                    const githubUrl = await uploadImageToGithub({ name: fileName }, base64String);
+                    img.src = githubUrl; // Directly update the DOM
                 }
             }
-
-            // 3. Save to Firebase
+            
+            // 3. Prepare final data object for Firebase from the current DOM state
+            processingText.textContent = 'Mempersiapkan data untuk server...';
             const soalObject = {};
-            soalElements.forEach(soalDiv => {
+            currentSoalElements.forEach(soalDiv => {
                 const nomor = soalDiv.dataset.nomor;
                 soalObject[nomor] = {
                     pertanyaan: soalDiv.querySelector('.soal-pertanyaan').innerHTML,
@@ -1622,82 +2260,90 @@
                     kunciJawaban: soalDiv.querySelector('.soal-kunci-jawaban div').textContent.trim().toUpperCase()
                 };
             });
-
-            const allKunjab = Object.keys(soalObject).sort((a,b)=>a-b).map(n => soalObject[n].kunciJawaban).join(',');
-            const finalData = { ...currentSoalData, soal: soalObject, kunjab: allKunjab, terakhirUpdate: new Date().toISOString() };
             
-            await set(ref(db, getDbPath(currentSoalData)), finalData);
-
-            // 4. Execute Delete
-            for (const url of imagesToDelete) await deleteImageFromGithub(url);
-
-            showToast('Berhasil disimpan!', 'success');
-            createInitialSnapshots();
+            const allKunjab = Object.keys(soalObject).sort((a,b) => parseInt(a) - parseInt(b)).map(nomor => soalObject[nomor].kunciJawaban || ' ');
             
+            const finalData = {
+                ...currentSoalData,
+                soal: Object.keys(soalObject).length > 0 ? soalObject : null,
+                kunjab: allKunjab.join(','),
+                terakhirUpdate: new Date().toISOString()
+            };
+
+            // 4. Write to Firebase (Single DB)
+            processingText.textContent = 'Menyimpan data ke server...';
+            const dbPath = getDbPath(currentSoalData);
+            
+            // Simpan data hanya ke satu database
+            await set(ref(db, dbPath), finalData);
+            
+            // 5. Delete unused images from GitHub
+            if (imagesToDelete.size > 0) {
+                let deletedCount = 0;
+                const totalToDelete = imagesToDelete.size;
+                for (const imageUrl of imagesToDelete) {
+                    deletedCount++;
+                    processingText.textContent = `(${totalToDelete - deletedCount + 1}/${totalToDelete}) Membersihkan gambar lama...`;
+                    await deleteImageFromGithub(imageUrl);
+                }
+            }
+            
+            showToast('Semua perubahan berhasil disimpan!', 'success');
+            createInitialSnapshots(); 
+            prioritizeInvalidSoal(); 
+            checkAllValidityAndUpdateSaveButton();
+
         } catch (error) {
-            showToast(`Gagal: ${error.message}`, 'error');
+            showToast(`Penyimpanan Gagal: ${error.message}`, 'error');
+            console.error("Global save error:", error);
         } finally {
             hideProcessing();
         }
     }
-
-    addSoalBtn.addEventListener('click', () => {
-        const nomor = document.querySelectorAll('.soal-container').length + 1;
-        const div = createSoalElement({pertanyaan:'',pilihanA:'',pilihanB:'',pilihanC:'',pilihanD:''}, '', nomor);
-        outputEl.appendChild(div);
-        div.scrollIntoView({behavior:'smooth'});
-        updateUIForSoalPresence();
-        checkAllValidityAndUpdateSaveButton();
-    });
-
-    clearDataBtn.addEventListener('click', () => {
-        modalText.textContent = "Hapus SEMUA data?";
-        confirmationInputContainer.style.display = 'block';
-        confirmationWord.textContent = "HAPUS";
-        confirmationInput.value = '';
-        confirmDeleteBtn.onclick = async () => {
-            deleteModal.style.display = 'none';
-            showProcessing('Menghapus...');
-            try {
-                await remove(ref(db, getDbPath(currentSoalData)));
-                outputEl.innerHTML = '';
-                showToast('Terhapus.', 'success');
-                updateUIForSoalPresence();
-            } catch(e) { showToast(e.message, 'error'); } 
-            finally { hideProcessing(); }
-        };
-        deleteModal.style.display = 'flex';
-    });
-
-    settingsBtn.addEventListener('click', () => settingsModal.style.display = 'flex');
-    settingsModal.addEventListener('click', (e) => { if(e.target===settingsModal) settingsModal.style.display='none'; });
-    lightThemeBtn.addEventListener('click', () => { document.body.classList.remove('dark-mode'); localStorage.setItem('theme', 'light'); });
-    darkThemeBtn.addEventListener('click', () => { document.body.classList.add('dark-mode'); localStorage.setItem('theme', 'dark'); });
-
-    // --- INITIALIZATION ---
+    
     function initialize() {
+        // initializeFirebaseApps(); // Tidak diperlukan lagi
         performAutoLogin();
         initializeToolbar();
         initializeSelectionListeners();
-        
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'dark') document.body.classList.add('dark-mode');
 
         confirmActionBtn.addEventListener('click', () => {
-            if (confirmCallback) confirmCallback();
+            if (typeof confirmCallback === 'function') {
+                confirmCallback();
+            }
             confirmModal.style.display = 'none';
         });
-        cancelConfirmBtn.addEventListener('click', () => confirmModal.style.display = 'none');
+
+        cancelConfirmBtn.addEventListener('click', () => {
+            confirmModal.style.display = 'none';
+            confirmCallback = null;
+        });
         
+        confirmModal.addEventListener('click', (e) => {
+            if(e.target === confirmModal) {
+                 confirmModal.style.display = 'none';
+                 confirmCallback = null;
+            }
+        });
+
         outputEl.addEventListener('input', (e) => {
-            if (e.target.closest('[contenteditable]')) checkAllValidityAndUpdateSaveButton();
+            if (e.target.closest('[contenteditable="true"]')) {
+                checkAllValidityAndUpdateSaveButton();
+            }
         });
 
         globalSaveBtn.addEventListener('click', () => {
-            showConfirmModal('Simpan?', 'Data akan dikirim ke server.', 'Ya', 'btn-success', executeGlobalSave);
+            showConfirmModal(
+                'Konfirmasi Penyimpanan',
+                'Semua perubahan akan dikirim ke server. Pastikan semua data sudah benar. Lanjutkan?',
+                'Ya, Kirim & Simpan',
+                'btn-success',
+                executeGlobalSave
+            );
         });
     }
-
+    
+    loadTheme();
     initialize();
 </script>
 </body>
