@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>Editor Bank Soal (Single Database) - Fix Word Lists</title>
+    <title>Editor Bank Soal (Single Database) - Fix Encoding & UI</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1356,8 +1356,12 @@
     function validateSoal(soalDiv) {
         const errorMessages = [];
         
+        // FUNGSI UTAMA: Mengecek apakah konten benar-benar kosong
+        // Mengabaikan &nbsp; (non-breaking space) yang sering dibuat editor otomatis
         function isContentEmpty(element) {
-            const hasText = element.textContent.trim() !== '';
+            // Hapus tag HTML
+            const rawText = element.textContent.replace(/\u00a0/g, " ").trim(); 
+            const hasText = rawText.length > 0;
             const hasImage = element.querySelector('img') !== null;
             return !hasText && !hasImage;
         }
@@ -1375,7 +1379,7 @@
         if (isContentEmpty(pilihanCEl)) errorMessages.push('Pilihan C tidak boleh kosong.');
         if (isContentEmpty(pilihanDEl)) errorMessages.push('Pilihan D tidak boleh kosong.');
         
-        const kunciText = kunciEl.textContent.trim().toUpperCase();
+        const kunciText = kunciEl.textContent.replace(/\u00a0/g, " ").trim().toUpperCase();
         if (!kunciText) {
             errorMessages.push('Kunci Jawaban tidak boleh kosong.');
         } else if (!['A', 'B', 'C', 'D'].includes(kunciText)) {
@@ -1520,6 +1524,34 @@
         }
     });
 
+    // FUNGSI PEMBERSIH KODE WORD/WPS YANG LEBIH KUAT
+    // Memperbaiki masalah encoding (simbol aneh) sebelum diparsing
+    function cleanWordHtml(html) {
+        if (!html) return "";
+        
+        let clean = html;
+        
+        // 1. Perbaiki Mojibake Windows-1252/UTF-8 yang umum
+        // Seringkali titik tiga (...) jadi â€¦ atau semacamnya di komputer beda
+        const replacements = {
+            'â€¦': '...',
+            'â€œ': '"',
+            'â€': '"',
+            'â€™': "'",
+            'â€“': '-',
+            'â€”': '--',
+            'Â': ' ', // Non-breaking space artifact
+            'ï»¿': '', // BOM
+            'Ã—': 'x', // Multiplication sign
+        };
+        
+        for (const [bad, good] of Object.entries(replacements)) {
+            clean = clean.split(bad).join(good);
+        }
+
+        return clean;
+    }
+
     async function processZipFile(file) {
         outputEl.innerHTML = '';
         initialSoalSnapshots = {};
@@ -1527,17 +1559,14 @@
 
         try {
             const zip = await JSZip.loadAsync(file);
-            // Cari semua file HTML
             const htmlFiles = zip.file(/.+\.html?$/i);
             
             if (htmlFiles.length === 0) throw new Error("File .html tidak ditemukan di dalam ZIP.");
             
-            // Prioritaskan file yang BUKAN header/footer/filelist jika ada banyak
-            // Sort agar file utama (yang biasanya lebih besar atau nama pendek) diproses duluan, atau exclude yg mengandung _files
+            // Urutkan file agar file utama diproses duluan (biasanya nama lebih pendek atau tanpa _files)
             htmlFiles.sort((a, b) => {
                 const aName = a.name.toLowerCase();
                 const bName = b.name.toLowerCase();
-                // Penalti untuk file di dalam folder _files atau bernama header/footer
                 const aIsAux = aName.includes('_files') || aName.includes('header') || aName.includes('footer');
                 const bIsAux = bName.includes('_files') || bName.includes('header') || bName.includes('footer');
                 if (aIsAux && !bIsAux) return 1;
@@ -1549,21 +1578,23 @@
             let validHtmlContent = null;
             let usedZipObject = null;
 
-            // Iterasi untuk mencari file yang benar-benar berisi soal
             for (const htmlFile of htmlFiles) {
                 try {
                     const fileContentAsArray = await htmlFile.async('uint8array');
-                    const decoder = new TextDecoder('windows-1252'); // Coba encoding default Word
-                    const htmlContent = decoder.decode(fileContentAsArray);
+                    const decoder = new TextDecoder('windows-1252'); // Standar Word HTML biasanya ini
+                    let htmlContent = decoder.decode(fileContentAsArray);
+                    
+                    // TERAPKAN PEMBERSIH KODE
+                    htmlContent = cleanWordHtml(htmlContent);
+
                     const tempDoc = new DOMParser().parseFromString(htmlContent, 'text/html');
                     
-                    // Coba ekstrak
                     const extracted = extractQuestionsFromDom(tempDoc.body);
                     if (extracted.length > 0) {
                         questionsFound = extracted;
-                        validHtmlContent = htmlContent; // Simpan untuk referensi gambar jika perlu
-                        usedZipObject = htmlFile; // File ini yang benar
-                        break; // Ketemu! Berhenti mencari
+                        validHtmlContent = htmlContent;
+                        usedZipObject = htmlFile;
+                        break; 
                     }
                 } catch (e) {
                     console.warn("Gagal memparsing file kandidat:", htmlFile.name, e);
@@ -1571,48 +1602,45 @@
             }
 
             if (questionsFound.length === 0) {
-                throw new Error("Tidak ada tabel format soal yang valid ditemukan di dalam file manapun di ZIP ini.");
+                // Pesan Error yang lebih spesifik
+                throw new Error("Tidak ditemukan tabel format soal yang valid. Pastikan:\n1. Menggunakan Template yang benar\n2. Tidak ada baris header yang terhapus\n3. File disimpan sebagai Web Page Filtered / Web Page");
             }
 
-            // Proses Gambar hanya untuk file yang valid
             if (usedZipObject) {
-                 // Kita perlu memuat ulang tempDoc dari validHtmlContent agar referensi gambar benar saat diproses
                  const tempDoc = new DOMParser().parseFromString(validHtmlContent, 'text/html');
-                 // Pre-load images
                  const imagesInDoc = Array.from(tempDoc.getElementsByTagName('img'));
                  for (const img of imagesInDoc) {
                     const src = img.getAttribute('src');
                     if (src && !src.startsWith('data:') && !src.startsWith('http')) {
                         try {
                             const decodedSrc = decodeURIComponent(src);
-                            // Cari file gambar di zip. Path gambar di HTML mungkin relatif
-                            // Kita perlu resolusi path yang lebih pintar jika file HTML ada di subfolder
-                            // Tapi biasanya Word export: File.htm dan File_files/image.png ada di level yg sama
                             
-                            // Simplifikasi: coba cari loose match di zip jika exact match gagal
+                            // Strategi pencarian gambar yang lebih agresif untuk WPS/Windows 8
+                            // Kadang pathnya "folder/gambar.png", kadang "folder%20gambar.png"
                             let imageFile = zip.file(decodedSrc);
                             
-                            // Jika tidak ketemu, coba cari by filename saja (risky tapi membantu jika path beda)
                             if (!imageFile) {
+                                // Coba cari di root ZIP jika path salah
                                 const cleanName = decodedSrc.split('/').pop();
-                                const potentialMatches = zip.file(new RegExp(cleanName + "$", "i"));
+                                // Cari file yang berakhiran nama ini (case insensitive)
+                                const potentialMatches = zip.file(new RegExp(cleanName.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + "$", "i"));
                                 if (potentialMatches.length > 0) imageFile = potentialMatches[0];
                             }
 
                             if (imageFile) {
                                 const base64Content = await imageFile.async('base64');
+                                // Deteksi ekstensi dari nama file asli di ZIP
                                 const extension = imageFile.name.split('.').pop().toLowerCase();
-                                img.src = `data:image/${extension};base64,${base64Content}`;
+                                const mimeType = extension === 'jpg' ? 'jpeg' : extension;
+                                img.src = `data:image/${mimeType};base64,${base64Content}`;
                                 img.dataset.fileName = imageFile.name;
                             }
                         } catch (e) { console.warn(`Gagal memuat gambar: ${src}`, e); }
                     }
                 }
-                // Ekstrak ulang dengan gambar yang sudah di-embed
                 questionsFound = extractQuestionsFromDom(tempDoc.body);
             }
 
-            // Render hasil ke layar
             questionsFound.forEach(q => {
                 const soalDiv = createSoalElement(q.detail, q.kunci, q.nomor);
                 soalDiv.dataset.isNew = 'true';
@@ -1643,6 +1671,7 @@
         }
     }
 
+    // LOGIKA PARSING TABEL YANG DIPERBAIKI (LEBIH TOLERAN)
     function extractQuestionsFromDom(bodyElement) {
         const tables = bodyElement.getElementsByTagName('table');
         const results = [];
@@ -1650,27 +1679,46 @@
         
         for (const table of tables) {
             const rows = table.rows;
-            for (let i = 0; i < rows.length; i += 2) {
-                const firstCell = rows[i]?.cells[0];
-                if (!firstCell) continue;
+            // Loop manual tanpa asumsi i += 2 fix, agar bisa skip baris kosong
+            let i = 0;
+            while (i < rows.length) {
+                const row = rows[i];
+                if (!row) { i++; continue; }
+
+                // Strategi: Cari cell pertama yang berisi ANGKA
+                // Ini mengatasi masalah header tabel yang kadang ada kadang tidak
+                const firstCell = row.cells[0];
+                const rawNum = firstCell ? firstCell.textContent.trim() : '';
                 
-                const nomorText = firstCell.textContent.trim();
-                // Validasi sederhana: cell pertama harus angka
-                if (!nomorText || isNaN(parseInt(nomorText, 10))) continue;
-
-                if (i + 1 >= rows.length) continue;
-
-                const mainContentCell = rows[i]?.cells[1];
-                const keyCell = rows[i + 1]?.cells[1];
-
-                if (!mainContentCell || !keyCell) {
-                    console.warn(`Skipping incomplete question block at row index ${i}`);
+                // Jika bukan angka, skip baris ini (mungkin header atau baris kosong)
+                if (!rawNum || isNaN(parseInt(rawNum, 10))) {
+                    i++;
                     continue;
                 }
+
+                // Cek apakah ini baris soal valid
+                // Baris 1: [No] [Soal + Opsi]
+                // Baris 2 (Opsional tapi biasanya ada): [No] [Kunci]
                 
-                // Jika konten kosong sama sekali, skip
-                if (!mainContentCell.textContent.trim() && !mainContentCell.querySelector('img')) {
-                    continue;
+                const mainContentCell = row.cells[1]; // Cell soal
+                
+                // Cari baris kunci (biasanya tepat dibawahnya)
+                let keyCell = null;
+                if (i + 1 < rows.length) {
+                    const nextRow = rows[i+1];
+                    // Cek apakah baris berikutnya adalah baris kunci?
+                    // Biasanya kolom pertama kosong atau sama dengan nomor, kolom kedua isi kunci
+                    if (nextRow.cells.length > 1) {
+                        const potentialKeyContent = nextRow.cells[1].textContent.trim();
+                        // Asumsi: Kunci pendek (A/B/C/D), Soal panjang
+                        if (potentialKeyContent.length < 50) { 
+                            keyCell = nextRow.cells[1];
+                        }
+                    }
+                }
+
+                if (!mainContentCell) {
+                    i++; continue;
                 }
 
                 try {
@@ -1681,17 +1729,14 @@
                     const questionParts = [];
                     const optionParts = new Map([['A', []], ['B', []], ['C', []], ['D', []]]);
                     const optionKeys = ['A', 'B', 'C', 'D'];
-                    let currentOptionIndex = 0; // 0=A, 1=B, 2=C, 3=D
+                    let currentOptionIndex = 0; 
                     let foundOptions = false;
 
+                    // Logika Ekstraksi Opsi (A, B, C, D)
                     for (const node of Array.from(tempDiv.childNodes)) {
-                        // LOGIKA BARU: Cek jika node adalah LIST (OL/UL)
+                        // Handle Lists (OL/UL) dari Word
                         if (node.tagName === 'OL' || node.tagName === 'UL') {
                             const listItems = node.querySelectorAll('li');
-                            
-                            // Jika list memiliki atribut start, kita sesuaikan indexnya
-                            // Namun, amannya kita lanjutkan saja urutan dari index terakhir
-                            
                             listItems.forEach(li => {
                                 if (currentOptionIndex < 4) {
                                     foundOptions = true;
@@ -1700,27 +1745,27 @@
                                     currentOptionIndex++;
                                 }
                             });
-                            continue; // Lanjut ke node berikutnya
+                            continue;
                         }
 
                         const nodeText = node.textContent.trim();
-                        // Deteksi opsi jawaban manual A. B. C. D.
-                        const match = nodeText.match(/^([A-D])\.\s*/);
+                        // Deteksi manual A. B. C. D. (Teks biasa tanpa List)
+                        const match = nodeText.match(/^([A-D])[\.\)]\s*/); // A. atau A)
 
                         if (match) {
                             foundOptions = true;
                             const keyMatch = match[1];
-                            currentOptionIndex = optionKeys.indexOf(keyMatch); // Set index sesuai huruf yang ditemukan
+                            currentOptionIndex = optionKeys.indexOf(keyMatch); 
                             
                             const tempNode = node.cloneNode(true);
-                            const markerRegex = new RegExp(`^\\s*${keyMatch}\\.\\s*`);
+                            // Hapus marker "A." dari teks
+                            const markerRegex = new RegExp(`^\\s*${keyMatch}[\\.\\)]\\s*`);
                             
                             const walker = document.createTreeWalker(tempNode, NodeFilter.SHOW_TEXT, null, false);
                             let textNodeToModify = walker.nextNode();
                             while(textNodeToModify && textNodeToModify.nodeValue.trim() === '') {
                                 textNodeToModify = walker.nextNode();
                             }
-                            
                             if (textNodeToModify) {
                                 textNodeToModify.nodeValue = textNodeToModify.nodeValue.replace(markerRegex, '').trim();
                             }
@@ -1729,17 +1774,15 @@
                             if (contentToAdd) {
                                 optionParts.get(keyMatch).push(contentToAdd);
                             }
-                            currentOptionIndex++; // Siapkan untuk huruf berikutnya
+                            currentOptionIndex++; 
                         } else if (foundOptions) {
-                            // Jika sudah masuk mode opsi, tapi tidak ada marker A/B/C/D
-                            // Kemungkinan ini adalah kelanjutan teks dari opsi sebelumnya
-                            // ATAU ini adalah list item yang tidak terdeteksi
-                            
+                            // Konten lanjutan dari opsi sebelumnya
                             if (currentOptionIndex > 0 && currentOptionIndex <= 4) {
                                 const lastKey = optionKeys[currentOptionIndex - 1];
                                 optionParts.get(lastKey).push(node.outerHTML || node.textContent);
                             }
                         } else {
+                            // Ini bagian dari Pertanyaan
                             questionParts.push(node.cloneNode(true));
                         }
                     }
@@ -1755,7 +1798,13 @@
                         pilihanD: stripFormattingFromOption(optionParts.get('D')?.join(' ') || '')
                     };
                     
-                    const kunci = cleanHtml(keyCell, false).trim().toUpperCase();
+                    let kunci = '';
+                    if (keyCell) {
+                        kunci = cleanHtml(keyCell, false).trim().toUpperCase();
+                        // Bersihkan kunci dari karakter aneh jika ada (misal: "Jawaban: A")
+                        const kunciMatch = kunci.match(/([A-D])/);
+                        if (kunciMatch) kunci = kunciMatch[1];
+                    }
                     
                     results.push({
                         detail: soalDetail,
@@ -1763,8 +1812,12 @@
                         nomor: soalDitemukan
                     });
 
+                    // Lompat baris. Jika kita menemukan baris kunci, lompat 2. Jika tidak, lompat 1.
+                    i += keyCell ? 2 : 1; 
+
                 } catch (e) {
                     console.error(`Gagal memproses blok soal pada baris ${i}.`, e);
+                    i++; // Safety net agar tidak infinite loop
                 }
             }
         }
@@ -1848,9 +1901,6 @@
 
 
     function parseHtmlAndDisplay(bodyElement) {
-        // Fungsi ini sekarang digantikan oleh extractQuestionsFromDom
-        // Tapi kita biarkan kosong atau hapus jika tidak dipakai lagi
-        // Untuk menjaga kompatibilitas jika ada panggilan lain, kita bisa log warning
         console.warn("parseHtmlAndDisplay is deprecated. Use processZipFile logic instead.");
     }
 
@@ -1875,7 +1925,9 @@
         
         if (!allowParagraphs) {
             clone.querySelectorAll('p').forEach(p => {
-                if (p.innerHTML.trim() === '' || p.innerHTML.trim() === '&nbsp;') {
+                // Gunakan fungsi pembersih yang konsisten
+                const text = p.textContent.replace(/\u00a0/g, " ").trim();
+                if (text === '' && !p.querySelector('img')) {
                     p.remove();
                 } else {
                     p.replaceWith(...p.childNodes, document.createElement('br'));
@@ -2118,6 +2170,21 @@
         outputEl.addEventListener('focusout', (e) => {
             if (e.target.getAttribute('contenteditable') === 'true') {
                 saveSelection();
+            }
+        });
+
+        // PERBAIKAN: Global Click Listener untuk menutup toolbar
+        document.addEventListener('mousedown', (e) => {
+            // Jika toolbar sedang sembunyi, abaikan
+            if (editorToolbar.style.display === 'none') return;
+
+            // Cek apa yang diklik
+            const clickedToolbar = editorToolbar.contains(e.target);
+            const clickedEditable = e.target.isContentEditable || e.target.closest('[contenteditable="true"]');
+            
+            // Jika klik BUKAN di toolbar DAN BUKAN di area edit teks, sembunyikan toolbar
+            if (!clickedToolbar && !clickedEditable) {
+                hideToolbar();
             }
         });
 
