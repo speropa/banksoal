@@ -238,6 +238,29 @@
             justify-content: center;
         }
 
+        /* NEW CSS FOR PREVIEW CARD */
+        .preview-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+        }
+        .qr-preview-img {
+            max-width: 120px;
+            height: auto;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+        .warning-text {
+            color: var(--danger-color);
+            font-weight: 700;
+            font-size: 0.95em;
+            margin: 2px 0;
+        }
+
         .identitas-item {
             font-size: 1.1em;
             font-weight: 500;
@@ -635,6 +658,16 @@
                 <div class="identitas-item">Kelas: <strong id="info-kelas"></strong></div>
                 <div class="identitas-item">Mata Pelajaran: <strong id="info-mapel"></strong></div>
             </div>
+            
+            <div class="editor-card preview-card" id="preview-card" style="display: none;">
+                <h3>Preview Hasil Ujian (HP)</h3>
+                <div class="preview-content">
+                    <img src="https://github.com/speropa/preview/blob/main/Preview.png?raw=true" alt="QR Preview" class="qr-preview-img">
+                    <p class="warning-text">Scan menggunakan HP</p>
+                    <p class="warning-text">Jangan disebarkan ke siswa</p>
+                </div>
+            </div>
+
             <div class="editor-card actions-card">
                  <h3>Aksi Global</h3>
                  <button id="add-soal-btn" class="btn btn-success header-btn"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg><span>Tambah Soal</span></button>
@@ -820,6 +853,7 @@
     const infoModalTitle = document.getElementById('info-modal-title');
     const infoModalText = document.getElementById('info-modal-text');
     const infoModalCloseBtn = document.getElementById('info-modal-close');
+    const previewCard = document.getElementById('preview-card');
 
     function showView(viewId) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -1002,6 +1036,7 @@
                 selectionForm.reset();
                 showView('guru-login-view');
                 showToast("Anda telah berhasil logout.", "info");
+                previewCard.style.display = 'none';
             }
         );
     });
@@ -1014,6 +1049,7 @@
             'btn-primary',
             async () => {
                 outputEl.innerHTML = ''; 
+                previewCard.style.display = 'none';
                 // selectionForm.reset(); // Dihapus agar data tidak hilang
                 
                 // Jangan paksa update data (cache masih valid), langsung ke view
@@ -1183,11 +1219,17 @@
         const snapshot = await get(ref(db, dbPath));
 
         outputEl.innerHTML = ''; 
+        previewCard.style.display = 'none'; // Default hidden
 
         if (snapshot.exists()) {
             const data = snapshot.val();
             renderSoalFromData(data);
             showToast(`Data berhasil dimuat. ${data.soal ? Object.keys(data.soal).length : 0} soal ditemukan.`, 'success');
+            
+            // Tampilkan Preview jika ada data soal dari server
+            if(data.soal && Object.keys(data.soal).length > 0) {
+                 previewCard.style.display = 'flex';
+            }
         } else {
             showToast('Tidak ada data ditemukan. Silakan unggah file ZIP untuk memulai.', 'info');
         }
@@ -1462,6 +1504,7 @@
 
             outputEl.innerHTML = '';
             initialSoalSnapshots = {};
+            previewCard.style.display = 'none'; // Sembunyikan preview
             updateUIForSoalPresence();
             showToast('Semua data dan gambar berhasil dihapus!', 'success');
 
@@ -1494,6 +1537,7 @@
     async function processZipFile(file) {
         outputEl.innerHTML = '';
         initialSoalSnapshots = {};
+        previewCard.style.display = 'none'; // Sembunyikan saat upload baru
         if (activeResizer) removeResizer();
 
         try {
@@ -2296,6 +2340,13 @@
             createInitialSnapshots(); 
             prioritizeInvalidSoal(); 
             checkAllValidityAndUpdateSaveButton();
+            
+            // Tampilkan Preview setelah berhasil simpan
+            if (Object.keys(soalObject).length > 0) {
+                previewCard.style.display = 'flex';
+            } else {
+                previewCard.style.display = 'none';
+            }
 
         } catch (error) {
             showToast(`Penyimpanan Gagal: ${error.message}`, 'error');
