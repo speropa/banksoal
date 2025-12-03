@@ -260,6 +260,53 @@
             font-size: 0.95em;
             margin: 2px 0;
         }
+        
+        /* CSS FOR SEARCH BAR */
+        .search-bar-container {
+            margin-bottom: 20px;
+            position: relative;
+            display: none; /* Hidden by default, shown via JS */
+            z-index: 50;
+        }
+        .search-wrapper {
+            position: relative;
+            max-width: 100%;
+        }
+        .search-input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border: 2px solid var(--border-color);
+            border-radius: 30px;
+            font-size: 1em;
+            background-color: var(--card-background);
+            color: var(--text-color);
+            transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 10px rgba(74, 144, 226, 0.2);
+        }
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--label-color);
+            pointer-events: none;
+        }
+        .no-results-message {
+            text-align: center;
+            padding: 30px;
+            color: var(--label-color);
+            font-style: italic;
+            display: none;
+            background: var(--card-background);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px dashed var(--border-color);
+        }
 
         .identitas-item {
             font-size: 1.1em;
@@ -307,6 +354,11 @@
             overflow-wrap: break-word; 
             display: flex;
             flex-direction: column;
+        }
+        
+        /* Class helper untuk menyembunyikan soal saat filter */
+        .soal-container.hidden-by-filter {
+            display: none !important;
         }
 
         .soal-container::-webkit-scrollbar {
@@ -679,6 +731,19 @@
 
         <input id="file-input" type="file" accept=".zip" />
         
+        <div id="search-bar-container" class="search-bar-container">
+            <div class="search-wrapper">
+                <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                </svg>
+                <input type="text" id="soal-search-input" class="search-input" placeholder="Cari soal atau pilihan jawaban...">
+            </div>
+        </div>
+        
+        <div id="no-results-message" class="no-results-message">
+            Tidak ada soal yang cocok dengan kata kunci pencarian.
+        </div>
+        
         <div id="global-save-container" style="display: none;">
             <button id="global-save-btn" class="btn btn-success" disabled title="Harap perbaiki semua soal yang tidak valid sebelum mengirim.">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M8.5 1.5A.5.5 0 0 1 9 2v4.5A1.5 1.5 0 0 1 7.5 8h-1A1.5 1.5 0 0 1 5 6.5V2a.5.5 0 0 1 .5-.5h3z"/><path d="M14.354 4.354a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L7 11.293l6.646-6.647a.5.5 0 0 1 .708 0z"/><path d="M.5 1a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H.5z"/></svg>
@@ -854,6 +919,11 @@
     const infoModalText = document.getElementById('info-modal-text');
     const infoModalCloseBtn = document.getElementById('info-modal-close');
     const previewCard = document.getElementById('preview-card');
+    
+    // Elements for Search
+    const searchBarContainer = document.getElementById('search-bar-container');
+    const soalSearchInput = document.getElementById('soal-search-input');
+    const noResultsMessage = document.getElementById('no-results-message');
 
     function showView(viewId) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -1034,6 +1104,7 @@
                 guruPasswordInput.value = '';
                 outputEl.innerHTML = '';
                 selectionForm.reset();
+                soalSearchInput.value = ''; // Reset search
                 showView('guru-login-view');
                 showToast("Anda telah berhasil logout.", "info");
                 previewCard.style.display = 'none';
@@ -1050,6 +1121,7 @@
             async () => {
                 outputEl.innerHTML = ''; 
                 previewCard.style.display = 'none';
+                soalSearchInput.value = ''; // Reset search
                 // selectionForm.reset(); // Dihapus agar data tidak hilang
                 
                 // Jangan paksa update data (cache masih valid), langsung ke view
@@ -1220,6 +1292,7 @@
 
         outputEl.innerHTML = ''; 
         previewCard.style.display = 'none'; // Default hidden
+        soalSearchInput.value = ''; // Reset search field
 
         if (snapshot.exists()) {
             const data = snapshot.val();
@@ -1411,6 +1484,8 @@
 
     function checkAllValidityAndUpdateSaveButton() {
         let allValid = true;
+        // Hanya cek validitas soal yang tidak disembunyikan oleh filter (opsional)
+        // atau cek semua soal (lebih aman). Di sini kita cek semua soal.
         document.querySelectorAll('.soal-container').forEach(soalDiv => {
             if (!validateSoal(soalDiv)) {
                 allValid = false;
@@ -1453,6 +1528,13 @@
         const soalDivBaru = createSoalElement(soalDetailKosong, kunciKosong, nomorSoalBaru);
         outputEl.appendChild(soalDivBaru);
         soalDivBaru.dataset.isNew = 'true';
+        
+        // Reset search filter so the new question is visible
+        if (soalSearchInput.value) {
+            soalSearchInput.value = '';
+            filterSoal('');
+        }
+        
         updateUIForSoalPresence();
         checkAllValidityAndUpdateSaveButton();
         soalDivBaru.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -1505,6 +1587,7 @@
             outputEl.innerHTML = '';
             initialSoalSnapshots = {};
             previewCard.style.display = 'none'; // Sembunyikan preview
+            soalSearchInput.value = ''; // Reset search
             updateUIForSoalPresence();
             showToast('Semua data dan gambar berhasil dihapus!', 'success');
 
@@ -1538,6 +1621,7 @@
         outputEl.innerHTML = '';
         initialSoalSnapshots = {};
         previewCard.style.display = 'none'; // Sembunyikan saat upload baru
+        soalSearchInput.value = ''; // Reset search
         if (activeResizer) removeResizer();
 
         try {
@@ -2002,7 +2086,14 @@
         delete initialSoalSnapshots[nomorSoal];
         
         renumberSoalDOM();
-        updateUIForSoalPresence();
+        
+        // Cek search filter setelah delete, jika list kosong karena filter, tampilkan pesan
+        if (soalSearchInput.value) {
+            filterSoal(soalSearchInput.value);
+        } else {
+            updateUIForSoalPresence();
+        }
+
         checkAllValidityAndUpdateSaveButton();
         showToast(`Soal No. ${nomorSoal} telah dihapus dari editor. Tekan "Kirim & Simpan" untuk finalisasi.`, "info");
     }
@@ -2222,6 +2313,45 @@
             toolbarImageInput.value = '';
         });
     }
+    
+    // --- SEARCH FILTER FUNCTIONALITY ---
+    function filterSoal(searchTerm) {
+        const term = searchTerm.toLowerCase().trim();
+        const allSoal = document.querySelectorAll('.soal-container');
+        let visibleCount = 0;
+
+        allSoal.forEach(soalDiv => {
+            if (term === '') {
+                soalDiv.classList.remove('hidden-by-filter');
+                visibleCount++;
+                return;
+            }
+
+            // Get text from question and options
+            const questionText = soalDiv.querySelector('.soal-pertanyaan').textContent.toLowerCase();
+            const optionsText = Array.from(soalDiv.querySelectorAll('li div')).map(div => div.textContent.toLowerCase()).join(' ');
+            
+            // Check if search term exists in question OR options
+            if (questionText.includes(term) || optionsText.includes(term)) {
+                soalDiv.classList.remove('hidden-by-filter');
+                visibleCount++;
+            } else {
+                soalDiv.classList.add('hidden-by-filter');
+            }
+        });
+
+        // Show/Hide "No Results" message
+        if (visibleCount === 0 && allSoal.length > 0) {
+            noResultsMessage.style.display = 'block';
+        } else {
+            noResultsMessage.style.display = 'none';
+        }
+    }
+
+    soalSearchInput.addEventListener('input', (e) => {
+        filterSoal(e.target.value);
+    });
+    // ------------------------------------
 
     function updateUIForSoalPresence() {
         const hasSoal = outputEl.children.length > 0;
@@ -2229,6 +2359,12 @@
         clearDataBtn.disabled = !hasSoal;
         globalSaveContainer.style.display = hasSoal ? 'block' : 'none';
         uploadBtn.disabled = hasSoal;
+        
+        // Toggle Search Bar
+        searchBarContainer.style.display = hasSoal ? 'block' : 'none';
+        if (!hasSoal) {
+             noResultsMessage.style.display = 'none';
+        }
     }
 
     settingsBtn.addEventListener('click', () => settingsModal.style.display = 'flex');
