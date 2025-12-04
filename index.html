@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>Editor Bank Soal (Single Database) - Fix Encoding & UX</title>
+    <title>Editor Bank Soal (Dual Save Mode)</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2445,21 +2445,40 @@
                 };
             });
             
-            const allKunjab = Object.keys(soalObject).sort((a,b) => parseInt(a) - parseInt(b)).map(nomor => soalObject[nomor].kunciJawaban || ' ');
-            
+            const allKunjabList = Object.keys(soalObject).sort((a,b) => parseInt(a) - parseInt(b)).map(nomor => soalObject[nomor].kunciJawaban || ' ');
+            const kunjabString = allKunjabList.join(',');
+
+            // DATA 1: Data Lengkap (Berat) - Disimpan di path 'ujian/...'
             const finalData = {
                 ...currentSoalData,
                 soal: Object.keys(soalObject).length > 0 ? soalObject : null,
-                kunjab: allKunjab.join(','),
+                kunjab: kunjabString,
                 terakhirUpdate: new Date().toISOString()
             };
 
-            // 4. Write to Firebase (Single DB)
+            // DATA 2: Data Ringkas (Ringan) - Disimpan di path 'daftar_ujian/...'
+            // Ini yang diminta untuk Admin Panel
+            const metadata = {
+                tahunAjaran: currentSoalData.tahunAjaran,
+                namaUjian: currentSoalData.ujian,
+                kelas: currentSoalData.kelas,
+                mapel: currentSoalData.mapel,
+                jumlahSoal: Object.keys(soalObject).length,
+                kunjab: kunjabString, // Penting untuk token/grading otomatis
+                terakhirUpdate: new Date().toISOString()
+            };
+
+            // 4. Write to Firebase (Single DB) - PARALLEL SAVE
             processingText.textContent = 'Menyimpan data ke server...';
-            const dbPath = getDbPath(currentSoalData);
             
-            // Simpan data hanya ke satu database
-            await set(ref(db, dbPath), finalData);
+            const dbPathFull = getDbPath(currentSoalData); // Path: ujian/TA/Nama/Kelas/Mapel
+            const dbPathMeta = dbPathFull.replace(/^ujian/, 'daftar_ujian'); // Path: daftar_ujian/TA/Nama/Kelas/Mapel
+            
+            // Simpan keduanya sekaligus
+            await Promise.all([
+                set(ref(db, dbPathFull), finalData),
+                set(ref(db, dbPathMeta), metadata)
+            ]);
             
             // 5. Delete unused images from GitHub
             if (imagesToDelete.size > 0) {
@@ -2472,7 +2491,7 @@
                 }
             }
             
-            showToast('Semua perubahan berhasil disimpan!', 'success');
+            showToast('Semua perubahan berhasil disimpan (Data Soal & Daftar Ujian)!', 'success');
             createInitialSnapshots(); 
             prioritizeInvalidSoal(); 
             checkAllValidityAndUpdateSaveButton();
