@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>Editor Bank Soal (Dual Save Mode)</title>
+    <title>Editor Bank Soal (Split Storage)</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -238,7 +238,6 @@
             justify-content: center;
         }
 
-        /* NEW CSS FOR PREVIEW CARD */
         .preview-content {
             display: flex;
             flex-direction: column;
@@ -261,11 +260,10 @@
             margin: 2px 0;
         }
         
-        /* CSS FOR SEARCH BAR */
         .search-bar-container {
             margin-bottom: 20px;
             position: relative;
-            display: none; /* Hidden by default, shown via JS */
+            display: none; 
             z-index: 50;
         }
         .search-wrapper {
@@ -356,7 +354,6 @@
             flex-direction: column;
         }
         
-        /* Class helper untuk menyembunyikan soal saat filter */
         .soal-container.hidden-by-filter {
             display: none !important;
         }
@@ -621,7 +618,7 @@
         <div class="card-wrapper">
             <div class="spinner-container">
                 <div class="spinner"></div>
-                <p id="loading-text">Mempersiapkan Aplikasi & Login...</p>
+                <p id="loading-text">Mempersiapkan Aplikasi & Login ke Server...</p>
                 <p id="loading-error" class="error-message"></p>
             </div>
         </div>
@@ -754,11 +751,11 @@
         <div id="soal-list-container"></div>
 
         <div class="instructions-box">
-            <h3>Petunjuk</h3>
+            <h3>Petunjuk (Split Storage)</h3>
             <ol>
+                <li><strong>Mekanisme Simpan:</strong> Data akan otomatis dipisah. Ringkasan (untuk daftar ujian) disimpan ke <code>daftar_ujian</code>, sedangkan Soal Lengkap disimpan ke <code>ujian</code>.</li>
                 <li><strong>Tambah Soal Manual:</strong> Untuk membuat soal baru atau menambahkan soal.</li>
-                <li><strong>Template Word:</strong> Unduh file template_bank_soal.docx, petunjuk pengisian terdapat dalam file</li>
-                <li><strong>Unggah ZIP:</strong> Unggah file ZIP Anda untuk diproses. Data tidak akan disimpan otomatis. Gunakan tombol "Kirim & Simpan" setelah semua soal valid.</li>
+                <li><strong>Unggah ZIP:</strong> Unggah file ZIP Anda untuk diproses.</li>
             </ol>
         </div>
     </div>
@@ -826,21 +823,80 @@
     import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
     import { getDatabase, ref, set, get, remove, update } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
     
-    // KONFIGURASI FIREBASE TUNGGAL (SETUP)
-    const firebaseConfig = {
-    apiKey: "AIzaSyBAKwT7JY_HGnvK6h3u30-dfgRPXfef8l8",
-    authauthDomain: "abc-a13ea.firebaseapp.com",
-    databaseURL: "https://abc-a13ea-default-rtdb.firebaseio.com",
-    projectId: "abc-a13ea",
-    storageBucket: "abc-a13ea.firebasestorage.app",
-    messagingSenderId: "1052966795599",
-    appId: "1:1052966795599:web:d4d331199ca9081321ed3a"
-};
+    // --- KONFIGURASI MULTI-FIREBASE (Sama seperti Admin Panel) ---
+    
+    // 1. FIREBASE ATURAN
+    const configAturan = {
+        apiKey: "AIzaSyAoH-kHpL15GHnFa41ZdG7dWFUsUZ4QJKc",
+        authDomain: "aturan-694fe.firebaseapp.com",
+        databaseURL: "https://aturan-694fe-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "aturan-694fe",
+        storageBucket: "aturan-694fe.firebasestorage.app",
+        messagingSenderId: "1008762962672",
+        appId: "1:1008762962672:web:57815d4f3c49f211ebf835"
+    };
 
-    // Inisialisasi Firebase App
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getDatabase(app);
+    // 2. FIREBASE 7ABCDEF (Kelas 7)
+    const config7 = {
+        apiKey: "AIzaSyBkhBZw3oADXUAJ9FXY9-g7XBsSmQhzZVk",
+        authDomain: "def-ab5ee.firebaseapp.com",
+        databaseURL: "https://def-ab5ee-default-rtdb.firebaseio.com",
+        projectId: "def-ab5ee",
+        storageBucket: "def-ab5ee.firebasestorage.app",
+        messagingSenderId: "129712840107",
+        appId: "1:129712840107:web:ab10576fed95f735dd46ee"
+    };
+
+    // 3. FIREBASE 8ABCDEF (Kelas 8)
+    const config8 = {
+        apiKey: "AIzaSyAwilwwwEJ2MAdSf09BotxNH-z6RiXaHXY",
+        authDomain: "abc-43e73.firebaseapp.com",
+        databaseURL: "https://abc-43e73-default-rtdb.firebaseio.com",
+        projectId: "abc-43e73",
+        storageBucket: "abc-43e73.firebasestorage.app",
+        messagingSenderId: "1043754727577",
+        appId: "1:1043754727577:web:56c3732bf2a6ac900c2008"
+    };
+
+    // 4. FIREBASE 9ABCDEF (Kelas 9)
+    const config9 = {
+        apiKey: "AIzaSyBZ6JR3ggnUiZFQ-wdrewbfhzMUwFaGGzQ",
+        authDomain: "abc-d272a.firebaseapp.com",
+        databaseURL: "https://abc-d272a-default-rtdb.firebaseio.com",
+        projectId: "abc-d272a",
+        storageBucket: "abc-d272a.firebasestorage.app",
+        messagingSenderId: "1036605132828",
+        appId: "1:1036605132828:web:2b59f91290d50afe304fd9"
+    };
+
+    // Inisialisasi Apps
+    const appAturan = initializeApp(configAturan, "appAturan");
+    const app7 = initializeApp(config7, "app7");
+    const app8 = initializeApp(config8, "app8");
+    const app9 = initializeApp(config9, "app9");
+
+    // Inisialisasi Auth & Database untuk setiap App
+    const authAturan = getAuth(appAturan);
+    const dbAturan = getDatabase(appAturan);
+
+    const auth7 = getAuth(app7);
+    const db7 = getDatabase(app7);
+
+    const auth8 = getAuth(app8);
+    const db8 = getDatabase(app8);
+
+    const auth9 = getAuth(app9);
+    const db9 = getDatabase(app9);
+
+    // --- Helper Functions Routing Database ---
+    
+    function getDbForGrade(gradeInput) {
+        const gradeStr = String(gradeInput).trim().toUpperCase();
+        if (gradeStr.startsWith('7')) return db7;
+        if (gradeStr.startsWith('8')) return db8;
+        if (gradeStr.startsWith('9')) return db9;
+        return dbAturan; // Fallback jika kelas tidak dikenali
+    }
 
     const GITHUB_USERNAME = "speropa";
     const GITHUB_REPO = "gambarbanksoal";
@@ -970,17 +1026,32 @@
         infoModal.style.display = 'flex';
     }
 
-    function getDbPath(data) {
+    // --- FUNGSI PATH DATABASE BARU (SPLIT) ---
+
+    // 1. Path untuk Ringkasan/Metadata (di daftar_ujian/...)
+    function getSummaryDbPath(data) {
         const { tahunAjaran, ujian, kelas, mapel } = data;
         const safeTA = tahunAjaran.replace(/[\.\#\$\[\]\/]/g, '-');
         const safeUjian = ujian.replace(/\s+/g, '-');
         const safeMapel = mapel.replace(/\s+/g, '-');
+        // Path lama tetap dipakai untuk ringkasan
+        return `daftar_ujian/${safeTA}/${safeUjian}/Kelas-${kelas}/${safeMapel}`;
+    }
+
+    // 2. Path untuk Konten Soal Lengkap (di ujian/...)
+    function getContentDbPath(data) {
+        const { tahunAjaran, ujian, kelas, mapel } = data;
+        const safeTA = tahunAjaran.replace(/[\.\#\$\[\]\/]/g, '-');
+        const safeUjian = ujian.replace(/\s+/g, '-');
+        const safeMapel = mapel.replace(/\s+/g, '-');
+        // Path baru untuk soal berat
         return `ujian/${safeTA}/${safeUjian}/Kelas-${kelas}/${safeMapel}`;
     }
 
     async function fetchGithubToken() {
         try {
-            const tokenRef = ref(db, 'github/token');
+            // Token GitHub disimpan di DB Aturan
+            const tokenRef = ref(dbAturan, 'github/token');
             const snapshot = await get(tokenRef);
             if (snapshot.exists()) {
                 githubToken = snapshot.val();
@@ -998,15 +1069,24 @@
     }
 
     async function performAutoLogin() {
+        // Kredensial sistem (sama untuk semua server Firebase)
         const email = "speropa@gmail.com";
         const password = "Pajangan201184*";
         loadingError.style.display = 'none';
 
         try {
-            loadingText.textContent = 'Login ke sistem...';
-            // Login langsung ke Auth tunggal
-            await signInWithEmailAndPassword(auth, email, password);
-            console.log("Successfully logged in.");
+            loadingText.textContent = 'Login ke semua server...';
+            
+            // Login ke keempat instance Auth secara bersamaan
+            const loginPromises = [
+                signInWithEmailAndPassword(authAturan, email, password),
+                signInWithEmailAndPassword(auth7, email, password),
+                signInWithEmailAndPassword(auth8, email, password),
+                signInWithEmailAndPassword(auth9, email, password)
+            ];
+
+            await Promise.all(loginPromises);
+            console.log("Successfully logged in to all Firebase instances.");
 
             loadingText.textContent = 'Mengambil konfigurasi keamanan...';
             const tokenFetched = await fetchGithubToken();
@@ -1052,7 +1132,8 @@
         guruLoginBtn.textContent = 'Mencoba Login...';
 
         try {
-            const gurusRef = ref(db, 'gurus');
+            // Cek login guru di DB ATURAN
+            const gurusRef = ref(dbAturan, 'gurus');
             const snapshot = await get(gurusRef);
 
             if (!snapshot.exists()) {
@@ -1121,14 +1202,8 @@
             async () => {
                 outputEl.innerHTML = ''; 
                 previewCard.style.display = 'none';
-                soalSearchInput.value = ''; // Reset search
-                // selectionForm.reset(); // Dihapus agar data tidak hilang
-                
-                // Jangan paksa update data (cache masih valid), langsung ke view
-                // Tampilkan view
+                soalSearchInput.value = ''; 
                 showView('selection-view');
-                
-                // Pastikan tombol simpan validasi ulang statusnya
                 validateSelectionForm();
             }
         );
@@ -1137,8 +1212,9 @@
     async function populateSelectionDropdowns() {
         try {
             if (!ujiansDataCache || !aksesDataCache) {
-                const customUjiansRef = ref(db, 'customUjians');
-                const aksesRef = ref(db, `akses/${loggedInGuru.id}`);
+                // Data Ujian dan Akses ada di DB ATURAN
+                const customUjiansRef = ref(dbAturan, 'customUjians');
+                const aksesRef = ref(dbAturan, `akses/${loggedInGuru.id}`);
 
                 const [ujiansSnapshot, aksesSnapshot] = await Promise.all([
                     get(customUjiansRef),
@@ -1285,23 +1361,35 @@
     });
     
     async function fetchAndRenderSoal() {
-        const dbPath = getDbPath(currentSoalData);
-        // Kita tidak perlu lagi memilih primaryDbName karena hanya ada 1 DB
+        // Ambil dari path KONTEN (ujian/...) karena disitu soal lengkap disimpan
+        const contentPath = getContentDbPath(currentSoalData);
+        // Fallback: Path ringkasan (daftar_ujian/...) untuk support data lama
+        const summaryPath = getSummaryDbPath(currentSoalData);
+
+        const targetDb = getDbForGrade(currentSoalData.kelas);
         
-        const snapshot = await get(ref(db, dbPath));
+        // Coba ambil dari konten lengkap dulu
+        let snapshot = await get(ref(targetDb, contentPath));
+
+        // Jika konten lengkap kosong, coba cek di path lama (migrasi otomatis saat save nanti)
+        if (!snapshot.exists()) {
+             console.log("Data tidak ditemukan di path konten, mencoba path ringkasan (legacy)...");
+             snapshot = await get(ref(targetDb, summaryPath));
+        }
 
         outputEl.innerHTML = ''; 
-        previewCard.style.display = 'none'; // Default hidden
-        soalSearchInput.value = ''; // Reset search field
+        previewCard.style.display = 'none'; 
+        soalSearchInput.value = ''; 
 
         if (snapshot.exists()) {
             const data = snapshot.val();
-            renderSoalFromData(data);
-            showToast(`Data berhasil dimuat. ${data.soal ? Object.keys(data.soal).length : 0} soal ditemukan.`, 'success');
-            
-            // Tampilkan Preview jika ada data soal dari server
-            if(data.soal && Object.keys(data.soal).length > 0) {
-                 previewCard.style.display = 'flex';
+            // Cek apakah data memiliki properti 'soal'
+            if (data.soal && Object.keys(data.soal).length > 0) {
+                renderSoalFromData(data);
+                showToast(`Data berhasil dimuat. ${Object.keys(data.soal).length} soal ditemukan.`, 'success');
+                previewCard.style.display = 'flex';
+            } else {
+                showToast('Identitas ujian ditemukan, tetapi belum ada butir soal.', 'info');
             }
         } else {
             showToast('Tidak ada data ditemukan. Silakan unggah file ZIP untuk memulai.', 'info');
@@ -1484,8 +1572,6 @@
 
     function checkAllValidityAndUpdateSaveButton() {
         let allValid = true;
-        // Hanya cek validitas soal yang tidak disembunyikan oleh filter (opsional)
-        // atau cek semua soal (lebih aman). Di sini kita cek semua soal.
         document.querySelectorAll('.soal-container').forEach(soalDiv => {
             if (!validateSoal(soalDiv)) {
                 allValid = false;
@@ -1505,7 +1591,6 @@
             if (aIsInvalid && !bIsInvalid) return -1; 
             if (!aIsInvalid && bIsInvalid) return 1;
             
-            // If both are the same validity, sort by number
             const numA = parseInt(a.dataset.nomor, 10);
             const numB = parseInt(b.dataset.nomor, 10);
             return numA - numB;
@@ -1515,9 +1600,15 @@
     }
 
     async function clearAllDataFromDB() {
-        const dbPath = getDbPath(currentSoalData);
-        // Hapus data hanya dari satu database
-        await remove(ref(db, dbPath));
+        const summaryPath = getSummaryDbPath(currentSoalData);
+        const contentPath = getContentDbPath(currentSoalData);
+        const targetDb = getDbForGrade(currentSoalData.kelas);
+        
+        // Hapus dari kedua lokasi
+        await Promise.all([
+            remove(ref(targetDb, summaryPath)),
+            remove(ref(targetDb, contentPath))
+        ]);
     }
 
     addSoalBtn.addEventListener('click', () => {
@@ -1529,7 +1620,6 @@
         outputEl.appendChild(soalDivBaru);
         soalDivBaru.dataset.isNew = 'true';
         
-        // Reset search filter so the new question is visible
         if (soalSearchInput.value) {
             soalSearchInput.value = '';
             filterSoal('');
@@ -1586,8 +1676,8 @@
 
             outputEl.innerHTML = '';
             initialSoalSnapshots = {};
-            previewCard.style.display = 'none'; // Sembunyikan preview
-            soalSearchInput.value = ''; // Reset search
+            previewCard.style.display = 'none';
+            soalSearchInput.value = ''; 
             updateUIForSoalPresence();
             showToast('Semua data dan gambar berhasil dihapus!', 'success');
 
@@ -1620,23 +1710,19 @@
     async function processZipFile(file) {
         outputEl.innerHTML = '';
         initialSoalSnapshots = {};
-        previewCard.style.display = 'none'; // Sembunyikan saat upload baru
-        soalSearchInput.value = ''; // Reset search
+        previewCard.style.display = 'none'; 
+        soalSearchInput.value = ''; 
         if (activeResizer) removeResizer();
 
         try {
             const zip = await JSZip.loadAsync(file);
-            // Cari semua file HTML
             const htmlFiles = zip.file(/.+\.html?$/i);
             
             if (htmlFiles.length === 0) throw new Error("File .html tidak ditemukan di dalam ZIP.");
             
-            // Prioritaskan file yang BUKAN header/footer/filelist jika ada banyak
-            // Sort agar file utama (yang biasanya lebih besar atau nama pendek) diproses duluan, atau exclude yg mengandung _files
             htmlFiles.sort((a, b) => {
                 const aName = a.name.toLowerCase();
                 const bName = b.name.toLowerCase();
-                // Penalti untuk file di dalam folder _files atau bernama header/footer
                 const aIsAux = aName.includes('_files') || aName.includes('header') || aName.includes('footer');
                 const bIsAux = bName.includes('_files') || bName.includes('header') || bName.includes('footer');
                 if (aIsAux && !bIsAux) return 1;
@@ -1648,26 +1734,19 @@
             let validHtmlContent = null;
             let usedZipObject = null;
 
-            // Iterasi untuk mencari file yang benar-benar berisi soal
             for (const htmlFile of htmlFiles) {
                 try {
                     const fileContentAsArray = await htmlFile.async('uint8array');
                     
-                    // --- HYBRID DECODING STRATEGY (UTF-8 & WINDOWS-1252) ---
                     let htmlContent;
                     try {
-                        // Coba decode UTF-8 dulu (Standar Web/WPS Baru). 'fatal: true' akan throw error jika ada sequence invalid.
                         const utf8Decoder = new TextDecoder('utf-8', { fatal: true });
                         htmlContent = utf8Decoder.decode(fileContentAsArray);
                     } catch (e) {
-                        // Jika gagal (kemungkinan Word lama/ANSI), fallback ke Windows-1252
-                        console.warn("UTF-8 decoding failed, falling back to Windows-1252", e);
                         const win1252Decoder = new TextDecoder('windows-1252');
                         htmlContent = win1252Decoder.decode(fileContentAsArray);
                     }
                     
-                    // Pembersihan manual tambahan untuk karakter mojibake yang bandel
-                    // Kadang UTF-8 dibaca sebagai windows-1252 oleh sistem lain sebelum masuk sini
                     htmlContent = htmlContent
                         .replace(/â€¦/g, '…')
                         .replace(/â€“/g, '–')
@@ -1677,13 +1756,12 @@
 
                     const tempDoc = new DOMParser().parseFromString(htmlContent, 'text/html');
                     
-                    // Coba ekstrak
                     const extracted = extractQuestionsFromDom(tempDoc.body);
                     if (extracted.length > 0) {
                         questionsFound = extracted;
-                        validHtmlContent = htmlContent; // Simpan untuk referensi gambar jika perlu
-                        usedZipObject = htmlFile; // File ini yang benar
-                        break; // Ketemu! Berhenti mencari
+                        validHtmlContent = htmlContent; 
+                        usedZipObject = htmlFile; 
+                        break; 
                     }
                 } catch (e) {
                     console.warn("Gagal memparsing file kandidat:", htmlFile.name, e);
@@ -1694,25 +1772,17 @@
                 throw new Error("Tidak ada tabel format soal yang valid ditemukan di dalam file manapun di ZIP ini.");
             }
 
-            // Proses Gambar hanya untuk file yang valid
             if (usedZipObject) {
-                 // Kita perlu memuat ulang tempDoc dari validHtmlContent agar referensi gambar benar saat diproses
                  const tempDoc = new DOMParser().parseFromString(validHtmlContent, 'text/html');
-                 // Pre-load images
                  const imagesInDoc = Array.from(tempDoc.getElementsByTagName('img'));
                  for (const img of imagesInDoc) {
                     const src = img.getAttribute('src');
                     if (src && !src.startsWith('data:') && !src.startsWith('http')) {
                         try {
                             const decodedSrc = decodeURIComponent(src);
-                            // Cari file gambar di zip. Path gambar di HTML mungkin relatif
-                            // Kita perlu resolusi path yang lebih pintar jika file HTML ada di subfolder
-                            // Tapi biasanya Word export: File.htm dan File_files/image.png ada di level yg sama
                             
-                            // Simplifikasi: coba cari loose match di zip jika exact match gagal
                             let imageFile = zip.file(decodedSrc);
                             
-                            // Jika tidak ketemu, coba cari by filename saja (risky tapi membantu jika path beda)
                             if (!imageFile) {
                                 const cleanName = decodedSrc.split('/').pop();
                                 const potentialMatches = zip.file(new RegExp(cleanName + "$", "i"));
@@ -1728,11 +1798,9 @@
                         } catch (e) { console.warn(`Gagal memuat gambar: ${src}`, e); }
                     }
                 }
-                // Ekstrak ulang dengan gambar yang sudah di-embed
                 questionsFound = extractQuestionsFromDom(tempDoc.body);
             }
 
-            // Render hasil ke layar
             questionsFound.forEach(q => {
                 const soalDiv = createSoalElement(q.detail, q.kunci, q.nomor);
                 soalDiv.dataset.isNew = 'true';
@@ -1775,7 +1843,6 @@
                 if (!firstCell) continue;
                 
                 const nomorText = firstCell.textContent.trim();
-                // Validasi sederhana: cell pertama harus angka
                 if (!nomorText || isNaN(parseInt(nomorText, 10))) continue;
 
                 if (i + 1 >= rows.length) continue;
@@ -1784,11 +1851,9 @@
                 const keyCell = rows[i + 1]?.cells[1];
 
                 if (!mainContentCell || !keyCell) {
-                    console.warn(`Skipping incomplete question block at row index ${i}`);
                     continue;
                 }
                 
-                // Jika konten kosong sama sekali, skip
                 if (!mainContentCell.textContent.trim() && !mainContentCell.querySelector('img')) {
                     continue;
                 }
@@ -1801,16 +1866,12 @@
                     const questionParts = [];
                     const optionParts = new Map([['A', []], ['B', []], ['C', []], ['D', []]]);
                     const optionKeys = ['A', 'B', 'C', 'D'];
-                    let currentOptionIndex = 0; // 0=A, 1=B, 2=C, 3=D
+                    let currentOptionIndex = 0; 
                     let foundOptions = false;
 
                     for (const node of Array.from(tempDiv.childNodes)) {
-                        // LOGIKA BARU: Cek jika node adalah LIST (OL/UL)
                         if (node.tagName === 'OL' || node.tagName === 'UL') {
                             const listItems = node.querySelectorAll('li');
-                            
-                            // Jika list memiliki atribut start, kita sesuaikan indexnya
-                            // Namun, amannya kita lanjutkan saja urutan dari index terakhir
                             
                             listItems.forEach(li => {
                                 if (currentOptionIndex < 4) {
@@ -1820,17 +1881,16 @@
                                     currentOptionIndex++;
                                 }
                             });
-                            continue; // Lanjut ke node berikutnya
+                            continue; 
                         }
 
                         const nodeText = node.textContent.trim();
-                        // Deteksi opsi jawaban manual A. B. C. D.
                         const match = nodeText.match(/^([A-D])\.\s*/);
 
                         if (match) {
                             foundOptions = true;
                             const keyMatch = match[1];
-                            currentOptionIndex = optionKeys.indexOf(keyMatch); // Set index sesuai huruf yang ditemukan
+                            currentOptionIndex = optionKeys.indexOf(keyMatch); 
                             
                             const tempNode = node.cloneNode(true);
                             const markerRegex = new RegExp(`^\\s*${keyMatch}\\.\\s*`);
@@ -1849,12 +1909,8 @@
                             if (contentToAdd) {
                                 optionParts.get(keyMatch).push(contentToAdd);
                             }
-                            currentOptionIndex++; // Siapkan untuk huruf berikutnya
+                            currentOptionIndex++; 
                         } else if (foundOptions) {
-                            // Jika sudah masuk mode opsi, tapi tidak ada marker A/B/C/D
-                            // Kemungkinan ini adalah kelanjutan teks dari opsi sebelumnya
-                            // ATAU ini adalah list item yang tidak terdeteksi
-                            
                             if (currentOptionIndex > 0 && currentOptionIndex <= 4) {
                                 const lastKey = optionKeys[currentOptionIndex - 1];
                                 optionParts.get(lastKey).push(node.outerHTML || node.textContent);
@@ -1956,22 +2012,14 @@
         
         let node;
         while(node = walker.nextNode()) {
-            if (node.nodeType === 3) { // Text node
+            if (node.nodeType === 3) { 
                 result += node.textContent;
-            } else if (node.nodeName === 'IMG') { // Image element
+            } else if (node.nodeName === 'IMG') { 
                 result += node.outerHTML;
             }
         }
         
         return result.replace(/\s+/g, ' ').trim();
-    }
-
-
-    function parseHtmlAndDisplay(bodyElement) {
-        // Fungsi ini sekarang digantikan oleh extractQuestionsFromDom
-        // Tapi kita biarkan kosong atau hapus jika tidak dipakai lagi
-        // Untuk menjaga kompatibilitas jika ada panggilan lain, kita bisa log warning
-        console.warn("parseHtmlAndDisplay is deprecated. Use processZipFile logic instead.");
     }
 
     function cleanHtml(element, allowParagraphs) {
@@ -2032,8 +2080,8 @@
             
             const hasMeaningfulSiblings = Array.from(p.childNodes).some(sibling => {
                 if (sibling === elementToCheck) return false;
-                if (sibling.nodeType === 3 && sibling.textContent.trim().length > 0) return true; // Text node
-                if (sibling.nodeType === 1 && sibling.tagName !== 'BR' && !sibling.contains(elementToCheck)) return true; // Element node
+                if (sibling.nodeType === 3 && sibling.textContent.trim().length > 0) return true; 
+                if (sibling.nodeType === 1 && sibling.tagName !== 'BR' && !sibling.contains(elementToCheck)) return true; 
                 return false;
             });
 
@@ -2087,7 +2135,6 @@
         
         renumberSoalDOM();
         
-        // Cek search filter setelah delete, jika list kosong karena filter, tampilkan pesan
         if (soalSearchInput.value) {
             filterSoal(soalSearchInput.value);
         } else {
@@ -2248,13 +2295,11 @@
             }
         });
 
-        // --- GLOBAL CLICK LISTENER FOR TOOLBAR HIDING ---
         document.addEventListener('mousedown', (e) => {
             const isToolbar = editorToolbar.contains(e.target);
             const isEditable = e.target.closest('[contenteditable="true"]');
-            const isButton = e.target.closest('button'); // Hindari sembunyi jika klik tombol di toolbar itu sendiri
+            const isButton = e.target.closest('button'); 
             
-            // Jika klik BUKAN di toolbar DAN BUKAN di area edit DAN BUKAN tombol toolbar
             if (!isToolbar && !isEditable && !isButton) {
                 hideToolbar();
             }
@@ -2314,7 +2359,6 @@
         });
     }
     
-    // --- SEARCH FILTER FUNCTIONALITY ---
     function filterSoal(searchTerm) {
         const term = searchTerm.toLowerCase().trim();
         const allSoal = document.querySelectorAll('.soal-container');
@@ -2327,11 +2371,9 @@
                 return;
             }
 
-            // Get text from question and options
             const questionText = soalDiv.querySelector('.soal-pertanyaan').textContent.toLowerCase();
             const optionsText = Array.from(soalDiv.querySelectorAll('li div')).map(div => div.textContent.toLowerCase()).join(' ');
             
-            // Check if search term exists in question OR options
             if (questionText.includes(term) || optionsText.includes(term)) {
                 soalDiv.classList.remove('hidden-by-filter');
                 visibleCount++;
@@ -2340,7 +2382,6 @@
             }
         });
 
-        // Show/Hide "No Results" message
         if (visibleCount === 0 && allSoal.length > 0) {
             noResultsMessage.style.display = 'block';
         } else {
@@ -2351,7 +2392,6 @@
     soalSearchInput.addEventListener('input', (e) => {
         filterSoal(e.target.value);
     });
-    // ------------------------------------
 
     function updateUIForSoalPresence() {
         const hasSoal = outputEl.children.length > 0;
@@ -2360,7 +2400,6 @@
         globalSaveContainer.style.display = hasSoal ? 'block' : 'none';
         uploadBtn.disabled = hasSoal;
         
-        // Toggle Search Bar
         searchBarContainer.style.display = hasSoal ? 'block' : 'none';
         if (!hasSoal) {
              noResultsMessage.style.display = 'none';
@@ -2388,7 +2427,6 @@
             const currentSoalIds = new Set(currentSoalElements.map(el => el.dataset.nomor));
             const initialSoalIds = new Set(Object.keys(initialSoalSnapshots));
 
-            // 1. Identify deleted questions and collect their images for deletion
             initialSoalIds.forEach(nomor => {
                 if (!currentSoalIds.has(nomor)) {
                     initialSoalSnapshots[nomor].images.forEach(imgUrl => {
@@ -2397,7 +2435,6 @@
                 }
             });
 
-            // 2. Process image uploads for new/updated questions and collect old images to delete
             let imagesToUpload = [];
             currentSoalElements.forEach(soalDiv => {
                 soalDiv.querySelectorAll('img').forEach(img => {
@@ -2407,7 +2444,7 @@
                 });
 
                 const nomor = soalDiv.dataset.nomor;
-                if (initialSoalSnapshots[nomor]) { // Only for existing questions
+                if (initialSoalSnapshots[nomor]) { 
                     const initialImages = new Set(initialSoalSnapshots[nomor].images.filter(src => src.includes('github')));
                     const currentImages = new Set(Array.from(soalDiv.querySelectorAll('img')).map(img => img.src).filter(src => src.includes('github')));
                     initialImages.forEach(imgUrl => {
@@ -2426,11 +2463,10 @@
                     const base64String = img.src.split(',')[1];
                     const fileName = img.dataset.fileName || 'pasted-image.png';
                     const githubUrl = await uploadImageToGithub({ name: fileName }, base64String);
-                    img.src = githubUrl; // Directly update the DOM
+                    img.src = githubUrl; 
                 }
             }
             
-            // 3. Prepare final data object for Firebase from the current DOM state
             processingText.textContent = 'Mempersiapkan data untuk server...';
             const soalObject = {};
             currentSoalElements.forEach(soalDiv => {
@@ -2445,42 +2481,40 @@
                 };
             });
             
-            const allKunjabList = Object.keys(soalObject).sort((a,b) => parseInt(a) - parseInt(b)).map(nomor => soalObject[nomor].kunciJawaban || ' ');
-            const kunjabString = allKunjabList.join(',');
+            const allKunjab = Object.keys(soalObject).sort((a,b) => parseInt(a) - parseInt(b)).map(nomor => soalObject[nomor].kunciJawaban || ' ');
+            const jumlahSoal = Object.keys(soalObject).length;
+            const tanggalUpdate = new Date().toISOString();
 
-            // DATA 1: Data Lengkap (Berat) - Disimpan di path 'ujian/...'
-            const finalData = {
+            // 1. DATA RINGKASAN (Tanpa objek 'soal') -> Ke folder 'daftar_ujian'
+            const summaryData = {
                 ...currentSoalData,
-                soal: Object.keys(soalObject).length > 0 ? soalObject : null,
-                kunjab: kunjabString,
-                terakhirUpdate: new Date().toISOString()
+                soal: null, // Pastikan soal NULL agar ringan
+                jumlahSoal: jumlahSoal,
+                kunjab: allKunjab.join(','),
+                terakhirUpdate: tanggalUpdate
             };
 
-            // DATA 2: Data Ringkas (Ringan) - Disimpan di path 'daftar_ujian/...'
-            // Ini yang diminta untuk Admin Panel
-            const metadata = {
-                tahunAjaran: currentSoalData.tahunAjaran,
-                namaUjian: currentSoalData.ujian,
-                kelas: currentSoalData.kelas,
-                mapel: currentSoalData.mapel,
-                jumlahSoal: Object.keys(soalObject).length,
-                kunjab: kunjabString, // Penting untuk token/grading otomatis
-                terakhirUpdate: new Date().toISOString()
+            // 2. DATA LENGKAP (Dengan objek 'soal') -> Ke folder 'ujian'
+            const contentData = {
+                ...currentSoalData,
+                soal: jumlahSoal > 0 ? soalObject : null,
+                jumlahSoal: jumlahSoal,
+                kunjab: allKunjab.join(','),
+                terakhirUpdate: tanggalUpdate
             };
 
-            // 4. Write to Firebase (Single DB) - PARALLEL SAVE
-            processingText.textContent = 'Menyimpan data ke server...';
+            processingText.textContent = 'Menyimpan data ke server (Mode Split)...';
             
-            const dbPathFull = getDbPath(currentSoalData); // Path: ujian/TA/Nama/Kelas/Mapel
-            const dbPathMeta = dbPathFull.replace(/^ujian/, 'daftar_ujian'); // Path: daftar_ujian/TA/Nama/Kelas/Mapel
-            
-            // Simpan keduanya sekaligus
+            const targetDb = getDbForGrade(currentSoalData.kelas);
+            const summaryPath = getSummaryDbPath(currentSoalData);
+            const contentPath = getContentDbPath(currentSoalData);
+
+            // Simpan ke dua lokasi
             await Promise.all([
-                set(ref(db, dbPathFull), finalData),
-                set(ref(db, dbPathMeta), metadata)
+                set(ref(targetDb, summaryPath), summaryData),
+                set(ref(targetDb, contentPath), contentData)
             ]);
             
-            // 5. Delete unused images from GitHub
             if (imagesToDelete.size > 0) {
                 let deletedCount = 0;
                 const totalToDelete = imagesToDelete.size;
@@ -2491,13 +2525,12 @@
                 }
             }
             
-            showToast('Semua perubahan berhasil disimpan (Data Soal & Daftar Ujian)!', 'success');
+            showToast('Semua perubahan berhasil disimpan (Split Storage)!', 'success');
             createInitialSnapshots(); 
             prioritizeInvalidSoal(); 
             checkAllValidityAndUpdateSaveButton();
             
-            // Tampilkan Preview setelah berhasil simpan
-            if (Object.keys(soalObject).length > 0) {
+            if (jumlahSoal > 0) {
                 previewCard.style.display = 'flex';
             } else {
                 previewCard.style.display = 'none';
@@ -2512,7 +2545,6 @@
     }
     
     function initialize() {
-        // initializeFirebaseApps(); // Tidak diperlukan lagi
         performAutoLogin();
         initializeToolbar();
         initializeSelectionListeners();
@@ -2545,7 +2577,7 @@
         globalSaveBtn.addEventListener('click', () => {
             showConfirmModal(
                 'Konfirmasi Penyimpanan',
-                'Semua perubahan akan dikirim ke server. Pastikan semua data sudah benar. Lanjutkan?',
+                'Perubahan akan disimpan. Data Ringkasan masuk ke "daftar_ujian", Data Lengkap masuk ke "ujian". Lanjutkan?',
                 'Ya, Kirim & Simpan',
                 'btn-success',
                 executeGlobalSave
