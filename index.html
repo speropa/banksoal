@@ -2,9 +2,9 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=0.67">
+    <meta name="viewport" content="width=device-width, initial-scale=0.8">
     
-    <title>Editor Bank Soal (Split Storage)</title>
+    <title>Editor Bank Soal (Smart HD Image)</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -213,6 +213,7 @@
             display: flex;
             gap: 20px;
             margin-bottom: 25px;
+            width: 100%; 
         }
         .editor-header-grid .editor-card {
             flex: 1;
@@ -265,10 +266,12 @@
             position: relative;
             display: none; 
             z-index: 50;
+            width: 100%; 
+            box-sizing: border-box;
         }
         .search-wrapper {
             position: relative;
-            max-width: 100%;
+            width: 100%;
         }
         .search-input {
             width: 100%;
@@ -280,7 +283,7 @@
             color: var(--text-color);
             transition: all 0.3s;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            box-sizing: border-box; /* Perbaikan lebar pencarian */
+            box-sizing: border-box; 
         }
         .search-input:focus {
             outline: none;
@@ -721,7 +724,7 @@
             <div class="editor-card actions-card">
                  <h3>Aksi Global</h3>
                  <button id="add-soal-btn" class="btn btn-success header-btn"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg><span>Tambah Soal</span></button>
-                 <a href="https://drive.google.com/uc?export=download&id=11J15X750WGz3QeXO8sxcWSzRyfoDkJLb" target="_blank" id="template-zip-btn" class="btn btn-purple header-btn"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg><span>Template Word</span></a>
+                 <a href="https://drive.google.com/uc?export=download&id=1LSaBGNRDrzvO_ot7EuSbH8rREdhOltns" target="_blank" id="template-zip-btn" class="btn btn-purple header-btn"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg><span>Template Word</span></a>
                  <button id="upload-btn" class="btn btn-primary header-btn"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/></svg><span>Unggah ZIP</span></button>
                  <button id="clear-data-btn" class="btn btn-danger header-btn"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg><span>Hapus Semua</span></button>
             </div>
@@ -757,6 +760,7 @@
                 <li><strong>Mekanisme Simpan:</strong> Data akan otomatis dipisah. Ringkasan (untuk daftar ujian) disimpan ke <code>daftar_ujian</code>, sedangkan Soal Lengkap disimpan ke <code>ujian</code>.</li>
                 <li><strong>Tambah Soal Manual:</strong> Untuk membuat soal baru atau menambahkan soal.</li>
                 <li><strong>Unggah ZIP:</strong> Unggah file ZIP Anda untuk diproses.</li>
+                <li><strong>Auto-HD:</strong> Editor akan otomatis memilih gambar HD (misal: 7MB) dari ZIP dan mengoptimalkannya menjadi ~1.5MB agar tidak pecah tapi tetap ringan.</li>
             </ol>
         </div>
     </div>
@@ -1362,17 +1366,12 @@
     });
     
     async function fetchAndRenderSoal() {
-        // Ambil dari path KONTEN (ujian/...) karena disitu soal lengkap disimpan
         const contentPath = getContentDbPath(currentSoalData);
-        // Fallback: Path ringkasan (daftar_ujian/...) untuk support data lama
         const summaryPath = getSummaryDbPath(currentSoalData);
-
         const targetDb = getDbForGrade(currentSoalData.kelas);
         
-        // Coba ambil dari konten lengkap dulu
         let snapshot = await get(ref(targetDb, contentPath));
 
-        // Jika konten lengkap kosong, coba cek di path lama (migrasi otomatis saat save nanti)
         if (!snapshot.exists()) {
              console.log("Data tidak ditemukan di path konten, mencoba path ringkasan (legacy)...");
              snapshot = await get(ref(targetDb, summaryPath));
@@ -1384,7 +1383,6 @@
 
         if (snapshot.exists()) {
             const data = snapshot.val();
-            // Cek apakah data memiliki properti 'soal'
             if (data.soal && Object.keys(data.soal).length > 0) {
                 renderSoalFromData(data);
                 showToast(`Data berhasil dimuat. ${Object.keys(data.soal).length} soal ditemukan.`, 'success');
@@ -1605,7 +1603,6 @@
         const contentPath = getContentDbPath(currentSoalData);
         const targetDb = getDbForGrade(currentSoalData.kelas);
         
-        // Hapus dari kedua lokasi
         await Promise.all([
             remove(ref(targetDb, summaryPath)),
             remove(ref(targetDb, contentPath))
@@ -1756,6 +1753,66 @@
                         .replace(/â€/g, '”');
 
                     const tempDoc = new DOMParser().parseFromString(htmlContent, 'text/html');
+                    const imagesInDoc = Array.from(tempDoc.getElementsByTagName('img'));
+                    
+                    for (const img of imagesInDoc) {
+                        const src = img.getAttribute('src');
+                        if (src && !src.startsWith('data:') && !src.startsWith('http')) {
+                            try {
+                                const decodedSrc = decodeURIComponent(src);
+                                let imageFile = zip.file(decodedSrc);
+                                
+                                // LOGIKA BARU: Cek "Partner" Image (HD vs Web)
+                                const cleanName = decodedSrc.split('/').pop();
+                                
+                                // Cek apakah ini file genap (contoh: image002.png)
+                                const match = cleanName.match(/image(\d+)\./i);
+                                if (match) {
+                                    const currentNum = parseInt(match[1]);
+                                    
+                                    // Coba cek file "sebelumnya" (image001.png/jpg/etc)
+                                    // Asumsi Word menyimpan HD di ganjil, web di genap
+                                    const prevNum = currentNum - 1;
+                                    if (prevNum > 0) {
+                                        const prevNameBase = 'image' + String(prevNum).padStart(3, '0');
+                                        const possibleExtensions = ['.png', '.jpg', '.jpeg', '.gif'];
+                                        
+                                        let bestCandidate = null;
+                                        let currentSize = imageFile ? imageFile._data.uncompressedSize : 0;
+
+                                        for (const ext of possibleExtensions) {
+                                            // Cari file di folder manapun di zip yang namanya cocok
+                                            const candidates = zip.file(new RegExp(prevNameBase + ext + "$", "i"));
+                                            if (candidates.length > 0) {
+                                                const candidate = candidates[0];
+                                                // Jika kandidat lebih besar dari file saat ini, ambil kandidat!
+                                                if (candidate._data.uncompressedSize > currentSize) {
+                                                    bestCandidate = candidate;
+                                                    console.log(`Smart Swap: Mengganti ${cleanName} (${currentSize} bytes) dengan ${candidate.name} (${candidate._data.uncompressedSize} bytes)`);
+                                                }
+                                            }
+                                        }
+                                        
+                                        if (bestCandidate) {
+                                            imageFile = bestCandidate;
+                                        }
+                                    }
+                                }
+
+                                if (!imageFile) {
+                                    const potentialMatches = zip.file(new RegExp(cleanName + "$", "i"));
+                                    if (potentialMatches.length > 0) imageFile = potentialMatches[0];
+                                }
+
+                                if (imageFile) {
+                                    const base64Content = await imageFile.async('base64');
+                                    const extension = imageFile.name.split('.').pop().toLowerCase();
+                                    img.src = `data:image/${extension};base64,${base64Content}`;
+                                    img.dataset.fileName = imageFile.name; // Simpan nama asli
+                                }
+                            } catch (e) { console.warn(`Gagal memuat gambar: ${src}`, e); }
+                        }
+                    }
                     
                     const extracted = extractQuestionsFromDom(tempDoc.body);
                     if (extracted.length > 0) {
@@ -1771,35 +1828,6 @@
 
             if (questionsFound.length === 0) {
                 throw new Error("Tidak ada tabel format soal yang valid ditemukan di dalam file manapun di ZIP ini.");
-            }
-
-            if (usedZipObject) {
-                 const tempDoc = new DOMParser().parseFromString(validHtmlContent, 'text/html');
-                 const imagesInDoc = Array.from(tempDoc.getElementsByTagName('img'));
-                 for (const img of imagesInDoc) {
-                    const src = img.getAttribute('src');
-                    if (src && !src.startsWith('data:') && !src.startsWith('http')) {
-                        try {
-                            const decodedSrc = decodeURIComponent(src);
-                            
-                            let imageFile = zip.file(decodedSrc);
-                            
-                            if (!imageFile) {
-                                const cleanName = decodedSrc.split('/').pop();
-                                const potentialMatches = zip.file(new RegExp(cleanName + "$", "i"));
-                                if (potentialMatches.length > 0) imageFile = potentialMatches[0];
-                            }
-
-                            if (imageFile) {
-                                const base64Content = await imageFile.async('base64');
-                                const extension = imageFile.name.split('.').pop().toLowerCase();
-                                img.src = `data:image/${extension};base64,${base64Content}`;
-                                img.dataset.fileName = imageFile.name;
-                            }
-                        } catch (e) { console.warn(`Gagal memuat gambar: ${src}`, e); }
-                    }
-                }
-                questionsFound = extractQuestionsFromDom(tempDoc.body);
             }
 
             questionsFound.forEach(q => {
@@ -2122,6 +2150,35 @@
         }
     });
 
+    outputEl.addEventListener('paste', function(e) {
+        const clipboardData = e.clipboardData || window.clipboardData;
+        if (!clipboardData) return;
+
+        const items = clipboardData.items;
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].type.indexOf('image') !== -1) {
+                e.preventDefault();
+                
+                const blob = items[i].getAsFile();
+                const reader = new FileReader();
+                
+                reader.onload = (event) => {
+                    const imgHTML = `<img src="${event.target.result}" class="img-block">`;
+                    document.execCommand('insertHTML', false, imgHTML);
+                    
+                    const activeEl = document.activeElement;
+                    const container = activeEl ? activeEl.closest('.soal-container') : null;
+                    if(container) classifyImages(container);
+                    
+                    showToast('Gambar dari Clipboard berhasil ditempel!', 'success');
+                };
+                
+                reader.readAsDataURL(blob);
+                break;
+            }
+        }
+    });
+
     document.addEventListener('click', function(e) { if (activeResizer && !activeResizer.wrapper.contains(e.target)) removeResizer(); });
     cancelDeleteBtn.addEventListener('click', () => { deleteModal.style.display = 'none'; });
     infoModalCloseBtn.addEventListener('click', () => { infoModal.style.display = 'none'; });
@@ -2418,6 +2475,38 @@
         else document.body.classList.remove('dark-mode');
     }
 
+    // --- OPTIMIZATION HELPER ---
+    // Mengonversi gambar base64 besar menjadi High Quality JPEG (0.9)
+    async function optimizeImage(base64Str) {
+        return new Promise((resolve) => {
+            // Jika ukuran string < 500KB, tidak perlu optimasi
+            if (base64Str.length < 500 * 1024) {
+                resolve(base64Str); 
+                return;
+            }
+
+            const img = new Image();
+            img.src = "data:image/png;base64," + base64Str;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+                
+                // Konversi ke JPEG Quality 0.9 (High)
+                // Ini membuang alpha channel (transparansi), tapi sangat efisien
+                const optimizedDataUrl = canvas.toDataURL('image/jpeg', 0.9);
+                
+                // Ambil bagian base64-nya saja
+                const optimizedBase64 = optimizedDataUrl.split(',')[1];
+                console.log(`Optimasi Gambar: ${Math.round(base64Str.length/1024)}KB -> ${Math.round(optimizedBase64.length/1024)}KB`);
+                resolve(optimizedBase64);
+            };
+            img.onerror = () => resolve(base64Str); // Fallback jika gagal
+        });
+    }
+
     async function executeGlobalSave() {
         showProcessing('Menganalisis perubahan...');
         
@@ -2461,8 +2550,13 @@
                 for (const img of imagesToUpload) {
                     uploadedCount++;
                     processingText.textContent = `(${uploadedCount}/${imagesToUpload.length}) Mengunggah gambar...`;
-                    const base64String = img.src.split(',')[1];
-                    const fileName = img.dataset.fileName || 'pasted-image.png';
+                    
+                    let base64String = img.src.split(',')[1];
+                    const fileName = (img.dataset.fileName || 'pasted-image').replace(/\.[^/.]+$/, "") + ".jpg"; // Paksa ekstensi JPG
+                    
+                    // Optimasi di sini!
+                    base64String = await optimizeImage(base64String);
+
                     const githubUrl = await uploadImageToGithub({ name: fileName }, base64String);
                     img.src = githubUrl; 
                 }
@@ -2486,16 +2580,14 @@
             const jumlahSoal = Object.keys(soalObject).length;
             const tanggalUpdate = new Date().toISOString();
 
-            // 1. DATA RINGKASAN (Tanpa objek 'soal') -> Ke folder 'daftar_ujian'
             const summaryData = {
                 ...currentSoalData,
-                soal: null, // Pastikan soal NULL agar ringan
+                soal: null, 
                 jumlahSoal: jumlahSoal,
                 kunjab: allKunjab.join(','),
                 terakhirUpdate: tanggalUpdate
             };
 
-            // 2. DATA LENGKAP (Dengan objek 'soal') -> Ke folder 'ujian'
             const contentData = {
                 ...currentSoalData,
                 soal: jumlahSoal > 0 ? soalObject : null,
@@ -2510,7 +2602,6 @@
             const summaryPath = getSummaryDbPath(currentSoalData);
             const contentPath = getContentDbPath(currentSoalData);
 
-            // Simpan ke dua lokasi
             await Promise.all([
                 set(ref(targetDb, summaryPath), summaryData),
                 set(ref(targetDb, contentPath), contentData)
