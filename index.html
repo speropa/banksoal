@@ -423,32 +423,16 @@
         
         .soal-nomor-container { display: flex; align-items: center; gap: 5px; }
         
-        .soal-nomor-input { 
-            width: 60px; 
-            padding: 5px 8px; 
-            font-size: 1em; 
-            border: 2px solid var(--primary-color); 
-            border-radius: 8px; 
+        .soal-nomor-badge { 
+            display: inline-block;
+            padding: 4px 10px; 
+            font-size: 0.9em; 
+            border-radius: 6px; 
             margin-left: 8px;
             text-align: center;
             font-weight: 700;
-            color: var(--primary-color);
-            background-color: white;
-            transition: all 0.3s;
-            -moz-appearance: textfield; 
-        }
-
-        .soal-nomor-input::-webkit-outer-spin-button,
-        .soal-nomor-input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        
-        .soal-nomor-input:focus {
-            outline: none;
             background-color: var(--primary-color);
             color: white;
-            box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.2);
         }
 
         .drag-handle { display: grid; grid-template-columns: repeat(3, 6px); gap: 4px; padding: 10px; cursor: grab; border-radius: 5px; transition: background-color 0.2s; }
@@ -1984,9 +1968,7 @@
         soalDiv.innerHTML = `
             <div class="soal-header">
                 <div class="soal-nomor-container">
-                    <h3 class="soal-nomor">Soal 
-                        <input type="number" class="soal-nomor-input" value="${nomor}" min="1">
-                    </h3>
+                    <h3 class="soal-nomor">Soal <span class="soal-nomor-badge">${nomor}</span></h3>
                 </div>
                 <div class="drag-handle" title="Seret untuk mengubah urutan"><span></span><span></span><span></span><span></span><span></span><span></span></div>
                 <div class="soal-actions">
@@ -2007,28 +1989,8 @@
             <div class="soal-validation-error"></div>
         `;
         
-        const nomorInput = soalDiv.querySelector('.soal-nomor-input');
-        nomorInput.addEventListener('change', () => {
-            sortSoalByInput();
-        });
-        
         classifyImages(soalDiv);
         return soalDiv;
-    }
-
-    function sortSoalByInput() {
-        const container = document.getElementById('soal-list-container');
-        const items = Array.from(container.children);
-
-        items.sort((a, b) => {
-            const valA = parseFloat(a.querySelector('.soal-nomor-input').value) || 0;
-            const valB = parseFloat(b.querySelector('.soal-nomor-input').value) || 0;
-            return valA - valB;
-        });
-
-        items.forEach(item => container.appendChild(item));
-        renumberSoalDOM();
-        showToast("Urutan soal diperbarui.", "info");
     }
 
     function stripFormattingFromOption(htmlString) {
@@ -2274,12 +2236,9 @@
         document.querySelectorAll('#soal-list-container .soal-container').forEach((soalDiv, index) => {
             const newNumber = index + 1;
             
-            const inputNomor = soalDiv.querySelector('.soal-nomor-input');
-            if (inputNomor) {
-                inputNomor.value = newNumber;
-            } else {
-                 const nomorSpan = soalDiv.querySelector('.soal-nomor span');
-                 if(nomorSpan) nomorSpan.textContent = newNumber;
+            const badge = soalDiv.querySelector('.soal-nomor-badge');
+            if (badge) {
+                badge.textContent = newNumber;
             }
             soalDiv.dataset.nomor = newNumber;
         });
