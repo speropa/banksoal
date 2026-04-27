@@ -2018,6 +2018,13 @@
         const clone = element.cloneNode(true);
 
         clone.querySelectorAll('style, script').forEach(el => el.remove());
+        
+        // Hancurkan tag <a> (hyperlink) dan ubah jadi teks biasa
+        clone.querySelectorAll('a').forEach(a => {
+            const textNode = document.createTextNode(a.textContent);
+            a.replaceWith(textNode);
+        });
+
         clone.querySelectorAll('*').forEach(child => {
             child.removeAttribute('class');
             child.removeAttribute('lang');
@@ -2434,6 +2441,17 @@
         else document.body.classList.remove('dark-mode');
     }
 
+    // --- HELPER: Penghancur Hyperlink sebelum disimpan ---
+    function stripLinks(htmlString) {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = htmlString;
+        tempDiv.querySelectorAll('a').forEach(a => {
+            const textNode = document.createTextNode(a.textContent);
+            a.replaceWith(textNode);
+        });
+        return tempDiv.innerHTML;
+    }
+
     // --- OPTIMIZATION HELPER ---
     // Mengonversi gambar base64 besar menjadi High Quality JPEG (0.9)
     async function optimizeImage(base64Str) {
@@ -2526,11 +2544,11 @@
             currentSoalElements.forEach(soalDiv => {
                 const nomor = soalDiv.dataset.nomor;
                 soalObject[nomor] = {
-                    pertanyaan: soalDiv.querySelector('.soal-pertanyaan').innerHTML,
-                    pilihanA: soalDiv.querySelector('li:nth-child(1) div').innerHTML,
-                    pilihanB: soalDiv.querySelector('li:nth-child(2) div').innerHTML,
-                    pilihanC: soalDiv.querySelector('li:nth-child(3) div').innerHTML,
-                    pilihanD: soalDiv.querySelector('li:nth-child(4) div').innerHTML,
+                    pertanyaan: stripLinks(soalDiv.querySelector('.soal-pertanyaan').innerHTML),
+                    pilihanA: stripLinks(soalDiv.querySelector('li:nth-child(1) div').innerHTML),
+                    pilihanB: stripLinks(soalDiv.querySelector('li:nth-child(2) div').innerHTML),
+                    pilihanC: stripLinks(soalDiv.querySelector('li:nth-child(3) div').innerHTML),
+                    pilihanD: stripLinks(soalDiv.querySelector('li:nth-child(4) div').innerHTML),
                     kunciJawaban: soalDiv.querySelector('.soal-kunci-jawaban div').textContent.trim().toUpperCase()
                 };
             });
