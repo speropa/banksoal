@@ -238,6 +238,54 @@
             width: 100%;
             justify-content: center;
         }
+        
+        /* Dropdown Tambah Soal */
+        .dropdown-wrapper { position: relative; width: 100%; }
+        .dropdown-content {
+            display: none; position: absolute; background-color: var(--card-background);
+            min-width: 100%; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 100; border-radius: 8px; border: 1px solid var(--border-color);
+            overflow: hidden; top: 100%; left: 0; margin-top: 5px;
+        }
+        .dropdown-content button {
+            color: var(--text-color); padding: 12px 16px; text-decoration: none;
+            display: block; width: 100%; border: none; background: transparent;
+            text-align: left; cursor: pointer; border-bottom: 1px solid var(--border-color);
+            font-size: 0.9em; font-weight: 500; transition: background-color 0.2s;
+        }
+        .dropdown-content button:last-child { border-bottom: none; }
+        .dropdown-content button:hover { background-color: var(--background-color); color: var(--primary-color); }
+        .show-dropdown { display: block; }
+
+        /* Tipe Soal Styling */
+        .soal-container.tipe-pgk { border-color: var(--purple-color); background-color: rgba(142, 68, 173, 0.02); }
+        .soal-container.tipe-bs { border-color: var(--info-color); background-color: rgba(23, 162, 184, 0.02); }
+        
+        body.dark-mode .soal-container.tipe-pgk { background-color: rgba(142, 68, 173, 0.05); }
+        body.dark-mode .soal-container.tipe-bs { background-color: rgba(23, 162, 184, 0.05); }
+
+        .badge-tipe { 
+            padding: 4px 8px; border-radius: 6px; font-size: 0.8em; 
+            margin-left: 10px; font-weight: 600; display: inline-block; vertical-align: middle;
+        }
+        .badge-pg { background: var(--secondary-color); color: white; }
+        .badge-pgk { background: var(--purple-color); color: white; }
+        .badge-bs { background: var(--info-color); color: white; }
+
+        /* Custom List PGK (Checkbox) */
+        .list-pgk { list-style: none; padding-left: 0; margin-top: 15px; }
+        .list-pgk li { display: flex; align-items: flex-start; margin-bottom: 8px; }
+        .list-pgk .fake-checkbox { 
+            width: 18px; height: 18px; border: 2px solid var(--border-color); 
+            border-radius: 4px; margin-right: 12px; margin-top: 5px; flex-shrink: 0; background-color: var(--card-background);
+        }
+
+        /* Tabel BS (Benar/Salah) */
+        .table-bs { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .table-bs th, .table-bs td { border: 1px solid var(--border-color); padding: 10px; text-align: center; vertical-align: middle; }
+        .table-bs th { background-color: var(--editor-bg); font-weight: 600; font-size: 0.9em; }
+        .table-bs td:first-child { text-align: left; width: 70%; }
+        .table-bs .radio-dummy { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--border-color); display: inline-block; }
 
         .preview-content {
             display: flex;
@@ -707,8 +755,15 @@
 
             <div class="editor-card actions-card">
                  <h3>Aksi Global</h3>
-                 <button id="add-soal-btn" class="btn btn-success header-btn"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg><span>Tambah Soal</span></button>
-                 <a href="https://drive.google.com/uc?export=download&id=1LSaBGNRDrzvO_ot7EuSbH8rREdhOltns" target="_blank" id="template-zip-btn" class="btn btn-purple header-btn"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg><span>Template Word</span></a>
+                 <div class="dropdown-wrapper">
+                     <button id="add-soal-btn" class="btn btn-success header-btn"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg><span>Tambah Soal ▾</span></button>
+                     <div id="add-soal-dropdown" class="dropdown-content">
+                         <button data-type="PG">Pilihan Ganda (1 Jawaban)</button>
+                         <button data-type="PGK">PG Kompleks (Centang > 1)</button>
+                         <button data-type="BS">Benar/Salah (Tabel)</button>
+                     </div>
+                 </div>
+                 <a href="https://drive.google.com/uc?export=download&id=1kijyvpHPhDBWSUdXjfU3vqcUBv7Nx7mq" target="_blank" id="template-zip-btn" class="btn btn-purple header-btn"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg><span>Template Word</span></a>
                  <button id="upload-btn" class="btn btn-primary header-btn"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/></svg><span>Unggah ZIP</span></button>
                  <button id="clear-data-btn" class="btn btn-danger header-btn"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg><span>Hapus Semua</span></button>
             </div>
@@ -739,9 +794,9 @@
         <div id="soal-list-container"></div>
 
         <div class="instructions-box">
-            <h3>Petunjuk (Split Storage)</h3>
+            <h3>Petunjuk</h3>
             <ol>
-                <li><strong>Mekanisme Simpan:</strong> Data akan otomatis dipisah. Ringkasan (untuk daftar ujian) disimpan ke <code>daftar_ujian</code>, sedangkan Soal Lengkap disimpan ke <code>ujian</code>.</li>
+                <li><strong>Mekanisme Simpan:</strong> Data akan otomatis disimpan dan dioptimalkan ke server.</li>
                 <li><strong>Tambah Soal Manual:</strong> Untuk membuat soal baru atau menambahkan soal.</li>
                 <li><strong>Unggah ZIP:</strong> Unggah file ZIP Anda untuk diproses.</li>
                 <li><strong>Auto-HD:</strong> Editor akan otomatis memilih gambar HD (misal: 7MB) dari ZIP dan mengoptimalkannya menjadi ~1.5MB agar tidak pecah tapi tetap ringan.</li>
@@ -929,6 +984,7 @@
     const backToSelectionBtn = document.getElementById('back-to-selection-btn');
 
     const addSoalBtn = document.getElementById('add-soal-btn');
+    const addSoalDropdown = document.getElementById('add-soal-dropdown');
     const templateZipBtn = document.getElementById('template-zip-btn');
     const uploadBtn = document.getElementById('upload-btn');
     const clearDataBtn = document.getElementById('clear-data-btn');
@@ -1493,10 +1549,10 @@
         
         return {
             pertanyaan: soalDiv.querySelector('.soal-pertanyaan').innerHTML,
-            pilihanA: soalDiv.querySelector('li:nth-child(1) div').innerHTML,
-            pilihanB: soalDiv.querySelector('li:nth-child(2) div').innerHTML,
-            pilihanC: soalDiv.querySelector('li:nth-child(3) div').innerHTML,
-            pilihanD: soalDiv.querySelector('li:nth-child(4) div').innerHTML,
+            pilihanA: soalDiv.querySelector('.opt-a').innerHTML,
+            pilihanB: soalDiv.querySelector('.opt-b').innerHTML,
+            pilihanC: soalDiv.querySelector('.opt-c').innerHTML,
+            pilihanD: soalDiv.querySelector('.opt-d') ? soalDiv.querySelector('.opt-d').innerHTML : '',
             kunci: soalDiv.querySelector('.soal-kunci-jawaban div').innerHTML,
             images: extractImages(soalDiv)
         };
@@ -1518,25 +1574,43 @@
             const hasImage = element.querySelector('img') !== null;
             return !hasText && !hasImage;
         }
-
+        
+        const tipe = soalDiv.dataset.tipe;
         const pertanyaanEl = soalDiv.querySelector('.soal-pertanyaan');
-        const pilihanAEl = soalDiv.querySelector('li:nth-child(1) div');
-        const pilihanBEl = soalDiv.querySelector('li:nth-child(2) div');
-        const pilihanCEl = soalDiv.querySelector('li:nth-child(3) div');
-        const pilihanDEl = soalDiv.querySelector('li:nth-child(4) div');
+        const pilihanAEl = soalDiv.querySelector('.opt-a');
+        const pilihanBEl = soalDiv.querySelector('.opt-b');
+        const pilihanCEl = soalDiv.querySelector('.opt-c');
+        const pilihanDEl = soalDiv.querySelector('.opt-d');
         const kunciEl = soalDiv.querySelector('.soal-kunci-jawaban div');
 
         if (isContentEmpty(pertanyaanEl)) errorMessages.push('Pertanyaan tidak boleh kosong.');
-        if (isContentEmpty(pilihanAEl)) errorMessages.push('Pilihan A tidak boleh kosong.');
-        if (isContentEmpty(pilihanBEl)) errorMessages.push('Pilihan B tidak boleh kosong.');
-        if (isContentEmpty(pilihanCEl)) errorMessages.push('Pilihan C tidak boleh kosong.');
-        if (isContentEmpty(pilihanDEl)) errorMessages.push('Pilihan D tidak boleh kosong.');
+        if (isContentEmpty(pilihanAEl)) errorMessages.push(tipe === 'BS' ? 'Pernyataan 1 tidak boleh kosong.' : 'Pilihan A tidak boleh kosong.');
+        if (isContentEmpty(pilihanBEl)) errorMessages.push(tipe === 'BS' ? 'Pernyataan 2 tidak boleh kosong.' : 'Pilihan B tidak boleh kosong.');
+        if (isContentEmpty(pilihanCEl)) errorMessages.push(tipe === 'BS' ? 'Pernyataan 3 tidak boleh kosong.' : 'Pilihan C tidak boleh kosong.');
+        if (tipe !== 'BS' && isContentEmpty(pilihanDEl)) errorMessages.push('Pilihan D tidak boleh kosong.');
         
-        const kunciText = kunciEl.textContent.trim().toUpperCase();
+        const kunciText = kunciEl.textContent.trim().toUpperCase().replace(/\s+/g, '');
+        
         if (!kunciText) {
             errorMessages.push('Kunci Jawaban tidak boleh kosong.');
-        } else if (!['A', 'B', 'C', 'D'].includes(kunciText)) {
-            errorMessages.push('Kunci Jawaban harus A, B, C, atau D.');
+        } else {
+            if (tipe === 'PG') {
+                if (!['A', 'B', 'C', 'D'].includes(kunciText)) {
+                    errorMessages.push('Kunci PG harus 1 huruf (A, B, C, atau D).');
+                }
+            } else if (tipe === 'PGK') {
+                const parts = kunciText.split(',');
+                const validParts = parts.every(p => ['A', 'B', 'C', 'D'].includes(p));
+                if (!validParts || parts.length < 2) {
+                    errorMessages.push('Kunci PGK harus >1 pilihan dipisah koma (contoh: A,C atau A,B,D).');
+                }
+            } else if (tipe === 'BS') {
+                const parts = kunciText.split(',');
+                const validParts = parts.every(p => ['B', 'S'].includes(p));
+                if (!validParts || parts.length !== 3) {
+                    errorMessages.push('Kunci BS harus berisi kombinasi B dan S, dipisah koma, berjumlah 3 (contoh: B,S,B).');
+                }
+            }
         }
 
 
@@ -1593,23 +1667,43 @@
         ]);
     }
 
-    addSoalBtn.addEventListener('click', () => {
-        const nomorSoalBaru = document.querySelectorAll('.soal-container').length + 1;
-        const soalDetailKosong = { pertanyaan: '', pilihanA: '', pilihanB: '', pilihanC: '', pilihanD: '' };
-        const kunciKosong = '';
+    addSoalBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        addSoalDropdown.classList.toggle('show-dropdown');
+    });
 
-        const soalDivBaru = createSoalElement(soalDetailKosong, kunciKosong, nomorSoalBaru);
-        outputEl.appendChild(soalDivBaru);
-        soalDivBaru.dataset.isNew = 'true';
-        
-        if (soalSearchInput.value) {
-            soalSearchInput.value = '';
-            filterSoal('');
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.dropdown-wrapper')) {
+            addSoalDropdown.classList.remove('show-dropdown');
         }
-        
-        updateUIForSoalPresence();
-        checkAllValidityAndUpdateSaveButton();
-        soalDivBaru.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+
+    addSoalDropdown.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const tipeDipilih = e.target.dataset.type;
+            addSoalDropdown.classList.remove('show-dropdown');
+            
+            const nomorSoalBaru = document.querySelectorAll('.soal-container').length + 1;
+            const soalDetailKosong = { pertanyaan: '', pilihanA: '', pilihanB: '', pilihanC: '', pilihanD: '' };
+            let kunciKosong = '';
+            
+            // Set default key based on type for visual cues
+            if (tipeDipilih === 'PGK') kunciKosong = 'A,B';
+            else if (tipeDipilih === 'BS') kunciKosong = 'B,S,B';
+
+            const soalDivBaru = createSoalElement(soalDetailKosong, kunciKosong, nomorSoalBaru, tipeDipilih);
+            outputEl.appendChild(soalDivBaru);
+            soalDivBaru.dataset.isNew = 'true';
+            
+            if (soalSearchInput.value) {
+                soalSearchInput.value = '';
+                filterSoal('');
+            }
+            
+            updateUIForSoalPresence();
+            checkAllValidityAndUpdateSaveButton();
+            soalDivBaru.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
     });
 
     clearDataBtn.addEventListener('click', () => {
@@ -1944,11 +2038,13 @@
                         pilihanD: stripFormattingFromOption(optionParts.get('D')?.join(' ') || '')
                     };
                     
-                    const kunci = cleanHtml(keyCell, false).trim().toUpperCase();
+                    // PERBAIKAN: Menggunakan textContent agar tag HTML (seperti <br> atau <p>) 
+                    // tidak ikut terbaca dan merusak sistem deteksi tipe soal.
+                    const kunciRaw = keyCell.textContent.replace(/\s+/g, '').replace(/[\[\]]/g, '').toUpperCase();
                     
                     results.push({
                         detail: soalDetail,
-                        kunci: kunci,
+                        kunci: kunciRaw,
                         nomor: soalDitemukan
                     });
 
@@ -1960,15 +2056,72 @@
         return results;
     }
     
-    function createSoalElement(soalDetail, kunci, nomor) {
-        const soalDiv = document.createElement('div');
-        soalDiv.className = 'soal-container';
-        soalDiv.dataset.nomor = nomor;
+    function detectSoalType(kunci) {
+        if (!kunci) return 'PG';
+        // PERBAIKAN: Pembersihan ekstra untuk membuang sisa tag HTML jika masih ada
+        let k = kunci.replace(/<[^>]*>?/gm, '').replace(/\s+/g, '').replace(/[\[\]]/g, '').toUpperCase();
+        if (k === '' || (k.length === 1 && ['A','B','C','D'].includes(k))) return 'PG';
         
+        const parts = k.split(',');
+        const isBS = parts.every(p => p === 'B' || p === 'S');
+        if (isBS && parts.length === 3) return 'BS';
+        
+        const isPGK = parts.every(p => ['A','B','C','D'].includes(p));
+        if (isPGK && parts.length > 1) return 'PGK';
+        
+        return 'PG'; 
+    }
+    
+    function createSoalElement(soalDetail, kunci, nomor, forceType = null) {
+        const tipe = forceType || detectSoalType(kunci);
+        const soalDiv = document.createElement('div');
+        soalDiv.className = `soal-container tipe-${tipe.toLowerCase()}`;
+        soalDiv.dataset.nomor = nomor;
+        soalDiv.dataset.tipe = tipe;
+        
+        let badgeHtml = '';
+        let contentHtml = '';
+        
+        if (tipe === 'PG') {
+            badgeHtml = `<span class="badge-tipe badge-pg">Pilihan Ganda</span>`;
+            contentHtml = `
+                <ul>
+                    <li><b>A.</b> <div class="opt-a" contenteditable="true" dir="auto">${soalDetail.pilihanA}</div></li>
+                    <li><b>B.</b> <div class="opt-b" contenteditable="true" dir="auto">${soalDetail.pilihanB}</div></li>
+                    <li><b>C.</b> <div class="opt-c" contenteditable="true" dir="auto">${soalDetail.pilihanC}</div></li>
+                    <li><b>D.</b> <div class="opt-d" contenteditable="true" dir="auto">${soalDetail.pilihanD}</div></li>
+                </ul>
+            `;
+        } else if (tipe === 'PGK') {
+            badgeHtml = `<span class="badge-tipe badge-pgk">PG Kompleks</span>`;
+            contentHtml = `
+                <ul class="list-pgk">
+                    <li><div class="fake-checkbox"></div> <div class="opt-a" contenteditable="true" dir="auto" style="flex-grow:1">${soalDetail.pilihanA}</div></li>
+                    <li><div class="fake-checkbox"></div> <div class="opt-b" contenteditable="true" dir="auto" style="flex-grow:1">${soalDetail.pilihanB}</div></li>
+                    <li><div class="fake-checkbox"></div> <div class="opt-c" contenteditable="true" dir="auto" style="flex-grow:1">${soalDetail.pilihanC}</div></li>
+                    <li><div class="fake-checkbox"></div> <div class="opt-d" contenteditable="true" dir="auto" style="flex-grow:1">${soalDetail.pilihanD}</div></li>
+                </ul>
+            `;
+        } else if (tipe === 'BS') {
+            badgeHtml = `<span class="badge-tipe badge-bs">Benar / Salah</span>`;
+            contentHtml = `
+                <table class="table-bs">
+                    <thead><tr><th>Pernyataan</th><th>Benar (B)</th><th>Salah (S)</th></tr></thead>
+                    <tbody>
+                        <tr><td><div class="opt-a" contenteditable="true" dir="auto" data-placeholder="Pernyataan 1...">${soalDetail.pilihanA}</div></td><td><div class="radio-dummy"></div></td><td><div class="radio-dummy"></div></td></tr>
+                        <tr><td><div class="opt-b" contenteditable="true" dir="auto" data-placeholder="Pernyataan 2...">${soalDetail.pilihanB}</div></td><td><div class="radio-dummy"></div></td><td><div class="radio-dummy"></div></td></tr>
+                        <tr><td><div class="opt-c" contenteditable="true" dir="auto" data-placeholder="Pernyataan 3...">${soalDetail.pilihanC}</div></td><td><div class="radio-dummy"></div></td><td><div class="radio-dummy"></div></td></tr>
+                    </tbody>
+                </table>
+                <div class="opt-d" style="display:none;"></div>
+            `;
+        }
+
         soalDiv.innerHTML = `
             <div class="soal-header">
                 <div class="soal-nomor-container">
                     <h3 class="soal-nomor">Soal <span class="soal-nomor-badge">${nomor}</span></h3>
+                    ${badgeHtml}
                 </div>
                 <div class="drag-handle" title="Seret untuk mengubah urutan"><span></span><span></span><span></span><span></span><span></span><span></span></div>
                 <div class="soal-actions">
@@ -1976,12 +2129,7 @@
                 </div>
             </div>
             <div class="soal-pertanyaan" contenteditable="true" data-placeholder="Ketik pertanyaan di sini...">${soalDetail.pertanyaan}</div>
-            <ul>
-                <li><b>A.</b> <div contenteditable="true" dir="auto">${soalDetail.pilihanA}</div></li>
-                <li><b>B.</b> <div contenteditable="true" dir="auto">${soalDetail.pilihanB}</div></li>
-                <li><b>C.</b> <div contenteditable="true" dir="auto">${soalDetail.pilihanC}</div></li>
-                <li><b>D.</b> <div contenteditable="true" dir="auto">${soalDetail.pilihanD}</div></li>
-            </ul>
+            ${contentHtml}
             <div class="soal-kunci-jawaban">
                 <span>Kunci Jawaban:</span>
                 <div contenteditable="true" dir="auto">${kunci}</div>
@@ -2396,7 +2544,12 @@
             }
 
             const questionText = soalDiv.querySelector('.soal-pertanyaan').textContent.toLowerCase();
-            const optionsText = Array.from(soalDiv.querySelectorAll('li div')).map(div => div.textContent.toLowerCase()).join(' ');
+            const optA = soalDiv.querySelector('.opt-a').textContent.toLowerCase();
+            const optB = soalDiv.querySelector('.opt-b').textContent.toLowerCase();
+            const optC = soalDiv.querySelector('.opt-c').textContent.toLowerCase();
+            const optD = soalDiv.querySelector('.opt-d') ? soalDiv.querySelector('.opt-d').textContent.toLowerCase() : '';
+            
+            const optionsText = `${optA} ${optB} ${optC} ${optD}`;
             
             if (questionText.includes(term) || optionsText.includes(term)) {
                 soalDiv.classList.remove('hidden-by-filter');
@@ -2543,17 +2696,26 @@
             const soalObject = {};
             currentSoalElements.forEach(soalDiv => {
                 const nomor = soalDiv.dataset.nomor;
+                const tipe = soalDiv.dataset.tipe;
                 soalObject[nomor] = {
                     pertanyaan: stripLinks(soalDiv.querySelector('.soal-pertanyaan').innerHTML),
-                    pilihanA: stripLinks(soalDiv.querySelector('li:nth-child(1) div').innerHTML),
-                    pilihanB: stripLinks(soalDiv.querySelector('li:nth-child(2) div').innerHTML),
-                    pilihanC: stripLinks(soalDiv.querySelector('li:nth-child(3) div').innerHTML),
-                    pilihanD: stripLinks(soalDiv.querySelector('li:nth-child(4) div').innerHTML),
-                    kunciJawaban: soalDiv.querySelector('.soal-kunci-jawaban div').textContent.trim().toUpperCase()
+                    pilihanA: stripLinks(soalDiv.querySelector('.opt-a').innerHTML),
+                    pilihanB: stripLinks(soalDiv.querySelector('.opt-b').innerHTML),
+                    pilihanC: stripLinks(soalDiv.querySelector('.opt-c').innerHTML),
+                    pilihanD: tipe === 'BS' ? '' : stripLinks(soalDiv.querySelector('.opt-d').innerHTML),
+                    kunciJawaban: soalDiv.querySelector('.soal-kunci-jawaban div').textContent.trim().toUpperCase().replace(/\s+/g, '')
                 };
             });
             
-            const allKunjab = Object.keys(soalObject).sort((a,b) => parseInt(a) - parseInt(b)).map(nomor => soalObject[nomor].kunciJawaban || ' ');
+            const allKunjab = Object.keys(soalObject).sort((a,b) => parseInt(a) - parseInt(b)).map(nomor => {
+                let k = soalObject[nomor].kunciJawaban || '';
+                // Bungkus dengan bracket [ ] jika PGK atau BS (kunci mengandung koma)
+                if (k.includes(',')) {
+                    return `[${k}]`;
+                }
+                return k || ' ';
+            });
+            
             const jumlahSoal = Object.keys(soalObject).length;
             const tanggalUpdate = new Date().toISOString();
 
@@ -2646,7 +2808,7 @@
         globalSaveBtn.addEventListener('click', () => {
             showConfirmModal(
                 'Konfirmasi Penyimpanan',
-                'Perubahan akan disimpan. Data Ringkasan masuk ke "daftar_ujian", Data Lengkap masuk ke "ujian". Lanjutkan?',
+                'Semua perubahan pada soal dan gambar akan disimpan ke server. Lanjutkan?',
                 'Ya, Kirim & Simpan',
                 'btn-success',
                 executeGlobalSave
