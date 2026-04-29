@@ -287,6 +287,19 @@
         .table-bs td:first-child { text-align: left; width: 70%; }
         .table-bs .radio-dummy { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--border-color); display: inline-block; }
 
+        /* Tabel Tambahan di dalam Soal */
+        .soal-container table:not(.table-bs) {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        .soal-container table:not(.table-bs) th,
+        .soal-container table:not(.table-bs) td {
+            border: 1px solid var(--border-color);
+            padding: 8px;
+            vertical-align: top;
+        }
+
         .preview-content {
             display: flex;
             flex-direction: column;
@@ -859,13 +872,14 @@
 
 <div id="toast-container"></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
     import { getDatabase, ref, set, get, remove, update } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+    
+    // PERBAIKAN: Import JSZip dan SortableJS langsung ke dalam modul
+    import JSZip from "https://cdn.jsdelivr.net/npm/jszip@3.10.1/+esm";
+    import Sortable from "https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/+esm";
     
     // --- KONFIGURASI MULTI-FIREBASE (Sama seperti Admin Panel) ---
     
@@ -1939,11 +1953,21 @@
     }
 
     function extractQuestionsFromDom(bodyElement) {
-        const tables = bodyElement.getElementsByTagName('table');
+        // Hanya ambil tabel utama (yang tidak berada di dalam tabel layout lain)
+        const allTables = Array.from(bodyElement.getElementsByTagName('table'));
+        const mainTables = allTables.filter(t => {
+            let parent = t.parentElement;
+            while (parent && parent !== bodyElement) {
+                if (parent.tagName === 'TABLE') return false;
+                parent = parent.parentElement;
+            }
+            return true;
+        });
+
         const results = [];
         let soalDitemukan = 0;
         
-        for (const table of tables) {
+        for (const table of mainTables) {
             const rows = table.rows;
             for (let i = 0; i < rows.length; i += 2) {
                 const firstCell = rows[i]?.cells[0];
@@ -2176,12 +2200,24 @@
         clone.querySelectorAll('*').forEach(child => {
             child.removeAttribute('class');
             child.removeAttribute('lang');
-            if (child.tagName === 'IMG' && child.hasAttribute('style')) {
-                const width = child.style.width;
-                const height = child.style.height;
+            
+            if (child.tagName === 'IMG') {
+                // Ambil atribut width/height asli dari MS Word
+                let w = (child.style.width || child.getAttribute('width') || '').trim();
+                let h = (child.style.height || child.getAttribute('height') || '').trim();
+                
                 child.removeAttribute('style');
-                if (width) child.style.width = width;
-                if (height) child.style.height = height;
+                child.removeAttribute('width');
+                child.removeAttribute('height');
+
+                if (w) {
+                    if (/^\d+(\.\d+)?$/.test(w)) w += 'px'; // Tambahkan px jika cuma angka
+                    child.style.width = w;
+                }
+                if (h) {
+                    if (/^\d+(\.\d+)?$/.test(h)) h += 'px';
+                    child.style.height = h;
+                }
             } else if (child.tagName !== 'IMG') {
                  child.removeAttribute('style');
             }
@@ -2211,6 +2247,7 @@
                 if (!img.style.height) {
                     img.style.height = 'auto';
                 }
+                img.style.maxWidth = '100%'; // Pastikan gambar tidak melebihi kontainer soal
                 return;
             }
 
